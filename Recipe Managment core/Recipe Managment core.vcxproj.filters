@@ -18,5 +18,16 @@
     <ClCompile Include="Recipe Managment core.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="recipe.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="recipe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dependencies.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
