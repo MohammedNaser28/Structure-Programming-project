@@ -30,3 +30,56 @@
 *.exe
 *.out
 *.app
+.vs/Recipe Managment/CopilotIndices/17.12.38.29086/SemanticSymbols.db-shm
+.vs/Recipe Managment/FileContentIndex/fc6b9ce8-0a4c-474b-9ca2-2f946a35234e.vsidx
+# Visual Studio-specific files and directories
+.vs/
+*.VC.db
+*.VC.opendb
+*.tlog
+*.lastbuildstate
+ipch/
+*.log
+*.ilk
+*.idb
+
+# Build directories (Debug and Release)
+Debug/
+Release/
+x64/
+x86/
+ARM/
+ARM64/
+
+# CMake-related files (if using CMake)
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+CMakeLists.txt.user
+
+# Temporary files
+*.tmp
+*.cache
+*.ncb
+*.sdf
+*.suo
+*.user
+*.pdb
+*.opendb
+
+# Qt-specific files (if using Qt)
+moc_*.cpp
+moc_*.h
+ui_*.h
+qrc_*.cpp
+*.qmake.stash
+Makefile*
+
+# Clang Compilation Database
+compile_commands.json
+
+# CodeBlocks and Dev-C++ files (if switching IDEs)
+*.layout
+*.cbp
+*.dev
