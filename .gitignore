@@ -1,5 +1,8 @@
 # Prerequisites
 *.d
+
+# I ignore main file because its a test file
+
 main.cpp
 # Compiled Object files
 *.slo
