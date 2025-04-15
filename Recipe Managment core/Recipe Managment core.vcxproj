@@ -127,12 +127,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="admin.cpp" />
+    <ClCompile Include="general.cpp" />
+    <ClCompile Include="handledata.cpp" />
+    <ClCompile Include="login.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="recipe.cpp" />
+    <ClCompile Include="user.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="admin.h" />
     <ClInclude Include="dependencies.h" />
+    <ClInclude Include="general.h" />
+    <ClInclude Include="handledata.h" />
+    <ClInclude Include="logIn.h" />
     <ClInclude Include="recipe.h" />
+    <ClInclude Include="structures.h" />
+    <ClInclude Include="user.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
