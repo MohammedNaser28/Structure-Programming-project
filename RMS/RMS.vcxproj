@@ -104,7 +104,10 @@
   <ItemGroup>
     <QtRcc Include="mainwindow.qrc" />
     <QtUic Include="dialog.ui" />
-    <QtUic Include="mainwindow.ui" />
+    <QtUic Include="mainwindow.ui">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </QtUic>
     <QtMoc Include="mainwindow.h" />
     <ClCompile Include="data.cpp" />
     <ClCompile Include="dialog.cpp" />

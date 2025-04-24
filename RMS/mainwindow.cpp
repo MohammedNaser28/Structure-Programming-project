@@ -3,20 +3,20 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindowClass())
-    , recipes_grid(new QGridLayout)
+    //, recipes_grid(new QGridLayout)
 {
     ui->setupUi(this);
-    ui->scrollAreaWidgetContents->setLayout(recipes_grid);
-    ui->scrollArea->setWidgetResizable(true);
+    //ui->scrollAreaWidgetContents->setLayout(recipes_grid);
+    //ui->scrollArea->setWidgetResizable(true);
 
-    recipe_pages.fill(nullptr, 1000);
+    //recipe_pages.fill(nullptr, 1000);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-    qDeleteAll(recipe_pages);
-    recipe_pages.clear();
+    //qDeleteAll(recipe_pages);
+    //recipe_pages.clear();
 }
 
 void MainWindow::on_log_out_btn_clicked()
@@ -25,6 +25,7 @@ void MainWindow::on_log_out_btn_clicked()
     emit switchToDialog();
 }
 
+/*
 void MainWindow::on_save_recipe_btn_clicked()
 {
     // take input
@@ -171,3 +172,5 @@ void MainWindow::on_home_page_btn_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->home_page);
 }
+
+*/
