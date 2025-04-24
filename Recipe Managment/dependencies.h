@@ -1,9 +1,0 @@
-#pragma once
-#include <QList>
-#include <Qlabel>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QStackedWidget>
-#include <QDialog>
-#include <QFileSystemModel>
-#include <Qdebug>
