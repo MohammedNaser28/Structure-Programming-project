@@ -56,6 +56,24 @@
     <QtUic Include="dialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+    <QtUic Include="createaccount.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="form.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="login.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="login_copy.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="recipeManagement.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="register.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="structures.h">

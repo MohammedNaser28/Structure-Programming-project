@@ -2,7 +2,7 @@
 
 #include "dependencies.h"
 
-static int next_id = 0; // Added missing semicolon
+static int next_id = 0; 
 
 struct Recipe
 {

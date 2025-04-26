@@ -103,13 +103,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <QtRcc Include="mainwindow.qrc" />
+    <QtUic Include="createaccount.ui" />
     <QtUic Include="dialog.ui" />
+    <QtUic Include="form.ui" />
+    <QtUic Include="login.ui" />
+    <QtUic Include="login_copy.ui" />
     <QtUic Include="mainwindow.ui" />
     <QtMoc Include="mainwindow.h" />
     <ClCompile Include="data.cpp" />
     <ClCompile Include="dialog.cpp" />
     <ClCompile Include="mainwindow.cpp" />
     <ClCompile Include="main.cpp" />
+    <QtUic Include="recipeManagement.ui" />
+    <QtUic Include="register.ui" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="dialog.h" />

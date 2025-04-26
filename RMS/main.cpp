@@ -16,11 +16,11 @@ int main(int argc, char* argv[])
     load_users();
     load_recipes();
 
-    Dialog dialog;
+    Register dialog;
     MainWindow mainWindow;
 
     // Connect signals to switch between windows
-    QObject::connect(&dialog, &Dialog::switchToMainWindow, &dialog, [&dialog, &mainWindow]() {
+    QObject::connect(&dialog, &Register::switchToMainWindow, &dialog, [&dialog, &mainWindow]() {
         dialog.hide();
         mainWindow.show();
         });

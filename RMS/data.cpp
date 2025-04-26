@@ -15,6 +15,7 @@ void save_users()
     // open the file
     QString file_name = "Users.txt";
     QFile file(file_name);
+
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         qCritical() << "Could not open " << file_name << ":" << file.errorString();
         return;
@@ -155,8 +156,9 @@ void save_recipes()
         stream << recipes[i]->level << Qt::endl;
         stream << recipes[i]->rates_sum << Qt::endl;
         stream << recipes[i]->rates_num << Qt::endl;
-
         stream << recipes[i]->ing_num << Qt::endl;
+
+
         QString ing;
         for (int j = 0; j < recipes[i]->ing_num; j++)
         {

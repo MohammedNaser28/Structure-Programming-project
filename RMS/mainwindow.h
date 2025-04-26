@@ -5,7 +5,7 @@
 #include "global.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindowClass; };
+namespace Ui { class MainWindow; };
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -22,6 +22,7 @@ private:
     QList<QWidget*> recipe_pages;      // IDs of recipe pages
 
 private slots:
+
     void on_home_page_btn_clicked();
 
     void on_log_out_btn_clicked();

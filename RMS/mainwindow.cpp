@@ -2,12 +2,12 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindowClass())
+    , ui (new Ui::MainWindowClass()) 
     , recipes_grid(new QGridLayout)
 {
     ui->setupUi(this);
-    ui->scrollAreaWidgetContents->setLayout(recipes_grid);
-    ui->scrollArea->setWidgetResizable(true);
+    //ui->scrollAreaWidgetContents->setLayout(recipes_grid);
+    //ui->scrollArea->setWidgetResizable(true);
 
     recipe_pages.fill(nullptr, 1000);
 }
@@ -171,3 +171,4 @@ void MainWindow::on_home_page_btn_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->home_page);
 }
+
