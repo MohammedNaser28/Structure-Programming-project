@@ -100,13 +100,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <QtRcc Include="mainwindow.qrc" />
+    <ClCompile Include="mainwindow.cpp" />
     <QtUic Include="dialog.ui" />
-    <QtMoc Include="mainwindow.h" />
     <ClCompile Include="data.cpp" />
     <ClCompile Include="dialog.cpp" />
     <ClCompile Include="global.cpp" />
-    <ClCompile Include="mainwindow.cpp" />
     <ClCompile Include="main.cpp" />
     <QtUic Include="mainwindow.ui" />
   </ItemGroup>
@@ -117,6 +115,7 @@
     <ClInclude Include="data.h" />
     <ClInclude Include="dependencies.h" />
     <ClInclude Include="global.h" />
+    <QtMoc Include="mainwindow.h" />
     <ClInclude Include="structures.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

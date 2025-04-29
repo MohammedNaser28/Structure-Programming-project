@@ -1,5 +1,6 @@
 #pragma once
-#include <QtWidgets/QMainWindow>
+
+#include <QMainWindow>
 #include "ui_mainwindow.h"
 #include "global.h"
 
@@ -9,14 +10,14 @@ QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+	MainWindow(QWidget *parent = nullptr);
+	~MainWindow();
 
 private:
-    Ui::MainWindowClass *ui;
+	Ui::MainWindowClass *ui;
     QGridLayout* recipes_grid;
     QList<QWidget*> recipe_pages;      // IDs of recipe pages
 

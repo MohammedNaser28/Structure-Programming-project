@@ -1,11 +1,11 @@
 ﻿#include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindowClass())
+	: QMainWindow(parent)
+	, ui(new Ui::MainWindowClass())
     , recipes_grid(new QGridLayout)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
     ui->scrollAreaWidgetContents->setLayout(recipes_grid);
     ui->scrollArea->setWidgetResizable(true);
 
@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+	delete ui;
     qDeleteAll(recipe_pages);
     recipe_pages.clear();
 }
@@ -24,7 +24,6 @@ void MainWindow::on_log_out_btn_clicked()
     loged_in_user = nullptr;
     emit switchToDialog();
 }
-
 
 void MainWindow::on_save_recipe_btn_clicked()
 {
@@ -78,7 +77,7 @@ void MainWindow::create_recipe_page(QSharedPointer<Recipe> r_ptr)
         QLabel* category = new QLabel(categ);
 
         QString l;
-        if (r_ptr->level == 0) l = "سهل" ;
+        if (r_ptr->level == 0) l = "سهل";
         else if (r_ptr->level == 1) l = "متوسط";
         else l = "صعب";
         QLabel* level = new QLabel(l);
