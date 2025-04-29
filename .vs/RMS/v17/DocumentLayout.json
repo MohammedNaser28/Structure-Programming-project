@@ -1,9 +1,9 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\AdminOS\\source\\repos\\Structure-Programming-project\\",
+  "WorkspaceRootPath": "C:\\Users\\AdminOS\\source\\repos\\Structure-Programming-project\\demo\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{22FA1446-5FBB-44A9-9DAA-7094BD99507F}|RMS\\RMS.vcxproj|C:\\Users\\AdminOS\\source\\repos\\Structure-Programming-project\\RMS\\mainwindow.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{22FA1446-5FBB-44A9-9DAA-7094BD99507F}|RMS\\RMS.vcxproj|C:\\Users\\AdminOS\\source\\repos\\Structure-Programming-project\\demo\\RMS\\mainwindow.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{22FA1446-5FBB-44A9-9DAA-7094BD99507F}|RMS\\RMS.vcxproj|solutionrelative:RMS\\mainwindow.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
@@ -36,9 +36,9 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "mainwindow.cpp",
-              "DocumentMoniker": "C:\\Users\\AdminOS\\source\\repos\\Structure-Programming-project\\RMS\\mainwindow.cpp",
+              "DocumentMoniker": "C:\\Users\\AdminOS\\source\\repos\\Structure-Programming-project\\demo\\RMS\\mainwindow.cpp",
               "RelativeDocumentMoniker": "RMS\\mainwindow.cpp",
-              "ToolTip": "C:\\Users\\AdminOS\\source\\repos\\Structure-Programming-project\\RMS\\mainwindow.cpp",
+              "ToolTip": "C:\\Users\\AdminOS\\source\\repos\\Structure-Programming-project\\demo\\RMS\\mainwindow.cpp",
               "RelativeToolTip": "RMS\\mainwindow.cpp",
               "ViewState": "AgIAAB4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
