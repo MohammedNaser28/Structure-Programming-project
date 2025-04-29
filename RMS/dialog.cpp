@@ -14,8 +14,7 @@ Register::~Register()
 
 void Register::on_login_btn_clicked()
 {
-    //ui->warning_label->clear();
-
+    ui->warning_label->clear();
     // take data
     QString username = ui->username_field->text();
     QString password = ui->pass_field->text();
@@ -26,14 +25,14 @@ void Register::on_login_btn_clicked()
     if (username.size() == 0 || password.size() == 0)
     {
         qWarning() << "Enter a Username and a Password";
-        //ui->warning_label->setText("Enter a Username and a Password");
+        ui->warning_label->setText("Enter a Username and a Password");
         return;
     }
 
     if (username.contains(" ") || password.contains(" "))
     {
         qWarning() << "Username and Password can't contain whitespace";
-        //ui->warning_label->setText("Username and Password can't contain whitespace");
+        ui->warning_label->setText("Username and Password can't contain whitespace");
         return;
     }
 
@@ -59,7 +58,7 @@ void Register::on_login_btn_clicked()
 
 void Register::on_create_btn_clicked()
 {
-    //ui->warning_label->clear();
+    ui->warning_label->clear();
 
     // take input
     QString username = ui->username_create->text();
@@ -73,14 +72,14 @@ void Register::on_create_btn_clicked()
     if (!username.size() || !password.size() || !confirm_password.size())
     {
         qWarning() << "Enter a Username and a Password";
-        //ui->warning_label->setText("Enter a Username and a Password");
+        ui->warning_label->setText("Enter a Username and a Password");
         return;
     }
 
     if (username.contains(" ") || password.contains(" "))
     {
         qWarning() << "Username and Password can't contain whitespace";
-        //ui->warning_label->setText("Username and Password can't contain whitespace");
+        ui->warning_label->setText("Username and Password can't contain whitespace");
         return;
     }
 
@@ -90,7 +89,7 @@ void Register::on_create_btn_clicked()
         if (username == users[i]->username)
         {
             qCritical() << "This username already exists";
-            //ui->warning_label->setText("This username already exists");
+            ui->warning_label->setText("This username already exists");
             return;
         }
     }
@@ -98,23 +97,23 @@ void Register::on_create_btn_clicked()
     if (confirm_password != password)
     {
         qCritical() << "Passwords are not identical";
-        //ui->warning_label->setText("Passwords are not identical");
+        ui->warning_label->setText("Passwords are not isdentical");
         return;
     }
 
-    //bool isAdmin;
-    //if (ui->admin_btn->isChecked()) isAdmin = true;
-    //else if (ui->user_btn->isChecked()) isAdmin = false;
-    //else
-    //{
-    //    qCritical() << "Select User or Admin";
-    //    ui->warning_label->setText("Select User or Admin");
-    //    return;
-    //}
+    bool isAdmin;
+    if (ui->is_admin_btn->isChecked()) isAdmin = true;
+    else if (ui->is_user_btn->isChecked()) isAdmin = false;
+    else
+    {
+        qCritical() << "Select User or Admin";
+        //ui->warning_label->setText("Select User or Admin");
+        return;
+    }
 
     // create new user and append it to the users list
     QSharedPointer<User> user_ptr(new User());
-    //user_ptr->isAdmin = isAdmin;
+    user_ptr->isAdmin = isAdmin;
     user_ptr->username = username;
     user_ptr->password = password;
     users[num_of_users] = user_ptr;
@@ -131,12 +130,16 @@ void Register::on_create_btn_clicked()
     ui->stackedWidget->setCurrentWidget(ui->login_container);
 }
 
+void Register::on_switch_to_login_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(ui->login_container);
+}
+
 
 
 
 void Register::on_switch_to_create_clicked()
 {
-    //ui->title_label->setText("Register");
     //ui->warning_label->setText("");
-    ui->stackedWidget->setCurrentWidget(ui->register_container);
+    ui->stackedWidget->setCurrentWidget(ui->create_container);
 }

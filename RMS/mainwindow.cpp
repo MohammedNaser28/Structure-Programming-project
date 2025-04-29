@@ -6,8 +6,8 @@ MainWindow::MainWindow(QWidget *parent)
     , recipes_grid(new QGridLayout)
 {
     ui->setupUi(this);
-    //ui->scrollAreaWidgetContents->setLayout(recipes_grid);
-    //ui->scrollArea->setWidgetResizable(true);
+    ui->scrollAreaWidgetContents->setLayout(recipes_grid);
+    ui->scrollArea->setWidgetResizable(true);
 
     recipe_pages.fill(nullptr, 1000);
 }

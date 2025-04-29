@@ -41,7 +41,7 @@ struct User
    bool isAdmin = false;
    QString username;
    QString password;
-
+   QString name;
    int favorite_recipes_num = 0;
    int favorite_recipes[100] {};  // IDs of favorite recipes
 

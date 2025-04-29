@@ -19,10 +19,13 @@ private:
 	Ui::Register *ui;
 
 private slots:
+
 	void on_login_btn_clicked();
 	void on_switch_to_create_clicked();
 	void on_create_btn_clicked();
+	void on_switch_to_login_clicked();
 
 signals:
 	void switchToMainWindow();
 };
+

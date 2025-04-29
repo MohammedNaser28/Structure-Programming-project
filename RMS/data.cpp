@@ -32,6 +32,7 @@ void save_users()
     {
         stream << users[i]->isAdmin << Qt::endl;
         stream << users[i]->username << Qt::endl;
+        stream << users[i]->name << Qt::endl;
         stream << users[i]->password << Qt::endl;
 
         // we have to make sure that all fav recipes weren't deleted from the system
@@ -94,7 +95,7 @@ void load_users()
 
         stream >> user_ptr->username;
         stream >> user_ptr->password;
-
+        stream >> user_ptr->name;
         stream >> temp;
         user_ptr->favorite_recipes_num = temp.toInt();
 
@@ -183,6 +184,7 @@ void load_recipes()
     QFile file(file_name);
     if (!file.exists())
     {
+        
         qWarning() << file_name << " does not exist";
         return;
     }
