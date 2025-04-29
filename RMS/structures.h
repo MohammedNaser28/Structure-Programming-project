@@ -2,7 +2,11 @@
 
 #include "dependencies.h"
 
+<<<<<<< HEAD
 static int next_id = 0; 
+=======
+static int next_id = 0;
+>>>>>>> 3711ac27ca4b5b9b2337859114431661774274ae
 
 struct Recipe
 {
