@@ -3,6 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_mainwindow.h"
 #include "global.h"
+#include <QScrollArea>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; };
@@ -23,15 +24,15 @@ private:
 
 private slots:
 
-    void on_home_page_btn_clicked();
+    void on_home_btn_clicked();
 
-    void on_log_out_btn_clicked();
+    void on_logout_btn_clicked();
+    void on_add_recipe_admin_clicked();
+    //void on_save_recipe_btn_clicked();
 
-    void on_save_recipe_btn_clicked();
+    //void on_display_recipe_btn_clicked();
 
-    void on_display_recipe_btn_clicked();
-
-    void create_recipe_page(QSharedPointer<Recipe> r_ptr);
+    //void create_recipe_page(QSharedPointer<Recipe> r_ptr);
 
 signals:
     void switchToDialog();

@@ -42,6 +42,7 @@ void Register::on_login_btn_clicked()
         if (users[i]->username == username && users[i]->password == password)
         {
             loged_in_user = users[i];
+            currentUser = i;
             qInfo() << username << " loged in succesfully!";
             emit switchToMainWindow();
             break;
@@ -62,6 +63,7 @@ void Register::on_create_btn_clicked()
 
     // take input
     QString username = ui->username_create->text();
+    QString name = ui->name_create_field->text();
     QString password = ui->pass_field_create->text();
     QString confirm_password = ui->confirm_pass_create->text();
     username = username.trimmed();
@@ -107,14 +109,16 @@ void Register::on_create_btn_clicked()
     else
     {
         qCritical() << "Select User or Admin";
-        //ui->warning_label->setText("Select User or Admin");
+        ui->warning_label->setText("Select User or Admin");
         return;
     }
 
     // create new user and append it to the users list
     QSharedPointer<User> user_ptr(new User());
     user_ptr->isAdmin = isAdmin;
+
     user_ptr->username = username;
+    user_ptr->name = name;
     user_ptr->password = password;
     users[num_of_users] = user_ptr;
     num_of_users++;

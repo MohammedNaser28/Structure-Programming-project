@@ -112,6 +112,7 @@
     <QtMoc Include="mainwindow.h" />
     <ClCompile Include="data.cpp" />
     <ClCompile Include="dialog.cpp" />
+    <ClCompile Include="global.cpp" />
     <ClCompile Include="mainwindow.cpp" />
     <ClCompile Include="main.cpp" />
     <QtUic Include="recipeManagement.ui" />

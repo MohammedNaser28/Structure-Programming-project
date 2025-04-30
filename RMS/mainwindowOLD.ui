@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+	<class>MainWindowClass</class>
+	<widget class="QMainWindow" name="MainWindowClass">
+		<property name="geometry">
+			<rect>
+				<x>0</x>
+				<y>0</y>
+				<width>797</width>
+				<height>628</height>
+			</rect>
+		</property>
+		<property name="windowTitle">
+			<string>MainWindow</string>
+		</property>
+		<widget class="QWidget" name="centralWidget">
+			<widget class="QStackedWidget" name="stackedWidget">
+				<property name="geometry">
+					<rect>
+						<x>10</x>
+						<y>80</y>
+						<width>781</width>
+						<height>501</height>
+					</rect>
+				</property>
+				<property name="currentIndex">
+					<number>0</number>
+				</property>
+				<widget class="QWidget" name="home_page">
+					<widget class="QFrame" name="add_recipe">
+						<property name="geometry">
+							<rect>
+								<x>0</x>
+								<y>0</y>
+								<width>781</width>
+								<height>221</height>
+							</rect>
+						</property>
+						<property name="font">
+							<font>
+								<pointsize>14</pointsize>
+							</font>
+						</property>
+						<property name="frameShape">
+							<enum>QFrame::Shape::Box</enum>
+						</property>
+						<widget class="QPushButton" name="save_recipe_btn">
+							<property name="geometry">
+								<rect>
+									<x>460</x>
+									<y>170</y>
+									<width>111</width>
+									<height>31</height>
+								</rect>
+							</property>
+							<property name="font">
+								<font>
+									<pointsize>10</pointsize>
+								</font>
+							</property>
+							<property name="text">
+								<string>حفظ</string>
+							</property>
+						</widget>
+						<widget class="QWidget" name="layoutWidget">
+							<property name="geometry">
+								<rect>
+									<x>430</x>
+									<y>10</y>
+									<width>331</width>
+									<height>138</height>
+								</rect>
+							</property>
+							<layout class="QGridLayout" name="gridLayout">
+								<item row="0" column="1">
+									<widget class="QLineEdit" name="title_line">
+										<property name="font">
+											<font>
+												<pointsize>10</pointsize>
+											</font>
+										</property>
+										<property name="layoutDirection">
+											<enum>Qt::LayoutDirection::RightToLeft</enum>
+										</property>
+									</widget>
+								</item>
+								<item row="3" column="1">
+									<widget class="QComboBox" name="level_combobox">
+										<property name="font">
+											<font>
+												<pointsize>10</pointsize>
+											</font>
+										</property>
+										<property name="layoutDirection">
+											<enum>Qt::LayoutDirection::RightToLeft</enum>
+										</property>
+										<item>
+											<property name="text">
+												<string>سهل</string>
+											</property>
+										</item>
+										<item>
+											<property name="text">
+												<string>متوسط</string>
+											</property>
+										</item>
+										<item>
+											<property name="text">
+												<string>صعب</string>
+											</property>
+										</item>
+									</widget>
+								</item>
+								<item row="3" column="2">
+									<widget class="QLabel" name="label_6">
+										<property name="font">
+											<font>
+												<pointsize>10</pointsize>
+											</font>
+										</property>
+										<property name="text">
+											<string>الصعوبه</string>
+										</property>
+									</widget>
+								</item>
+								<item row="2" column="1">
+									<widget class="QSpinBox" name="cock_time_spinbox">
+										<property name="font">
+											<font>
+												<pointsize>10</pointsize>
+											</font>
+										</property>
+										<property name="layoutDirection">
+											<enum>Qt::LayoutDirection::LeftToRight</enum>
+										</property>
+									</widget>
+								</item>
+								<item row="0" column="2">
+									<widget class="QLabel" name="label_2">
+										<property name="font">
+											<font>
+												<pointsize>10</pointsize>
+											</font>
+										</property>
+										<property name="text">
+											<string>الاسم</string>
+										</property>
+									</widget>
+								</item>
+								<item row="1" column="1">
+									<widget class="QComboBox" name="category_combobox">
+										<property name="font">
+											<font>
+												<pointsize>10</pointsize>
+											</font>
+										</property>
+										<property name="layoutDirection">
+											<enum>Qt::LayoutDirection::RightToLeft</enum>
+										</property>
+										<item>
+											<property name="text">
+												<string>حادق</string>
+											</property>
+										</item>
+										<item>
+											<property name="text">
+												<string>حلو</string>
+											</property>
+										</item>
+									</widget>
+								</item>
+								<item row="1" column="2">
+									<widget class="QLabel" name="label_5">
+										<property name="font">
+											<font>
+												<pointsize>10</pointsize>
+											</font>
+										</property>
+										<property name="text">
+											<string>القسم</string>
+										</property>
+									</widget>
+								</item>
+								<item row="2" column="2">
+									<widget class="QLabel" name="label_4">
+										<property name="font">
+											<font>
+												<pointsize>10</pointsize>
+											</font>
+										</property>
+										<property name="text">
+											<string>مده التحضير</string>
+										</property>
+									</widget>
+								</item>
+							</layout>
+						</widget>
+						<widget class="QWidget" name="layoutWidget_2">
+							<property name="geometry">
+								<rect>
+									<x>20</x>
+									<y>10</y>
+									<width>381</width>
+									<height>141</height>
+								</rect>
+							</property>
+							<layout class="QGridLayout" name="gridLayout_2">
+								<item row="0" column="0">
+									<widget class="QLabel" name="label_7">
+										<property name="font">
+											<font>
+												<pointsize>10</pointsize>
+											</font>
+										</property>
+										<property name="text">
+											<string>المكونات</string>
+										</property>
+									</widget>
+								</item>
+								<item row="1" column="0">
+									<widget class="QPlainTextEdit" name="ingredients_text">
+										<property name="font">
+											<font>
+												<pointsize>10</pointsize>
+											</font>
+										</property>
+										<property name="layoutDirection">
+											<enum>Qt::LayoutDirection::RightToLeft</enum>
+										</property>
+									</widget>
+								</item>
+								<item row="0" column="1">
+									<widget class="QLabel" name="label_8">
+										<property name="font">
+											<font>
+												<pointsize>10</pointsize>
+											</font>
+										</property>
+										<property name="text">
+											<string>الوصف</string>
+										</property>
+									</widget>
+								</item>
+								<item row="1" column="1">
+									<widget class="QPlainTextEdit" name="description_text">
+										<property name="font">
+											<font>
+												<pointsize>10</pointsize>
+											</font>
+										</property>
+										<property name="layoutDirection">
+											<enum>Qt::LayoutDirection::RightToLeft</enum>
+										</property>
+									</widget>
+								</item>
+							</layout>
+						</widget>
+						<widget class="QPushButton" name="display_recipe_btn">
+							<property name="geometry">
+								<rect>
+									<x>230</x>
+									<y>170</y>
+									<width>111</width>
+									<height>31</height>
+								</rect>
+							</property>
+							<property name="font">
+								<font>
+									<pointsize>10</pointsize>
+								</font>
+							</property>
+							<property name="text">
+								<string>عرض الوصفات</string>
+							</property>
+						</widget>
+					</widget>
+					<widget class="QScrollArea" name="scrollArea">
+						<property name="geometry">
+							<rect>
+								<x>0</x>
+								<y>230</y>
+								<width>781</width>
+								<height>281</height>
+							</rect>
+						</property>
+						<property name="frameShape">
+							<enum>QFrame::Shape::Box</enum>
+						</property>
+						<property name="widgetResizable">
+							<bool>true</bool>
+						</property>
+						<widget class="QWidget" name="scrollAreaWidgetContents">
+							<property name="geometry">
+								<rect>
+									<x>0</x>
+									<y>0</y>
+									<width>777</width>
+									<height>277</height>
+								</rect>
+							</property>
+						</widget>
+					</widget>
+				</widget>
+				<widget class="QWidget" name="recipes_page"/>
+			</widget>
+			<widget class="QFrame" name="upper_bar">
+				<property name="geometry">
+					<rect>
+						<x>10</x>
+						<y>0</y>
+						<width>781</width>
+						<height>71</height>
+					</rect>
+				</property>
+				<property name="frameShape">
+					<enum>QFrame::Shape::Box</enum>
+				</property>
+				<widget class="QPushButton" name="log_out_btn">
+					<property name="geometry">
+						<rect>
+							<x>10</x>
+							<y>20</y>
+							<width>81</width>
+							<height>31</height>
+						</rect>
+					</property>
+					<property name="styleSheet">
+						<string notr="true">
+							QPushButton
+							{
+							border: none;
+							background-color: rgb(240, 240, 240);
+							text-decoration: underline;
+							font: 9pt &quot;Segoe UI&quot; rgb(0, 0, 0);
+							color: rgb(0, 0, 255)rgb(5, 80, 255);
+							color: rgb(39, 19, 255);
+
+							}
+						</string>
+					</property>
+					<property name="text">
+						<string>تسجيل الخروج</string>
+					</property>
+				</widget>
+				<widget class="QLabel" name="title">
+					<property name="geometry">
+						<rect>
+							<x>630</x>
+							<y>10</y>
+							<width>131</width>
+							<height>51</height>
+						</rect>
+					</property>
+					<property name="font">
+						<font>
+							<family>Tahoma</family>
+							<pointsize>16</pointsize>
+						</font>
+					</property>
+					<property name="tabletTracking">
+						<bool>false</bool>
+					</property>
+					<property name="contextMenuPolicy">
+						<enum>Qt::ContextMenuPolicy::PreventContextMenu</enum>
+					</property>
+					<property name="layoutDirection">
+						<enum>Qt::LayoutDirection::LeftToRight</enum>
+					</property>
+					<property name="frameShape">
+						<enum>QFrame::Shape::Box</enum>
+					</property>
+					<property name="text">
+						<string>عنوان</string>
+					</property>
+					<property name="alignment">
+						<set>Qt::AlignmentFlag::AlignCenter</set>
+					</property>
+				</widget>
+				<widget class="QPushButton" name="home_page_btn">
+					<property name="geometry">
+						<rect>
+							<x>530</x>
+							<y>20</y>
+							<width>91</width>
+							<height>31</height>
+						</rect>
+					</property>
+					<property name="font">
+						<font>
+							<family>Segoe UI</family>
+							<pointsize>9</pointsize>
+							<italic>false</italic>
+							<bold>false</bold>
+							<underline>true</underline>
+						</font>
+					</property>
+					<property name="styleSheet">
+						<string notr="true">
+							QPushButton
+							{
+							border: none;
+							background-color: rgb(240, 240, 240);
+							text-decoration: underline;
+							font: 9pt &quot;Segoe UI&quot; rgb(0, 0, 0);
+							color: rgb(0, 0, 255)rgb(5, 80, 255);
+							color: rgb(39, 19, 255);
+
+							}
+						</string>
+					</property>
+					<property name="text">
+						<string>الصفحه الرئيسه</string>
+					</property>
+				</widget>
+			</widget>
+		</widget>
+		<widget class="QMenuBar" name="menuBar">
+			<property name="geometry">
+				<rect>
+					<x>0</x>
+					<y>0</y>
+					<width>797</width>
+					<height>21</height>
+				</rect>
+			</property>
+		</widget>
+		<widget class="QToolBar" name="mainToolBar">
+			<attribute name="toolBarArea">
+				<enum>TopToolBarArea</enum>
+			</attribute>
+			<attribute name="toolBarBreak">
+				<bool>false</bool>
+			</attribute>
+		</widget>
+		<widget class="QStatusBar" name="statusBar"/>
+	</widget>
+	<layoutdefault spacing="6" margin="11"/>
+	<resources>
+		<include location="mainwindow.qrc"/>
+	</resources>
+	<connections/>
+</ui>

@@ -94,8 +94,8 @@ void load_users()
         user_ptr->isAdmin = (temp == "1") ? true : false;
 
         stream >> user_ptr->username;
-        stream >> user_ptr->password;
         stream >> user_ptr->name;
+        stream >> user_ptr->password;
         stream >> temp;
         user_ptr->favorite_recipes_num = temp.toInt();
 
