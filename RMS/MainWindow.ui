@@ -20,7 +20,7 @@
       <x>10</x>
       <y>80</y>
       <width>781</width>
-      <height>501</height>
+      <height>511</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -302,6 +302,173 @@
      </widget>
     </widget>
     <widget class="QWidget" name="recipe_page"/>
+    <widget class="QWidget" name="add_recipe_page">
+     <widget class="QScrollArea" name="scroll_area">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>781</width>
+        <height>511</height>
+       </rect>
+      </property>
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scroll_content">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>779</width>
+         <height>509</height>
+        </rect>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QLabel" name="title_lbl">
+          <property name="text">
+           <string>العنوان:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="title_line_2"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="ing_lbl">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>المكونات:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="ing_container" native="true">
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QPushButton" name="add_ing_btn">
+             <property name="text">
+              <string> + إضافة المزيد</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="methods_lbl">
+          <property name="text">
+           <string>الخطوات:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="methods_container" native="true">
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QPushButton" name="add_method_btn">
+             <property name="text">
+              <string> + إضافة المزيد</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="des_lbl">
+          <property name="text">
+           <string>الوصف</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTextEdit" name="des_edit"/>
+        </item>
+        <item>
+         <widget class="QWidget" name="info_widget" native="true">
+          <layout class="QHBoxLayout" name="info_layout">
+           <item>
+            <widget class="QSpinBox" name="time_spinBox"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="time_lbl">
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Shape::StyledPanel</enum>
+             </property>
+             <property name="text">
+              <string>الوقت</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="category_combo"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="category_lbl">
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Shape::StyledPanel</enum>
+             </property>
+             <property name="text">
+              <string>القسم</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="img_widget" native="true">
+          <layout class="QHBoxLayout" name="img_layout">
+           <item>
+            <widget class="QPushButton" name="browse_btn">
+             <property name="text">
+              <string>Browse</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="image_path_line"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="img_lbl">
+             <property name="text">
+              <string>إضافة صورة:</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="submit_btn">
+          <property name="text">
+           <string>إضافة الوصفة</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </widget>
    </widget>
    <widget class="QFrame" name="upper_bar">
     <property name="geometry">
@@ -406,6 +573,40 @@
      </property>
      <property name="text">
       <string>الصفحه الرئيسه</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="add_recipe_page_btn">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>20</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>9</pointsize>
+       <italic>false</italic>
+       <bold>false</bold>
+       <underline>true</underline>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton
+{
+   border: none;
+   background-color: rgb(240, 240, 240);
+	text-decoration: underline;
+	font: 9pt &quot;Segoe UI&quot; rgb(0, 0, 0);
+	color: rgb(0, 0, 255)rgb(5, 80, 255);
+	color: rgb(39, 19, 255);
+
+}</string>
+     </property>
+     <property name="text">
+      <string>اضف وصفه</string>
      </property>
     </widget>
    </widget>
