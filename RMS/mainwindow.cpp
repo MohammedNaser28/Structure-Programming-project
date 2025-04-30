@@ -1,4 +1,4 @@
-﻿#include "mainwindow.h"
+#include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->scrollArea->setWidgetResizable(true);
 
     recipe_pages.fill(nullptr, 1000);
+
+    setup_add_recipe_page();
 }
 
 MainWindow::~MainWindow()
@@ -19,10 +21,96 @@ MainWindow::~MainWindow()
     recipe_pages.clear();
 }
 
+void MainWindow::on_add_recipe_page_btn_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(ui->add_recipe_page);
+}
+
+void MainWindow::setup_add_recipe_page()
+{
+    // Scrollable central area
+    ui->scroll_area->setLayoutDirection(Qt::RightToLeft);
+    ui->scroll_content->setLayoutDirection(Qt::RightToLeft);
+    ui->scroll_content->layout()->setSpacing(12);
+    ui->scroll_area->setWidgetResizable(true);
+
+    // Title field
+    ui->title_line->setPlaceholderText(QStringLiteral("العنوان"));
+
+    // Ingredients
+    ui->ing_container->setLayoutDirection(Qt::RightToLeft);
+    connect(ui->add_ing_btn, &QPushButton::clicked, this, &MainWindow::add_ingredient_row);
+
+    // Method
+    ui->methods_container->setLayoutDirection(Qt::RightToLeft);
+    connect(ui->add_method_btn, &QPushButton::clicked, this, &MainWindow::add_method_row);
+
+    // Description
+    ui->des_edit->setPlaceholderText(QStringLiteral("أضف الوصف"));
+
+    // Info row
+    ui->info_layout->setSpacing(10);
+    ui->info_layout->setDirection(QBoxLayout::RightToLeft);
+
+    // Image row
+    ui->img_layout->setDirection(QBoxLayout::RightToLeft);
+    ui->image_path_line->setPlaceholderText(QStringLiteral("مسار الصورة"));
+    connect(ui->browse_btn, &QPushButton::clicked, this, &MainWindow::choose_image);
+}
+
+
 void MainWindow::on_log_out_btn_clicked()
 {
     loged_in_user = nullptr;
     emit switchToDialog();
+}
+
+void MainWindow::add_ingredient_row() {
+    QWidget* row = new QWidget;
+    row->setLayoutDirection(Qt::RightToLeft);
+    QHBoxLayout* row_layout = new QHBoxLayout(row);
+    row_layout->setSpacing(5);
+    row_layout->setDirection(QBoxLayout::LeftToRight);
+    QLineEdit* edit = new QLineEdit;
+    edit->setPlaceholderText(QStringLiteral("مكون"));
+    QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
+    connect(rm, &QPushButton::clicked, this, &MainWindow::remove_row);
+    row_layout->addWidget(edit);
+    row_layout->addWidget(rm);
+    ui->ing_container->layout()->addWidget(row);
+}
+
+void MainWindow::remove_row() {
+    QPushButton* btn = qobject_cast<QPushButton*>(sender());
+    if (!btn) return;
+    QWidget* row = btn->parentWidget();
+    delete row;
+}
+
+void MainWindow::add_method_row() {
+    QWidget* row = new QWidget;
+    row->setLayoutDirection(Qt::RightToLeft);
+    QHBoxLayout* row_layout = new QHBoxLayout(row);
+    row_layout->setSpacing(5);
+    row_layout->setDirection(QBoxLayout::LeftToRight);
+    QLineEdit* edit = new QLineEdit;
+    edit->setPlaceholderText(QStringLiteral("اكتب الخطوة"));
+    QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
+    connect(rm, &QPushButton::clicked, this, &MainWindow::remove_row);
+    row_layout->addWidget(edit);
+    row_layout->addWidget(rm);
+    QLayout* method_layout = ui->methods_container->layout();
+    method_layout->addWidget(row);
+}
+
+void MainWindow::choose_image() {
+    QString file = QFileDialog::getOpenFileName(this, QString("اختر صورة"), QString(), QString("صور (*.png *.jpg *.jpeg)"));
+    if (!file.isEmpty()) ui->image_path_line->setText(file);
+}
+
+void MainWindow::on_submit_btn_clicked()
+{
+    ;
 }
 
 void MainWindow::on_save_recipe_btn_clicked()
