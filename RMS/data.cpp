@@ -53,7 +53,43 @@ void save_users()
         }
 
         // add my recipes
-        
+        // write num of recipes
+        stream << users[i]->my_recipes_num << Qt::endl;
+
+        // write each recipe
+        for (int c = 0; c < users[i]->my_recipes_num; c++)
+        {
+            if (users[i]->my_recipes[c] == nullptr) continue;
+
+            stream << users[i]->my_recipes[c]->category << Qt::endl;
+            stream << users[i]->my_recipes[c]->title << Qt::endl;
+            stream << users[i]->my_recipes[c]->description << Qt::endl;
+            stream << users[i]->my_recipes[c]->cock_time << Qt::endl;
+            stream << users[i]->my_recipes[c]->level << Qt::endl;
+            stream << users[i]->my_recipes[c]->rates_sum << Qt::endl;
+            stream << users[i]->my_recipes[c]->rates_num << Qt::endl;
+            stream << users[i]->my_recipes[c]->imagePath << Qt::endl;
+            stream << users[i]->my_recipes[c]->ing_num << Qt::endl;
+
+            QString ing;
+            for (int j = 0; j < users[i]->my_recipes[c]->ing_num; j++)
+            {
+                ing.append(QString("%1,").arg(users[i]->my_recipes[c]->ingredients[j]));
+            }
+            ing.chop(1);
+            stream << ing << Qt::endl;
+
+
+            stream << users[i]->my_recipes[c]->steps_num << Qt::endl;
+
+            QString steps;
+            for (int j = 0; j < users[i]->my_recipes[c]->steps_num; j++)
+            {
+                steps.append(QString("%1,").arg(users[i]->my_recipes[c]->steps[j]));
+            }
+            steps.chop(1);
+            stream << steps << Qt::endl;
+        }
     }
 
     file.close();
@@ -93,6 +129,7 @@ void load_users()
     {
         QSharedPointer<User> user_ptr(new User());
 
+        users[i] = user_ptr;
         stream >> temp;
         user_ptr->isAdmin = (temp == "1") ? true : false;
         stream >> user_ptr->username;
@@ -104,10 +141,41 @@ void load_users()
         for (int j = 0; j < user_ptr->favorite_recipes_num; j++)
         {
             stream >> temp;
-            user_ptr->my_recipes[j] = temp.toInt();
+            user_ptr->favorite_recipes[j] = temp.toInt();
         }
 
-        users[i] = user_ptr;
+        qInfo() << "loading" << users[i]->my_recipes_num << " recipes...";
+        for (int c = 0; c < users[c]->my_recipes_num; c++)
+        {
+            QSharedPointer<Recipe> recipe_ptr(new Recipe());
+
+            recipe_ptr->category = stream.readLine().toInt();
+            recipe_ptr->title = stream.readLine();
+            recipe_ptr->description = stream.readLine();
+            recipe_ptr->cock_time = stream.readLine().toDouble();
+            recipe_ptr->level = stream.readLine().toInt();
+            recipe_ptr->rates_sum = stream.readLine().toInt();
+            recipe_ptr->rates_num = stream.readLine().toInt();
+            recipe_ptr->imagePath = stream.readLine();
+            recipe_ptr->ing_num = stream.readLine().toInt();
+            QString ingred = stream.readLine();
+            QStringList ingredList = ingred.split(",");
+            for (int j = 0; j < recipe_ptr->ing_num; j++)
+            {
+                recipe_ptr->ingredients[j] = ingredList[j];
+            }
+
+            recipe_ptr->steps_num = stream.readLine().toInt();
+            QString step = stream.readLine();
+            QStringList sl = step.split(",");
+            for (int j = 0; j < recipe_ptr->ing_num; j++)
+            {
+                recipe_ptr->steps[j] = ingredList[j];
+            }
+
+            users[i]->my_recipes[c] = recipe_ptr;
+        }
+
     }
 
     file.close();
