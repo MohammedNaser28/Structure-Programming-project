@@ -71,7 +71,7 @@ private slots:
     void on_save_edit_recipe_btn_2_clicked();
     void add_ingredient_row_edition();
     void add_method_row_edition();
-    //void display_edition_page_user();
+    void display_edition_page_user();
     void on_go_edition_page_btn_clicked();
     int get_ingredient_count_edit();
     int get_step_count_edit();

@@ -202,64 +202,64 @@ void MainWindow::on_go_edition_page_btn_clicked()
     }
 
     ui->stackedWidget->setCurrentWidget(ui->myedition_page);
-    //display_edition_page_user();
+    display_edition_page_user();
 }
 
 
-//void MainWindow::display_edition_page_user()
-//{
-//
-//
-//    qDebug() << "Edition recipes count:" << loged_in_user->my_recipes_num;
-//
-//    QWidget* scrollWidget = new QWidget;
-//    QGridLayout* edition_grid = new QGridLayout(scrollWidget);
-//
-//    if (ui->scrollArea_4->widget()) {
-//        ui->scrollArea_4->takeWidget()->deleteLater();
-//    }
-//
-//
-//
-//    int r = 0, c = 0;
-//    for (int i = 0; i < loged_in_user->my_recipes_num; i++)
-//    {
-//        QWidget* widget = new QWidget;
-//
-//        QVBoxLayout* layout = new QVBoxLayout(widget);
-//
-//        QLabel* title = new QLabel(loged_in_user->my_recipes[i]->title);
-//        title->setAlignment(Qt::AlignCenter);
-//
-//        QLabel* image = new QLabel;
-//        image->setPixmap(QPixmap(loged_in_user->my_recipes[i]->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
-//        image->setAlignment(Qt::AlignCenter);
-//
-//        QPushButton* button = new QPushButton("View details");
-//        button->setStyleSheet("color:rgb(0,0,0);");
-//        connect(button, &QPushButton::clicked, this, [this, recipe = loged_in_user->my_recipes[i]]() {
-//            if (this && recipe) {  // Check if pointers are valid
-//                assign_recipe_page(recipe);
-//                ui->stackedWidget->setCurrentWidget(ui->recipe_page);
-//            }
-//            });
-//
-//
-//        layout->addWidget(title);
-//        layout->addWidget(image); // ADDED: Image label
-//        layout->addWidget(button);
-//
-//        c = i % 4;
-//        if (!c && i) r++;
-//        edition_grid->addWidget(widget, r, c);
-//    }
-//
-//
-//
-//    ui->scrollArea_4->setWidget(scrollWidget);
-//    ui->scrollArea_4->setWidgetResizable(true);
-//    qDebug() << "scrollArea_3 visible:" << ui->scrollArea_3->isVisible();
-//}
+void MainWindow::display_edition_page_user()
+{
+
+
+    qDebug() << "Edition recipes count:" << loged_in_user->my_recipes_num;
+
+    QWidget* scrollWidget = new QWidget;
+    QGridLayout* edition_grid = new QGridLayout(scrollWidget);
+
+    if (ui->scrollArea_4->widget()) {
+        ui->scrollArea_4->takeWidget()->deleteLater();
+    }
+
+
+
+    int r = 0, c = 0;
+    for (int i = 0; i < loged_in_user->my_recipes_num; i++)
+    {
+        QWidget* widget = new QWidget;
+
+        QVBoxLayout* layout = new QVBoxLayout(widget);
+
+        QLabel* title = new QLabel(loged_in_user->my_recipes[i]->title);
+        title->setAlignment(Qt::AlignCenter);
+
+        QLabel* image = new QLabel;
+        image->setPixmap(QPixmap(loged_in_user->my_recipes[i]->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
+        image->setAlignment(Qt::AlignCenter);
+
+        QPushButton* button = new QPushButton("View details");
+        button->setStyleSheet("color:rgb(0,0,0);");
+        connect(button, &QPushButton::clicked, this, [this, recipe = loged_in_user->my_recipes[i]]() {
+            if (this && recipe) {  // Check if pointers are valid
+                assign_recipe_page(recipe);
+                ui->stackedWidget->setCurrentWidget(ui->recipe_page);
+            }
+            });
+
+
+        layout->addWidget(title);
+        layout->addWidget(image); // ADDED: Image label
+        layout->addWidget(button);
+
+        c = i % 4;
+        if (!c && i) r++;
+        edition_grid->addWidget(widget, r, c);
+    }
+
+
+
+    ui->scrollArea_4->setWidget(scrollWidget);
+    ui->scrollArea_4->setWidgetResizable(true);
+    qDebug() << "scrollArea_3 visible:" << ui->scrollArea_3->isVisible();
+}
 
 void MainWindow::add_ingred_to_user_page_edit() {
 
@@ -288,6 +288,8 @@ void MainWindow::add_ingred_to_user_page_edit() {
         qDebug() << "Add Ingredient" << i << ":" << currentDisplayedRecipe->ingredients[i] << '\n';
 
     }
+
+    qDebug() << "OUT FROM INGREDIANTES";
 }
 
 //void MainWindow::add_ingred_to_user_page_edit() {
@@ -408,13 +410,12 @@ void MainWindow::add_method_to_user_page_edit() {
         row_layout->addWidget(rm);
         QLayout* method_layout = ui->steps_container_2->layout();
         method_layout->addWidget(row);
+        qInfo() << "STEPS" << i << ":" << currentDisplayedRecipe->steps[i] << '\n';
     }
 }
 
 void MainWindow::on_save_edit_recipe_btn_2_clicked()
 {
-
-
     QSharedPointer<Recipe> recipe_ptr(new Recipe());
     recipe_ptr = currentDisplayedRecipe;
     recipe_ptr->generate_id();
@@ -423,29 +424,31 @@ void MainWindow::on_save_edit_recipe_btn_2_clicked()
 
 
     // Get ingredients
-    int num_ingredients = get_ingredient_count_edit() - 1;
+    int num_ingredients = get_ingredient_count_edit();
     QString* ingredients_array = get_ingredients_edit(num_ingredients);
 
     // Get steps
-    int num_steps = get_step_count_edit() - 1;
+    int num_steps = get_step_count_edit();
     QString* steps_array = get_steps_edit(num_steps);
 
 
     /***************************** Assign data from ui ************************/
 
-    recipe_ptr->description = ui->desc_field->toPlainText();
+    recipe_ptr->description = ui->desc_edit_field_2->toPlainText();
     recipe_ptr->description = recipe_ptr->description.trimmed();
 
 
     // Assign ingredients
     recipe_ptr->ing_num = num_ingredients;
-    for (int i = 1; i < num_ingredients; ++i) {
+    for (int i = 0; i < num_ingredients; ++i) {
+        qDebug() << "ingredients " << i << recipe_ptr->ingredients[i] << "   ingredients_array  " << ingredients_array[i];
         recipe_ptr->ingredients[i] = ingredients_array[i];
     }
 
     // Assign steps
     recipe_ptr->steps_num = num_steps;
-    for (int i = 1; i < num_steps; ++i) {
+    for (int i = 0; i < num_steps; ++i) {
+        qDebug() << "STEPS " << i << recipe_ptr->steps[i] << "   STEPS_array  " << steps_array[i];
         recipe_ptr->steps[i] = steps_array[i];
     }
 
@@ -462,55 +465,96 @@ void MainWindow::on_save_edit_recipe_btn_2_clicked()
 
 int MainWindow::get_ingredient_count_edit()
 {
-    return ui->ing_container_2->layout()->count();
+    int count=0;
+    QWidget* container = ui->ing_container_2; // your container widget
+
+    const QList<QLineEdit*> lineEdits = container->findChildren<QLineEdit*>();
+
+    for (QLineEdit* lineEdit : lineEdits) {
+        if (!(lineEdit->text().trimmed() == "")) {
+            ++count;
+        }
+    }
+
+    return count;
 }
 
 int MainWindow::get_step_count_edit()
 {
-    return ui->steps_container_2->layout()->count();
+    int count = 0;
+    QWidget* container = ui->steps_container_2; // your container widget
+
+    const QList<QLineEdit*> lineEdits = container->findChildren<QLineEdit*>();
+
+    for (QLineEdit* lineEdit : lineEdits) {
+        if (!(lineEdit->text().trimmed()=="")) {
+            ++count;
+        }
+    }
+
+    return count;
     
 }
 
 QString* MainWindow::get_ingredients_edit(int& out_count)
  {
-        QLayout* container_layout = ui->ing_container_2->layout();
-        int count = container_layout->count();
-        out_count = count;
-        QString* ingredients = new QString[count];
-        for (int i = 0; i < count; ++i) {
-            QWidget* row = container_layout->itemAt(i)->widget();
-            if (row) {
-                QLayout* row_layout = row->layout();
-                if (row_layout) {
-                    QLineEdit* edit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
-                    if (edit) {
-                        ingredients[i] = edit->text();
-                    }
-                }
-            }
-        }
+    QWidget* container = ui->ing_container_2; // your container widget
+
+    const QList<QLineEdit*> lineEdits = container->findChildren<QLineEdit*>();
+
+    QString* ingredients = new QString[out_count];
+
+    for (int i = 0; i < out_count; ++i) {
+        QString text = lineEdits[i]->text();
+        ingredients[i] = text;
+        qDebug() << "LineEdit Text:" << text;
+    }
+        //QLayout* container_layout = ui->ing_container_2->layout();
+        //int count = container_layout->count();
+        //out_count = count;
+        //for (int i = 0; i < count; ++i) {
+        //    QWidget* row = container_layout->itemAt(i)->widget();
+        //    if (row) {
+        //        QLayout* row_layout = row->layout();
+        //        if (row_layout) {
+        //            QLineEdit* edit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
+        //            if (edit) {
+        //                ingredients[i] = edit->text();
+        //            }
+        //        }
+        //    }
+        //}
+
+
         return ingredients;
     
 
 }
 
 QString* MainWindow::get_steps_edit(int& out_count) {
-        QLayout* container_layout = ui->steps_container_2->layout();
-        int count = container_layout->count();
-        out_count = count;
-        QString* steps = new QString[count];
-        for (int i = 0; i < count; ++i) {
-            QWidget* row = container_layout->itemAt(i)->widget();
-            if (row) {
-                QLayout* row_layout = row->layout();
-                if (row_layout) {
-                    QLineEdit* edit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
-                    if (edit) {
-                        steps[i] = edit->text();
-                    }
-                }
-            }
-        }
+    QWidget* container = ui->steps_container_2; // your container widget
+
+    const QList<QLineEdit*> lineEdits = container->findChildren<QLineEdit*>();
+
+    QString* steps = new QString[out_count];
+
+    for (int i = 0; i < out_count; ++i) {
+        QString text = lineEdits[i]->text();
+        steps[i] = text;
+        qDebug() << "LineEdit Text:" << text;
+    }
+        //for (int i = 0; i < count; ++i) {
+        //    QWidget* row = container_layout->itemAt(i)->widget();
+        //    if (row) {
+        //        QLayout* row_layout = row->layout();
+        //        if (row_layout) {
+        //            QLineEdit* edit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
+        //            if (edit) {
+        //                steps[i] = edit->text();
+        //            }
+        //        }
+        //    }
+        //}
         return steps;
     
 
@@ -519,11 +563,35 @@ QString* MainWindow::get_steps_edit(int& out_count) {
 
 
 int MainWindow::get_ingredient_count() {
-    return ui->ing_container->layout()->count();
+    int count = 0;
+    QWidget* container = ui->ing_container; // your container widget
+
+    const QList<QLineEdit*> lineEdits = container->findChildren<QLineEdit*>();
+
+    for (QLineEdit* lineEdit : lineEdits) {
+        if (!(lineEdit->text().trimmed() == "")) {
+            ++count;
+        }
+    }
+
+    return count;
+
 }
 
 int MainWindow::get_step_count() {
-    return ui->steps_container->layout()->count();
+
+    int count = 0;
+    QWidget* container = ui->steps_container; // your container widget
+
+    const QList<QLineEdit*> lineEdits = container->findChildren<QLineEdit*>();
+
+    for (QLineEdit* lineEdit : lineEdits) {
+        if (!(lineEdit->text().trimmed() == "")) {
+            ++count;
+        }
+    }
+
+    return count;
 }
 
 
@@ -615,7 +683,7 @@ void MainWindow::display_recipe()
 
         QVBoxLayout* layout = new QVBoxLayout(widget);
 
-        QLabel* title = new QLabel(loged_in_user->my_recipes[i]->title);
+        QLabel* title = new QLabel(recipes[i]->title);
         title->setAlignment(Qt::AlignCenter);
 
          QLabel *image = new QLabel;
@@ -655,11 +723,11 @@ void MainWindow::on_submit_recipe_btn_clicked()
 
 
     // Get ingredients
-    int num_ingredients = get_ingredient_count()-1;
+    int num_ingredients = get_ingredient_count();
     QString* ingredients_array = get_ingredients(num_ingredients);
 
     // Get steps
-    int num_steps =get_step_count()-1;
+    int num_steps =get_step_count();
     QString* steps_array = get_steps(num_steps);
 
 
@@ -711,8 +779,8 @@ void MainWindow::assign_recipe_page(QSharedPointer<Recipe> r_ptr)
     ui->desc_browser->setText(r_ptr->description);
     QString s = QString::number(r_ptr->cock_time,'f',2);
     ui->display_time_recipe->setText("وقت الطهو:  " + s);
-    QString avg_rate = QString::number((r_ptr->rates_sum / r_ptr->rates_num),'f',2);
-    ui->display_avg_rate->setText("متوسط التقييمات:  " + avg_rate);
+    //QString avg_rate = QString::number((r_ptr->rates_sum / r_ptr->rates_num),'f',2);
+    //ui->display_avg_rate->setText("متوسط التقييمات:  " + avg_rate);
     QString level;
         if (r_ptr->level == 0)  ui->display_level_recipe->setText("مستوى العصوبة:   سهل");
         else if (r_ptr->level == 1)  ui->display_level_recipe->setText("مستوى الصعوبة:   متوسط");
@@ -879,42 +947,33 @@ void MainWindow::assign_edition_user_page()
 
 // Retrieve ingredients from the UI as a dynamic array
 QString* MainWindow::get_ingredients(int& out_count) {
-    QLayout* container_layout = ui->ing_container->layout();
-    int count = container_layout->count();
-    out_count = count;
-    QString* ingredients = new QString[count];
-    for (int i = 0; i < count; ++i) {
-        QWidget* row = container_layout->itemAt(i)->widget();
-        if (row) {
-            QLayout* row_layout = row->layout();
-            if (row_layout) {
-                QLineEdit* edit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
-                if (edit) {
-                    ingredients[i] = edit->text();
-                }
-            }
-        }
+    QWidget* container = ui->ing_container; // your container widget
+
+    const QList<QLineEdit*> lineEdits = container->findChildren<QLineEdit*>();
+
+    QString* ingredients = new QString[out_count];
+
+    for (int i = 0; i < out_count; ++i) {
+        QString text = lineEdits[i]->text();
+        ingredients[i] = text;
+        qDebug() << "LineEdit Text:" << text;
     }
+
     return ingredients;
 }
 
 // Retrieve steps from the UI as a dynamic array
 QString* MainWindow::get_steps(int& out_count) {
-    QLayout* container_layout = ui->steps_container->layout();
-    int count = container_layout->count();
-    out_count = count;
-    QString* steps = new QString[count];
-    for (int i = 0; i < count; ++i) {
-        QWidget* row = container_layout->itemAt(i)->widget();
-        if (row) {
-            QLayout* row_layout = row->layout();
-            if (row_layout) {
-                QLineEdit* edit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
-                if (edit) {
-                    steps[i] = edit->text();
-                }
-            }
-        }
+    QWidget* container = ui->steps_container; // your container widget
+
+    const QList<QLineEdit*> lineEdits = container->findChildren<QLineEdit*>();
+
+    QString* steps = new QString[out_count];
+
+    for (int i = 0; i < out_count; ++i) {
+        QString text = lineEdits[i]->text();
+        steps[i] = text;
+        qDebug() << "LineEdit Text:" << text;
     }
     return steps;
 }
