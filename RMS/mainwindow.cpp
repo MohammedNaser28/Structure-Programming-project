@@ -417,10 +417,23 @@ void MainWindow::add_method_to_user_page_edit() {
 void MainWindow::on_save_edit_recipe_btn_2_clicked()
 {
     QSharedPointer<Recipe> recipe_ptr(new Recipe());
-    recipe_ptr = currentDisplayedRecipe;
     recipe_ptr->generate_id();
     loged_in_user->my_recipes[loged_in_user->my_recipes_num] = recipe_ptr;
     loged_in_user->my_recipes_num++;
+
+
+
+    // Manually copy properties from currentDisplayedRecipe
+    recipe_ptr->category = currentDisplayedRecipe->category;
+    recipe_ptr->title = currentDisplayedRecipe->title;
+    recipe_ptr->level = currentDisplayedRecipe->level;
+    recipe_ptr->cock_time = currentDisplayedRecipe->cock_time;
+    recipe_ptr->rates_sum = currentDisplayedRecipe->rates_sum;
+    recipe_ptr->rates_num = currentDisplayedRecipe->rates_num;
+    recipe_ptr->imagePath = currentDisplayedRecipe->imagePath;
+
+    // Generate a new unique ID
+    recipe_ptr->generate_id();
 
 
     // Get ingredients
