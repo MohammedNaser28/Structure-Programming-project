@@ -23,6 +23,7 @@ int main(int argc, char* argv[])
     QObject::connect(&dialog, &Dialog::switchToMainWindow, &dialog, [&dialog, &mainWindow]() {
         dialog.hide();
         mainWindow.show();
+        mainWindow.on_home_page_btn_clicked();
         });
 
     QObject::connect(&mainWindow, &MainWindow::switchToDialog, &mainWindow, [&dialog, &mainWindow]() {

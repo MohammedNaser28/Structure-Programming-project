@@ -7,6 +7,7 @@ QSharedPointer<User> loged_in_user = nullptr;
 
 int num_of_recipes = 0;
 QSharedPointer<Recipe> recipes[1000];
+QSharedPointer<Recipe> current_recipe = nullptr;
 
 // hashtable to recipes IDs to help in deleteing recipes and saving data (-1 means doesn't exist)
 short recipes_id_to_index[10000]; // intialized by (-1) in main

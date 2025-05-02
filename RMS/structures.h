@@ -2,7 +2,7 @@
 
 #include "dependencies.h"
 
-static int next_id = 0; // Added missing semicolon
+static int next_id = 1;
 
 struct Recipe
 {
@@ -18,12 +18,12 @@ struct Recipe
    int rates_sum = 0, rates_num = 0;
 
    int ing_num = 0;
-   QString ingredients[100];
+   QString ingredients[100] {};
 
    int steps_num = 0;
-   QString steps[100];
+   QString steps[100] {};
 
-   QString imagePath;
+   QString imagePath = "";
 
    void generate_id()
    {

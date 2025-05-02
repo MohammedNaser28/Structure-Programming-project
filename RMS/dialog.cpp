@@ -44,6 +44,25 @@ void Dialog::on_log_in_btn_clicked()
         {
             loged_in_user = users[i];
             qInfo() << username << " loged in succesfully!";
+
+            // Check if there ware deleted recipes in favorite
+            // in case recipes deleted in previous sessions(log out without closing the app)
+            // were added to the favorite array of the current user
+            int &fav_num = loged_in_user ->favorite_recipes_num;
+            for (int j = 0; j < fav_num; j++)
+            {
+                // if the id refers to deleted recipe 
+                // switch it with the last one and decrease favorite_recipes_num
+                if (recipes_id_to_index[loged_in_user ->favorite_recipes[j]] == -1)
+                {
+                    int last_id = loged_in_user ->favorite_recipes[fav_num - 1];
+                    loged_in_user ->favorite_recipes[fav_num - 1] = 0;
+                    loged_in_user ->favorite_recipes[j] = last_id;
+
+                    fav_num--;
+                }
+            }
+
             emit switchToMainWindow();
             break;
         }
