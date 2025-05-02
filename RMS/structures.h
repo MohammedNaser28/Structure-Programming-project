@@ -2,7 +2,7 @@
 
 #include "dependencies.h"
 
-static int next_id = 0; 
+static int next_id = 1; 
 
 struct Recipe
 {
@@ -13,9 +13,9 @@ struct Recipe
    int category = 0;
    QString title;
    QString description;
-   int cock_time = 0;
+   double cock_time = 0;
    int level = 0;
-   int rates_sum = 0, rates_num = 0;
+   int rates_sum = 1, rates_num = 1;
 
    int ing_num = 0;
    QString ingredients[100];

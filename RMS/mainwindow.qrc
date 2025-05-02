@@ -1,4 +1,9 @@
 <RCC>
-    <qresource prefix="MainWindow">
+    <qresource prefix="/MainWindow">
+        <file>heart.png</file>
+        <file>logout.png</file>
+        <file>search-interface-symbol.png</file>
+        <file>home.png</file>
+        <file>star.png</file>
     </qresource>
 </RCC>

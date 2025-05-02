@@ -42,12 +42,12 @@ void Register::on_login_btn_clicked()
         if (users[i]->username == username && users[i]->password == password)
         {
             loged_in_user = users[i];
-            currentUser = i;
             qInfo() << username << " loged in succesfully!";
             emit switchToMainWindow();
             break;
         }
     }
+
 
     // if user was not found
     if (loged_in_user.isNull())
@@ -122,6 +122,7 @@ void Register::on_create_btn_clicked()
     user_ptr->password = password;
     users[num_of_users] = user_ptr;
     num_of_users++;
+    loged_in_user = user_ptr;
 
     // switch to main window and clear register page and switch to log in
     emit switchToMainWindow();

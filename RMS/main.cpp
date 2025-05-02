@@ -17,12 +17,14 @@ int main(int argc, char* argv[])
     load_recipes();
 
     Register dialog;
-    MainWindow mainWindow;
 
+    MainWindow mainWindow;
     // Connect signals to switch between windows
     QObject::connect(&dialog, &Register::switchToMainWindow, &dialog, [&dialog, &mainWindow]() {
         dialog.hide();
         mainWindow.show();
+        mainWindow.startup();
+        
         });
 
     QObject::connect(&mainWindow, &MainWindow::switchToDialog, &mainWindow, [&dialog, &mainWindow]() {

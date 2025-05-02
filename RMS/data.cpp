@@ -51,6 +51,9 @@ void save_users()
             fav.chop(1);
             stream << fav << Qt::endl;
         }
+
+        // add my recipes
+        
     }
 
     file.close();
@@ -92,7 +95,6 @@ void load_users()
 
         stream >> temp;
         user_ptr->isAdmin = (temp == "1") ? true : false;
-
         stream >> user_ptr->username;
         stream >> user_ptr->name;
         stream >> user_ptr->password;
@@ -102,7 +104,7 @@ void load_users()
         for (int j = 0; j < user_ptr->favorite_recipes_num; j++)
         {
             stream >> temp;
-            user_ptr->favorite_recipes[j] = temp.toInt();
+            user_ptr->my_recipes[j] = temp.toInt();
         }
 
         users[i] = user_ptr;
@@ -157,8 +159,8 @@ void save_recipes()
         stream << recipes[i]->level << Qt::endl;
         stream << recipes[i]->rates_sum << Qt::endl;
         stream << recipes[i]->rates_num << Qt::endl;
+        stream << recipes[i]->imagePath << Qt::endl;
         stream << recipes[i]->ing_num << Qt::endl;
-
 
         QString ing;
         for (int j = 0; j < recipes[i]->ing_num; j++)
@@ -167,6 +169,17 @@ void save_recipes()
         }
         ing.chop(1);
         stream << ing << Qt::endl;
+
+
+        stream << recipes[i]->steps_num << Qt::endl;
+
+        QString steps;
+        for (int j = 0; j < recipes[i]->steps_num; j++)
+        {
+            steps.append(QString("%1,").arg(recipes[i]->steps[j]));
+        }
+        steps.chop(1);
+        stream << steps << Qt::endl;
     }
 
 
@@ -211,17 +224,26 @@ void load_recipes()
         recipe_ptr->category = stream.readLine().toInt();
         recipe_ptr->title = stream.readLine();
         recipe_ptr->description = stream.readLine();
-        recipe_ptr->cock_time = stream.readLine().toInt();
+        recipe_ptr->cock_time = stream.readLine().toDouble();
         recipe_ptr->level = stream.readLine().toInt();
         recipe_ptr->rates_sum = stream.readLine().toInt();
         recipe_ptr->rates_num = stream.readLine().toInt();
-
+        //stream << recipes[i]->imagePath << Qt::endl;
+        recipe_ptr->imagePath = stream.readLine();
         recipe_ptr->ing_num = stream.readLine().toInt();
-        QString s = stream.readLine();
-        QStringList sl = s.split(",");
+        QString ingred = stream.readLine();
+        QStringList ingredList = ingred.split(",");
         for (int j = 0; j < recipe_ptr->ing_num; j++)
         {
-            recipe_ptr->ingredients[j] = sl[j];
+            recipe_ptr->ingredients[j] = ingredList[j];
+        }
+
+        recipe_ptr->steps_num = stream.readLine().toInt();
+        QString step = stream.readLine();
+        QStringList sl = step.split(",");
+        for (int j = 0; j < recipe_ptr->ing_num; j++)
+        {
+            recipe_ptr->steps[j] = ingredList[j];
         }
 
         recipes[i] = recipe_ptr;
@@ -233,3 +255,4 @@ void load_recipes()
     file.close();
     qInfo() << file_name << " was loaded successfully!";
 }
+
