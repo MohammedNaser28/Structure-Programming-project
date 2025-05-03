@@ -46,6 +46,10 @@ private slots:
 
     void on_search_btn_clicked();
     void on_sort_combobox_clicked();
+    //QSharedPointer<Recipe>*  searchRecipe(int& input);
+    //QSharedPointer<Recipe> * searchRecipe(QString& input,bool ingred=false);
+    void display_search_home(QSharedPointer<Recipe>* recipes, int count);
+    /********/
     void add_ingredient_row();
     void add_method_row();
     void remove_row();

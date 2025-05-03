@@ -86,6 +86,7 @@ void MainWindow::on_add_recipe_admin_btn_clicked()
 }
 
 
+
 void MainWindow::on_home_btn_clicked()
 {
     currentDisplayedRecipe = nullptr;
@@ -98,15 +99,158 @@ void MainWindow::choose_image() {
     if (!file.isEmpty()) ui->image_path_line->setText(file);
 }
 
-void MainWindow::on_search_btn_clicked()
-{
-    ;
-}
 
 void MainWindow::on_sort_combobox_clicked()
 {
     ;
 }
+
+
+
+void MainWindow::on_search_btn_clicked() {
+    QString input = ui->search_field->text().trimmed();
+    if (input.isEmpty()) {
+        QMessageBox::information(this, "Info", "Please enter something to search.");
+        return;
+    }
+
+    const int MAX_RESULTS = 100;
+    QSharedPointer<Recipe>* results = new QSharedPointer<Recipe>[MAX_RESULTS];
+    int resultCount = 0;
+    int searchType = ui->search_combobox->currentIndex();
+
+    try {
+        // Handle all three search types
+        if (searchType == 0) { // Title search
+            for (int i = 0; i < num_of_recipes && resultCount < MAX_RESULTS; i++) {
+                if (recipes[i]->title.toLower().contains(input.toLower())) {
+                    results[resultCount++] = recipes[i];
+                }
+            }
+        }
+        else if (searchType == 1) { // Time search
+            bool ok;
+            int targetTime = input.toDouble(&ok);
+            if (!ok || targetTime <= 0) {
+                QMessageBox::warning(this, "Error", "Invalid time format. Please enter a positive number.");
+                delete[] results;
+                return;
+            }
+
+            for (int i = 0; i < num_of_recipes && resultCount < MAX_RESULTS; i++) {
+                if (recipes[i]->cock_time == targetTime) {
+                    results[resultCount++] = recipes[i];
+                }
+            }
+        }
+        else if (searchType == 2) { // Ingredient search
+            QString searchTerm = input.toLower();
+            for (int i = 0; i < num_of_recipes && resultCount < MAX_RESULTS; i++) {
+                for (int j = 0; j < 100; j++) {
+                    if (recipes[i]->ingredients[j].toLower().contains(searchTerm)) {
+                        results[resultCount++] = recipes[i];
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (resultCount > 0) {
+            display_search_home(results, resultCount);
+        }
+        else {
+            QMessageBox::information(this, "No Results", "No matching recipes found.");
+        }
+
+        delete[] results; // Clean up memory
+
+    }
+    catch (...) {
+        delete[] results; // Ensure memory cleanup on error
+        QMessageBox::critical(this, "Error", "An unexpected error occurred.");
+    }
+}
+
+// Display function (unchanged but needs proper implementation)
+void MainWindow::display_search_home(QSharedPointer<Recipe>* recipes, int count) {
+    // Clear previous results
+    ui->stackedWidget->setCurrentWidget(ui->home_page);
+    QLayoutItem* item;
+    while ((item = recipes_grid->takeAt(0)) != nullptr) {
+        delete item->widget();
+        delete item;
+    }
+
+    // Display logic
+    int row = 0, col = 0;
+    for (int i = 0; i < count; i++) {
+
+            QWidget* widget = new QWidget;
+
+            QVBoxLayout* layout = new QVBoxLayout(widget);
+
+            QLabel* title = new QLabel(recipes[i]->title);
+            title->setAlignment(Qt::AlignCenter);
+
+            QLabel* image = new QLabel;
+            image->setPixmap(QPixmap(recipes[i]->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
+            image->setAlignment(Qt::AlignCenter);
+
+            QPushButton* button = new QPushButton("View details");
+            button->setStyleSheet("color:rgb(0,0,0);");
+            connect(button, &QPushButton::clicked, this, [=]() {
+                ui->stackedWidget->setCurrentWidget(ui->recipe_page);
+                assign_recipe_page(recipes[i]);
+                });
+
+
+            layout->addWidget(title);
+            layout->addWidget(image); // ADDED: Image label
+            layout->addWidget(button);
+
+            col = i % 4;
+            if (!col && i) row++;
+            recipes_grid->addWidget(widget, row, col);
+        
+    }
+}
+
+//void MainWindow::display_search_home(QSharedPointer<Recipe>& recipe_search,int& recipe_num)
+//{
+//    currentDisplayedRecipe = nullptr;
+//    ui->stackedWidget->setCurrentWidget(ui->home_page);
+//    int r = 0, c = 0;
+//    for (int i = 0; i < recipe_num; i++)
+//    {
+//        QWidget* widget = new QWidget;
+//
+//        QVBoxLayout* layout = new QVBoxLayout(widget);
+//
+//        QLabel* title = new QLabel(recipe_search[i]->title);
+//        title->setAlignment(Qt::AlignCenter);
+//
+//        QLabel* image = new QLabel;
+//        image->setPixmap(QPixmap(recipe_search[i]->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
+//        image->setAlignment(Qt::AlignCenter);
+//
+//        QPushButton* button = new QPushButton("View details");
+//        button->setStyleSheet("color:rgb(0,0,0);");
+//        connect(button, &QPushButton::clicked, this, [=]() {
+//            ui->stackedWidget->setCurrentWidget(ui->recipe_page);
+//            assign_recipe_page(recipe_search[i]);
+//            });
+//
+//
+//        layout->addWidget(title);
+//        layout->addWidget(image); // ADDED: Image label
+//        layout->addWidget(button);
+//
+//        c = i % 4;
+//        if (!c && i) r++;
+//        recipes_grid->addWidget(widget, r, c);
+//    }
+//}
+
 
 void MainWindow::add_ingredient_row() {
     QWidget* row = new QWidget;
