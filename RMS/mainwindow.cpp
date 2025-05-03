@@ -130,7 +130,7 @@ void MainWindow::on_sort_combobox_clicked()
 
 void MainWindow::on_arrangment_btn_clicked() {
         isDescending = !isDescending;
-        ui->arrangment_btn->setIcon(QIcon(isDescending ? ":/MainWindow/sort-descending.png" : ":/MainWindow/sort-descending.png"));
+        ui->arrangment_btn->setIcon(QIcon(isDescending ? ":/MainWindow/sort-descending.png" : ":/MainWindow/sort.png"));
         display_recipe(isDescending);
 }
 
@@ -240,18 +240,26 @@ void MainWindow::on_search_btn_clicked() {
             QMessageBox::information(this, "No Results", "No matching recipes found.");
         }
 
-        delete[] results; // Clean up memory
+        // Don't delete the results array here!
+              // Store it for later use when clicking "View details"
+              // Clean up the previous results if they exist
+        if (searchResults != nullptr) {
+            delete[] searchResults;
+        }
 
+        // Save the new results and count
+        searchResults = results;
+        searchResultCount = resultCount;
     }
     catch (...) {
         delete[] results; // Ensure memory cleanup on error
+        searchResults = nullptr;
+        searchResultCount = 0;
         QMessageBox::critical(this, "Error", "An unexpected error occurred.");
     }
 }
 
 
-
-// Display function (unchanged but needs proper implementation)
 void MainWindow::display_search_home(QSharedPointer<Recipe>* recipes, int count) {
     // Clear previous results
     ui->stackedWidget->setCurrentWidget(ui->home_page);
@@ -271,13 +279,13 @@ void MainWindow::display_search_home(QSharedPointer<Recipe>* recipes, int count)
 
             QLabel* title = new QLabel(recipes[i]->title);
             title->setAlignment(Qt::AlignCenter);
-
+            title->setStyleSheet(titleStyle);
             QLabel* image = new QLabel;
             image->setPixmap(QPixmap(recipes[i]->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
             image->setAlignment(Qt::AlignCenter);
 
-            QPushButton* button = new QPushButton("View details");
-            button->setStyleSheet("color:rgb(0,0,0);");
+            QPushButton* button = new QPushButton("اعرض الوصفة");
+            button->setStyleSheet(view_button_details);
             connect(button, &QPushButton::clicked, this, [=]() {
                 ui->stackedWidget->setCurrentWidget(ui->recipe_page);
                 assign_recipe_page(recipes[i]);
@@ -295,43 +303,6 @@ void MainWindow::display_search_home(QSharedPointer<Recipe>* recipes, int count)
     }
 }
 
-//void MainWindow::display_search_home(QSharedPointer<Recipe>& recipe_search,int& recipe_num)
-//{
-//    currentDisplayedRecipe = nullptr;
-//    ui->stackedWidget->setCurrentWidget(ui->home_page);
-//    int r = 0, c = 0;
-//    for (int i = 0; i < recipe_num; i++)
-//    {
-//        QWidget* widget = new QWidget;
-//
-//        QVBoxLayout* layout = new QVBoxLayout(widget);
-//
-//        QLabel* title = new QLabel(recipe_search[i]->title);
-//        title->setAlignment(Qt::AlignCenter);
-//
-//        QLabel* image = new QLabel;
-//        image->setPixmap(QPixmap(recipe_search[i]->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
-//        image->setAlignment(Qt::AlignCenter);
-//
-//        QPushButton* button = new QPushButton("View details");
-//        button->setStyleSheet("color:rgb(0,0,0);");
-//        connect(button, &QPushButton::clicked, this, [=]() {
-//            ui->stackedWidget->setCurrentWidget(ui->recipe_page);
-//            assign_recipe_page(recipe_search[i]);
-//            });
-//
-//
-//        layout->addWidget(title);
-//        layout->addWidget(image); // ADDED: Image label
-//        layout->addWidget(button);
-//
-//        c = i % 4;
-//        if (!c && i) r++;
-//        recipes_grid->addWidget(widget, r, c);
-//    }
-//}
-
-
 void MainWindow::add_ingredient_row() {
     QWidget* row = new QWidget;
     row->setLayoutDirection(Qt::RightToLeft);
@@ -340,9 +311,12 @@ void MainWindow::add_ingredient_row() {
     row_layout->setDirection(QBoxLayout::LeftToRight);
     QLineEdit* edit = new QLineEdit;
     edit->setPlaceholderText(QStringLiteral("مكون"));
-    edit->setStyleSheet("color:rgb(0,0,0);");
+    edit->setStyleSheet(view_button_details);
+    edit->setCursor(Qt::PointingHandCursor);
+
     QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
-    rm->setStyleSheet("color:rgb(0,0,0);");
+    rm->setStyleSheet(deleteButtonStyleDynamic);
+    rm->setCursor(Qt::PointingHandCursor);
 
     connect(rm, &QPushButton::clicked, this, &MainWindow::remove_row);
     row_layout->addWidget(edit);
@@ -358,9 +332,12 @@ void MainWindow::add_ingredient_row_edition() {
     row_layout->setDirection(QBoxLayout::LeftToRight);
     QLineEdit* edit = new QLineEdit;
     edit->setPlaceholderText(QStringLiteral("مكون"));
-    edit->setStyleSheet("color:rgb(0,0,0);");
+    edit->setStyleSheet(view_button_details);
+    edit->setCursor(Qt::PointingHandCursor);
+
     QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
-    rm->setStyleSheet("color:rgb(0,0,0);");
+    rm->setStyleSheet(deleteButtonStyleDynamic);
+    rm->setCursor(Qt::PointingHandCursor);
 
     connect(rm, &QPushButton::clicked, this, &MainWindow::remove_row);
     row_layout->addWidget(edit);
@@ -386,9 +363,12 @@ void MainWindow::add_method_row() {
     row_layout->setDirection(QBoxLayout::LeftToRight);
     QLineEdit* edit = new QLineEdit;
     edit->setPlaceholderText(QStringLiteral("اكتب الخطوة"));
+    edit->setCursor(Qt::PointingHandCursor);
+
     QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
-    edit->setStyleSheet("color:rgb(0,0,0);");
-    rm->setStyleSheet("color:rgb(0,0,0);");
+    edit->setStyleSheet(view_button_details);
+    rm->setStyleSheet(deleteButtonStyleDynamic);
+    rm->setCursor(Qt::PointingHandCursor);
 
     connect(rm, &QPushButton::clicked, this, &MainWindow::remove_row);
     row_layout->addWidget(edit);
@@ -407,8 +387,11 @@ void MainWindow::add_method_row_edition() {
     QLineEdit* edit = new QLineEdit;
     edit->setPlaceholderText(QStringLiteral("اكتب الخطوة"));
     QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
-    edit->setStyleSheet("color:rgb(0,0,0);");
-    rm->setStyleSheet("color:rgb(0,0,0);");
+    edit->setStyleSheet(view_button_details);
+    edit->setCursor(Qt::PointingHandCursor);
+
+    rm->setStyleSheet(deleteButtonStyle);
+    rm->setCursor(Qt::PointingHandCursor);
 
     connect(rm, &QPushButton::clicked, this, &MainWindow::remove_row);
     row_layout->addWidget(edit);
@@ -477,11 +460,11 @@ void MainWindow::display_edition_page_user() {
         QLabel* title = new QLabel(loged_in_user->my_recipes[i]->title);
         title->setAlignment(Qt::AlignCenter);
         title->setWordWrap(true);
-
+        title->setStyleSheet(titleStyle);
         QLabel* image = new QLabel;
         QPixmap pixmap(loged_in_user->my_recipes[i]->imagePath);
         if (!pixmap.isNull()) {
-            image->setPixmap(pixmap.scaled(150, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            image->setPixmap(pixmap.scaled(150,150, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         }
         else {
             image->setText("No Image");
@@ -489,8 +472,9 @@ void MainWindow::display_edition_page_user() {
         }
         image->setAlignment(Qt::AlignCenter);
 
-        QPushButton* button = new QPushButton("View Details");
-        button->setStyleSheet("color: rgb(0, 0, 0);");
+        QPushButton* button = new QPushButton("اعرض الوصفة");
+        button->setStyleSheet(view_button_details);
+        button->setCursor(Qt::PointingHandCursor);
         QSharedPointer<Recipe> recipe_ptr = loged_in_user->my_recipes[i];
         connect(button, &QPushButton::clicked, this, [this, recipe_ptr]() {
             assign_recipe_page(recipe_ptr);
@@ -498,7 +482,9 @@ void MainWindow::display_edition_page_user() {
             });
 
         QPushButton* button_delete = new QPushButton("حذف الوصفة");
-        button_delete->setStyleSheet("color: rgb(0, 0, 0);");
+        button_delete->setStyleSheet(deleteButtonStyle);
+        button_delete->setCursor(Qt::PointingHandCursor);
+
         connect(button_delete, &QPushButton::clicked, this, [this, i]() {
             if (QMessageBox::question(this, "Confirm", "Remove this recipe from your list?") == QMessageBox::Yes) {
                 delete_edition_btn(i);
@@ -584,8 +570,11 @@ void MainWindow::add_ingred_to_user_page_edit() {
         QLineEdit* edit = new QLineEdit;
         edit->setText(currentDisplayedRecipe->ingredients[i]);
          QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
-        edit->setStyleSheet("color:rgb(0,0,0);");
-        rm->setStyleSheet("color:rgb(0,0,0);");
+        edit->setStyleSheet(view_button_details);
+        edit->setCursor(Qt::PointingHandCursor);
+
+        rm->setStyleSheet(deleteButtonStyleDynamic);
+        rm->setCursor(Qt::PointingHandCursor);
 
         connect(rm, &QPushButton::clicked, this, &MainWindow::remove_row);
         row_layout->addWidget(edit);
@@ -642,8 +631,11 @@ void MainWindow::add_method_to_user_page_edit() {
         QLineEdit* edit = new QLineEdit;
         edit->setText(currentDisplayedRecipe->steps[i]);
         QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
-        edit->setStyleSheet("color:rgb(0,0,0);");
-        rm->setStyleSheet("color:rgb(0,0,0);");
+        edit->setStyleSheet(view_button_details);
+        edit->setCursor(Qt::PointingHandCursor);
+
+        rm->setStyleSheet(deleteButtonStyleDynamic);
+        rm->setCursor(Qt::PointingHandCursor);
 
         connect(rm, &QPushButton::clicked, this, &MainWindow::remove_row);
         row_layout->addWidget(edit);
@@ -940,6 +932,7 @@ void MainWindow::display_recipe(bool arrang)
 
 
     int r = 0, c = 0;
+    int validRecipes = 0;
     for (int i = arrang ? num_of_recipes - 1 : 0;
         arrang ? i >= 0 : i < num_of_recipes;
         i += arrang ? -1 : 1)
@@ -953,13 +946,14 @@ void MainWindow::display_recipe(bool arrang)
 
         QLabel* title = new QLabel(recipes[i]->title);
         title->setAlignment(Qt::AlignCenter);
-
+        title->setStyleSheet(titleStyle);
          QLabel *image = new QLabel;
          image->setPixmap(QPixmap(recipes[i]->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
+
          image->setAlignment(Qt::AlignCenter);
 
-        QPushButton* button = new QPushButton("View details");
-        button->setStyleSheet("color:rgb(0,0,0);");
+        QPushButton* button = new QPushButton("اعرض الوصفة");
+        button->setStyleSheet(view_button_details);
         connect(button, &QPushButton::clicked, this, [=]() {
             ui->stackedWidget->setCurrentWidget(ui->recipe_page);
             assign_recipe_page(recipes[i]);
@@ -970,8 +964,12 @@ void MainWindow::display_recipe(bool arrang)
         layout->addWidget(image); // ADDED: Image label
         layout->addWidget(button);
 
-        c = i % 4;
-        if (!c && i) r++;
+        // Calculate grid position: 4 columns per row
+        c = validRecipes % 4;
+        r = validRecipes / 4;
+        validRecipes++;
+
+        // Add to grid
         recipes_grid->addWidget(widget, r, c);
     }
 }
@@ -1073,7 +1071,7 @@ void MainWindow::assign_recipe_page(QSharedPointer<Recipe> r_ptr)
     ui->ingred_list->clear();
     ui->steps_list->clear();
     currentDisplayedRecipe = r_ptr;
-    ui->img_perview->setPixmap(QPixmap(r_ptr->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
+    ui->img_perview->setPixmap(QPixmap(r_ptr->imagePath).scaled(ui->img_perview->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
     ui->img_perview->setAlignment(Qt::AlignCenter);
 
     ui->desc_browser->setText(r_ptr->description);
@@ -1168,8 +1166,11 @@ void MainWindow::assign_admin_page()
         QLineEdit* edit = new QLineEdit;
         edit->setText(currentDisplayedRecipe->ingredients[i]);
         QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
-        edit->setStyleSheet("color:rgb(0,0,0);");
-        rm->setStyleSheet("color:rgb(0,0,0);");
+        edit->setStyleSheet(view_button_details);
+        edit->setCursor(Qt::PointingHandCursor);
+
+        rm->setStyleSheet(deleteButtonStyleDynamic);
+        rm->setCursor(Qt::PointingHandCursor);
 
         connect(rm, &QPushButton::clicked, this, &MainWindow::remove_row);
         row_layout->addWidget(edit);
@@ -1190,8 +1191,11 @@ void MainWindow::assign_admin_page()
         QLineEdit* edit = new QLineEdit;
         edit->setText(currentDisplayedRecipe->steps[i]);
         QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
-        edit->setStyleSheet("color:rgb(0,0,0);");
-        rm->setStyleSheet("color:rgb(0,0,0);");
+        edit->setStyleSheet(view_button_details);
+        edit->setCursor(Qt::PointingHandCursor);
+
+        rm->setStyleSheet(deleteButtonStyleDynamic);
+        rm->setCursor(Qt::PointingHandCursor);
 
         connect(rm, &QPushButton::clicked, this, &MainWindow::remove_row);
         row_layout->addWidget(edit);
@@ -1296,7 +1300,7 @@ void MainWindow::display_favorite()
 
         QLabel* title = new QLabel(recipes[recipe_index]->title);
         title->setAlignment(Qt::AlignCenter);
-
+        title->setStyleSheet(titleStyle);
         QLabel* image = new QLabel;
         QPixmap pixmap(recipes[recipe_index]->imagePath);
         if (!pixmap.isNull()) {
@@ -1308,9 +1312,9 @@ void MainWindow::display_favorite()
         }
         image->setAlignment(Qt::AlignCenter);
 
-        QPushButton* button = new QPushButton("View details");
-        button->setStyleSheet("color:rgb(0,0,0);");
-
+        QPushButton* button = new QPushButton("اعرض الوصفة");
+        button->setStyleSheet(view_button_details);
+        button->setCursor(Qt::PointingHandCursor);
         // Need to copy the pointer to avoid issues with lambdas
         QSharedPointer<Recipe> recipe_ptr = recipes[recipe_index];
         connect(button, &QPushButton::clicked, this, [this, recipe_ptr]() {
@@ -1319,8 +1323,8 @@ void MainWindow::display_favorite()
             });
 
         QPushButton* button_delete = new QPushButton("حذف من المفضلة");
-        button_delete->setStyleSheet("color:rgb(0,0,0);");
-
+        button_delete->setStyleSheet(deleteButtonStyle);
+        button_delete->setCursor(Qt::PointingHandCursor);
         // Pass the current index i
         int current_index = i;
         connect(button_delete, &QPushButton::clicked, this, [this, current_index]() {
@@ -1405,19 +1409,6 @@ void MainWindow::on_edit_user_btn_clicked()
 void MainWindow::assign_edition_user_page()
 {
     ui->desc_edit_field_2->setPlainText(currentDisplayedRecipe->description);
-    //ui->img_edit_preview->setPixmap(QPixmap(currentDisplayedRecipe->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
-    //ui->img_edit_preview->setAlignment(Qt::AlignCenter);
-
-    //ui->desc_browser->setText(currentDisplayedRecipe->description);
-    //QString s = QString::number(currentDisplayedRecipe->cock_time, 'f', 2);
-    //ui->display_time_recipe->setText("وقت الطهو:  " + s);
-    //QString avg_rate = QString::number((currentDisplayedRecipe->rates_sum / currentDisplayedRecipe->rates_num), 'f', 2);
-    //ui->display_avg_rate_2->setText("متوسط التقييمات:  " + avg_rate);
-    //QString level;
-    //if (currentDisplayedRecipe->level == 0)  ui->display_level_recipe_2->setText("مستوى العصوبة:   سهل");
-    //else if (currentDisplayedRecipe->level == 1)  ui->display_level_recipe_2->setText("مستوى الصعوبة:   متوسط");
-    //else  ui->display_level_recipe_2->setText("مستوى الصعوبة:   صعب");
-
     add_ingred_to_user_page_edit();
     add_method_to_user_page_edit();
 

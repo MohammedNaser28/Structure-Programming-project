@@ -32,7 +32,7 @@
 </string>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="home_page">
      <widget class="QScrollArea" name="scrollArea">

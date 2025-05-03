@@ -9,6 +9,31 @@ int main(int argc, char* argv[])
 {
     QApplication a(argc, argv);
 
+    a.setStyleSheet(
+        "QMessageBox {"
+        "    background-color: #fefefe;"
+        "    border: 2px solid #ccc;"
+        "    border-radius: 10px;"
+        "}"
+        "QLabel {"
+        "    color: #333;"
+        "    font-size: 16px;"
+        "}"
+        "QPushButton {"
+        "    background-color: #03A9F4;"
+        "    color: white;"
+        "    padding: 6px 12px;"
+        "    border-radius: 8px;"
+        "    min-width: 75px;"
+        "    margin: 4px;"
+        "}"
+        "QPushButton:hover {"
+        "    background-color: #0288D1;"
+        "}"
+        "QPushButton:pressed {"
+        "    background-color: #0277BD;"
+        "}"
+    );
     // intialize recipes_id_to_index
     for (int i = 0; i < 10000; i++)
         recipes_id_to_index[i] = -1;
