@@ -1,4 +1,4 @@
-3
+4
 1
 h
 h
@@ -27,5 +27,11 @@ C:/Users/11/Documents/New folder (3)/Structure-Programming-project/RMS/star.png
 r
 r
 r
+0
+0
+0
+s
+s
+s
 0
 0

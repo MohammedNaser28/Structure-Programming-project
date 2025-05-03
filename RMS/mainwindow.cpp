@@ -1007,103 +1007,91 @@ void MainWindow::assign_recipe_page(QSharedPointer<Recipe> r_ptr)
 
 }
 
+void MainWindow::on_delete_recipe_btn_clicked() {
+    // return to homepage or wherever you want
+    // now delete all pointers to current recipe and it will automatically delete the objet for us 
+    short& idx = recipes_id_to_index[currentDisplayedRecipe->id];
+
+    // make all recipes adjacent:
+    for (int i = idx; i + 1 < num_of_recipes; ++i) {
+        recipes[i] = recipes[i + 1];
+        recipes_id_to_index[recipes[i]->id] = i;
+    }
+
+    recipes[num_of_recipes - 1].clear();           // drop the QSharedPointer
+    recipes_id_to_index[currentDisplayedRecipe->id] = -1;           // mark “gone”
+    --num_of_recipes;   
+    ui->stackedWidget->setCurrentWidget(ui->home_page);
+    // delete from current 
+    display_recipe();
+}
+/**/
 //void MainWindow::on_delete_recipe_btn_clicked() {
-//    // return to homepage or wherever you want
-//    ui->stackedWidget->setCurrentWidget(ui->home_page);
-//    // check if loged_in_user had the recipe in his favorite array
-//    // other users gets checked at log in and and when save_users gets excuted
-//    if (loged_in_user->isAdmin == false) {
+//    // Check if there's a recipe to delete
+//    if (!currentDisplayedRecipe) {
+//        qInfo() << "No recipe to delete";
+//        return;
+//    }
 //
-//    int& fav_num = loged_in_user->favorite_recipes_num;
-//    for (int j = 0; j < fav_num; j++)
-//    {
-//        // if the id refers to deleted recipe 
-//        // switch it with the last one and decrease favorite_recipes_num
-//        if (recipes_id_to_index[loged_in_user->favorite_recipes[j]] == -1)
-//        {
-//            int last_id = loged_in_user->favorite_recipes[fav_num - 1];
-//            loged_in_user->favorite_recipes[fav_num - 1] = 0;
-//            loged_in_user->favorite_recipes[j] = last_id;
 //
-//            fav_num--;
+//    // Get the recipe ID
+//    int recipe_id = currentDisplayedRecipe->id;
+//
+//    // Find the recipe in the array by ID instead of relying on the map
+//    short index = -1;
+//    for (short i = 0; i < num_of_recipes; i++) {
+//        if (recipes[i] && recipes[i]->id == recipe_id) {
+//            index = i;
+//            break;
 //        }
 //    }
+//
+//    // Log the current state for debugging
+//    qInfo() << "Attempting to delete recipe ID:" << recipe_id << "at index:" << index;
+//    qInfo() << "Current num_of_recipes:" << num_of_recipes;
+//
+//    // Validate the index
+//    if (index < 0 || index >= num_of_recipes || !recipes[index]) {
+//        qInfo() << "Invalid recipe index for ID:" << recipe_id;
+//        return;
 //    }
 //
-//    // now delete all pointers and the object will be deleted automatically for us
-//    recipes[recipes_id_to_index[currentDisplayedRecipe->id]] = nullptr;  // delete from recipes[]
-//    recipes_id_to_index[currentDisplayedRecipe->id] = -1;                // delete from recipes_id_to_index
-//    --num_of_recipes;
-//    currentDisplayedRecipe = nullptr;                                    // delete from current 
+//    qInfo() << "Deleting recipe ID:" << recipe_id << "at index:" << index;
+//
+//    // Shift recipes to fill the gap
+//    for (short i = index; i < num_of_recipes - 1; i++) {
+//        recipes[i] = recipes[i + 1];
+//    }
+//
+//    // Clear the last slot and update state
+//    recipes[num_of_recipes - 1].reset();  // Reset the QSharedPointer
+//    num_of_recipes--;
+//
+//    // Reset the ID-to-index mapping for the deleted recipe
+//    recipes_id_to_index[recipe_id] = -1;
+//
+//    // Update the ID-to-index mapping for all recipes
+//    for (short i = 0; i < num_of_recipes; i++) {
+//        if (recipes[i]) {
+//            recipes_id_to_index[recipes[i]->id] = i;
+//        }
+//    }
+//
+//    // Clear the current recipe
+//    currentDisplayedRecipe.reset();
+//
+//    // Update the UI
+//    ui->stackedWidget->setCurrentWidget(ui->home_page);
 //    display_recipe();
+//
+//    // Log final state
+//    qInfo() << "After deletion, num_of_recipes:" << num_of_recipes;
+//    for (short i = 0; i < num_of_recipes; i++) {
+//        if (recipes[i]) {
+//            qInfo() << "recipes[" << i << "] ID:" << recipes[i]->id << ", index in map:" << recipes_id_to_index[recipes[i]->id];
+//        }
+//    }
 //}
-
-void MainWindow::on_delete_recipe_btn_clicked() {
-    // Check if there's a recipe to delete
-    if (!currentDisplayedRecipe) {
-        qInfo() << "No recipe to delete";
-        return;
-    }
-
-
-    // Get the recipe ID
-    int recipe_id = currentDisplayedRecipe->id;
-
-    // Find the recipe in the array by ID instead of relying on the map
-    short index = -1;
-    for (short i = 0; i < num_of_recipes; i++) {
-        if (recipes[i] && recipes[i]->id == recipe_id) {
-            index = i;
-            break;
-        }
-    }
-
-    // Log the current state for debugging
-    qInfo() << "Attempting to delete recipe ID:" << recipe_id << "at index:" << index;
-    qInfo() << "Current num_of_recipes:" << num_of_recipes;
-
-    // Validate the index
-    if (index < 0 || index >= num_of_recipes || !recipes[index]) {
-        qInfo() << "Invalid recipe index for ID:" << recipe_id;
-        return;
-    }
-
-    qInfo() << "Deleting recipe ID:" << recipe_id << "at index:" << index;
-
-    // Shift recipes to fill the gap
-    for (short i = index; i < num_of_recipes - 1; i++) {
-        recipes[i] = recipes[i + 1];
-    }
-
-    // Clear the last slot and update state
-    recipes[num_of_recipes - 1].reset();  // Reset the QSharedPointer
-    num_of_recipes--;
-
-    // Reset the ID-to-index mapping for the deleted recipe
-    recipes_id_to_index[recipe_id] = -1;
-
-    // Update the ID-to-index mapping for all recipes
-    for (short i = 0; i < num_of_recipes; i++) {
-        if (recipes[i]) {
-            recipes_id_to_index[recipes[i]->id] = i;
-        }
-    }
-
-    // Clear the current recipe
-    currentDisplayedRecipe.reset();
-
-    // Update the UI
-    ui->stackedWidget->setCurrentWidget(ui->home_page);
-    display_recipe();
-
-    // Log final state
-    qInfo() << "After deletion, num_of_recipes:" << num_of_recipes;
-    for (short i = 0; i < num_of_recipes; i++) {
-        if (recipes[i]) {
-            qInfo() << "recipes[" << i << "] ID:" << recipes[i]->id << ", index in map:" << recipes_id_to_index[recipes[i]->id];
-        }
-    }
-}
 //void MainWindow::on_delete_recipe_btn_clicked() {
 //    // Check if there's a recipe to delete
 //    if (!currentDisplayedRecipe) {
