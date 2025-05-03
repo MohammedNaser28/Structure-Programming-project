@@ -3,7 +3,9 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
     ui(new Ui::MainWindowClass),
-    recipes_grid(new QGridLayout){
+    recipes_grid(new QGridLayout),
+    favorite_grid(new QGridLayout),
+    edition_grid(new QGridLayout) {
 
 
 
@@ -16,10 +18,10 @@ MainWindow::MainWindow(QWidget *parent)
     //scrollWidgetEdition->setLayout(edition_grid);
 
     //// Set scrollWidgetFavorite for scrollArea_3
-    //ui->scrollArea_3->setWidget(scrollWidgetFavorite);
-    //ui->scrollArea_3->setWidgetResizable(true);
-    //ui->scrollArea_4->setWidget(scrollWidgetFavorite);
-    //ui->scrollArea_4->setWidgetResizable(true);
+    ui->scrollAreaWidgetContents_3->setLayout(favorite_grid);
+    ui->scrollArea_3->setWidgetResizable(true);
+    ui->scrollAreaWidgetContents_4->setLayout(edition_grid);
+    ui->scrollArea_4->setWidgetResizable(true);
 
     /**************************************************************************/
     //if(currentUser!=NULL)
@@ -38,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->sort_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(on_sort_combobox_clicked()));
 
 
-
+    //edition_grid.fill(nullptr, 1000);
     recipe_pages.fill(nullptr, 1000);
 }
 
@@ -128,7 +130,7 @@ void MainWindow::on_sort_combobox_clicked()
 
 void MainWindow::on_arrangment_btn_clicked() {
         isDescending = !isDescending;
-        ui->arrangment_btn->setIcon(QIcon(isDescending ? ":/MainWindow/sort-descending.png" : ":/sort.png"));
+        ui->arrangment_btn->setIcon(QIcon(isDescending ? ":/MainWindow/sort-descending.png" : ":/MainWindow/sort-descending.png"));
         display_recipe(isDescending);
 }
 
@@ -431,61 +433,114 @@ void MainWindow::on_go_edition_page_btn_clicked()
     display_edition_page_user();
 }
 
-
-void MainWindow::display_edition_page_user()
-{
-
-
-    qDebug() << "Edition recipes count:" << loged_in_user->my_recipes_num;
-    QWidget* scrollWidgetEdition = new QWidget;
-QGridLayout* edition_grid = new QGridLayout(scrollWidgetEdition);
-
-
-    if (ui->scrollArea_4->widget()) {
-        ui->scrollArea_4->takeWidget()->deleteLater();
+void MainWindow::display_edition_page_user() {
+    if (!edition_grid) {
+        qDebug() << "Error: edition_grid is null";
+        return;
     }
 
+    // Clear existing grid
+    while (QLayoutItem* item = edition_grid->takeAt(0)) {
+        if (QWidget* widget = item->widget()) {
+            delete widget;
+        }
+        delete item;
+    }
 
+    qDebug() << "Favorite recipes count:" << loged_in_user->my_recipes_num;
 
-    int r = 0, c = 0;
-    for (int i = 0; i < loged_in_user->my_recipes_num; i++)
-    {
+    // Take ownership of the existing scroll area's widget if exists
+    QWidget* scrollWidgetEdition = ui->scrollArea_4->takeWidget();
+    if (!scrollWidgetEdition) {
+        scrollWidgetEdition = new QWidget();
+    }
+
+    // Create new grid layout on the widget
+    delete edition_grid; // Delete old layout if exists
+    edition_grid = new QGridLayout(scrollWidgetEdition);
+
+    const int columns = 4;
+    int row = 0, col = 0;
+
+    for (int i = 0; i < loged_in_user->my_recipes_num; i++) {
+        if (!loged_in_user->my_recipes[i]) {
+            qDebug() << "Null recipe at index:" << i;
+            continue;
+        }
+
+        int recipe_id = loged_in_user->my_recipes[i]->id;
+       
+
         QWidget* widget = new QWidget;
-
         QVBoxLayout* layout = new QVBoxLayout(widget);
 
         QLabel* title = new QLabel(loged_in_user->my_recipes[i]->title);
         title->setAlignment(Qt::AlignCenter);
+        title->setWordWrap(true);
 
         QLabel* image = new QLabel;
-        image->setPixmap(QPixmap(loged_in_user->my_recipes[i]->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
+        QPixmap pixmap(loged_in_user->my_recipes[i]->imagePath);
+        if (!pixmap.isNull()) {
+            image->setPixmap(pixmap.scaled(150, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        }
+        else {
+            image->setText("No Image");
+            qDebug() << "Failed to load image for recipe:" << loged_in_user->my_recipes[i]->title;
+        }
         image->setAlignment(Qt::AlignCenter);
 
-        QPushButton* button = new QPushButton("View details");
-        button->setStyleSheet("color:rgb(0,0,0);");
-        connect(button, &QPushButton::clicked, this, [this, recipe = loged_in_user->my_recipes[i]]() {
-            if (this && recipe) {  // Check if pointers are valid
-                assign_recipe_page(recipe);
-                ui->stackedWidget->setCurrentWidget(ui->recipe_page);
+        QPushButton* button = new QPushButton("View Details");
+        button->setStyleSheet("color: rgb(0, 0, 0);");
+        QSharedPointer<Recipe> recipe_ptr = loged_in_user->my_recipes[i];
+        connect(button, &QPushButton::clicked, this, [this, recipe_ptr]() {
+            assign_recipe_page(recipe_ptr);
+            ui->stackedWidget->setCurrentWidget(ui->recipe_page);
+            });
+
+        QPushButton* button_delete = new QPushButton("حذف الوصفة");
+        button_delete->setStyleSheet("color: rgb(0, 0, 0);");
+        connect(button_delete, &QPushButton::clicked, this, [this, i]() {
+            if (QMessageBox::question(this, "Confirm", "Remove this recipe from your list?") == QMessageBox::Yes) {
+                delete_edition_btn(i);
+                QMessageBox::information(this, "Info", "Recipe removed from your recipes");
+                display_edition_page_user();
             }
             });
 
-
         layout->addWidget(title);
-        layout->addWidget(image); // ADDED: Image label
+        layout->addWidget(image);
         layout->addWidget(button);
+        layout->addWidget(button_delete);
 
-        c = i % 4;
-        if (!c && i) r++;
-        edition_grid->addWidget(widget, r, c);
+        qDebug() << "Adding user recipe widget at row:" << row << "col:" << col;
+        edition_grid->addWidget(widget, row, col);
+
+        col++;
+        if (col >= columns) {
+            col = 0;
+            row++;
+        }
     }
-
-
 
     ui->scrollArea_4->setWidget(scrollWidgetEdition);
     ui->scrollArea_4->setWidgetResizable(true);
-    qDebug() << "scrollArea_3 visible:" << ui->scrollArea_3->isVisible();
+    qDebug() << "scrollArea_4 visible:" << ui->scrollArea_4->isVisible();
 }
+void MainWindow::delete_edition_btn(int id_edition)
+{
+
+    // Remove from user's my_recipes
+    for (int j = id_edition; j < loged_in_user->my_recipes_num - 1; j++) {
+        loged_in_user->my_recipes[j] = loged_in_user->my_recipes[j + 1];
+    }
+    loged_in_user->my_recipes[loged_in_user->my_recipes_num - 1].reset();
+    loged_in_user->my_recipes_num--;
+
+    currentDisplayedRecipe = nullptr;
+    qDebug() << "Deleted user recipe at index:" << id_edition << "New my_recipes_num:" << loged_in_user->my_recipes_num;
+
+}
+
 
 void MainWindow::add_ingred_to_user_page_edit() {
 
@@ -544,101 +599,6 @@ void MainWindow::add_ingred_to_user_page_edit() {
     qDebug() << "OUT FROM INGREDIANTES";
 }
 
-//void MainWindow::add_ingred_to_user_page_edit() {
-//    if (!currentDisplayedRecipe) {
-//        qDebug() << "Error: No recipe data available";
-//        return;
-//    }
-//    qDebug() << "Ingredients count:" << currentDisplayedRecipe->ing_num;
-//
-//    // Ensure ui->ing_container_edit has a vertical layout
-//    QVBoxLayout* layout = qobject_cast<QVBoxLayout*>(ui->ing_container_edit->layout());
-//    if (!layout) {
-//        layout = new QVBoxLayout(ui->ing_container_edit);
-//        layout->setContentsMargins(0, 0, 0, 0);
-//        layout->setSpacing(5);
-//    }
-//
-//    // Clear existing rows to avoid duplicates
-//    QLayoutItem* item;
-//    while ((item = layout->takeAt(0)) != nullptr) {
-//        if (QWidget* widget = item->widget()) {
-//            widget->deleteLater();  // Use deleteLater for safer cleanup
-//        }
-//        delete item;
-//    }
-//
-//    // Add ingredient rows
-//    for (int i = 0; i < currentDisplayedRecipe->ing_num; i++) {
-//        QString ingredient = currentDisplayedRecipe->ingredients[i].trimmed();
-//        if (ingredient.isEmpty()) {
-//            qDebug() << "Skipping empty ingredient at index" << i;
-//            continue;
-//        }
-//        qDebug() << "Adding ingredient" << i << ":" << ingredient;
-//
-//        // Create a row widget
-//        QWidget* row = new QWidget(ui->ing_container_edit);
-//        QHBoxLayout* row_layout = new QHBoxLayout(row);
-//        row_layout->setSpacing(5);
-//        row_layout->setContentsMargins(0, 0, 0, 0);
-//        row_layout->setDirection(QBoxLayout::RightToLeft); // RTL for Arabic
-//
-//        // Add QLineEdit for ingredient
-//        QLineEdit* edit = new QLineEdit(row);
-//        edit->setText(ingredient);
-//        edit->setMinimumWidth(200);
-//        edit->setStyleSheet("color: rgb(0,0,0);");
-//        edit->setObjectName(QString("ingredient_edit_%1").arg(i));
-//
-//        // Store index for later reference
-//        edit->setProperty("ingredient_index", i);
-//
-//        // Add remove button
-//        QPushButton* rm = new QPushButton(QStringLiteral("حذف"), row);
-//        rm->setFixedWidth(60);
-//        rm->setStyleSheet("color: rgb(0,0,0);");
-//        rm->setProperty("row_index", i);  // Store the row index as a property
-//
-//        // Connect remove button with QueuedConnection for safety
-//        connect(rm, &QPushButton::clicked, this, [this, row]() {
-//            // Remove this specific row
-//            QLayout* parentLayout = row->parentWidget()->layout();
-//            parentLayout->removeWidget(row);
-//            row->deleteLater();
-//
-//            // Update the recipe data structure (would need to be implemented)
-//            });
-//
-//        // Add widgets to row layout
-//        row_layout->addWidget(edit);
-//        row_layout->addWidget(rm);
-//
-//        // Ensure the row has proper size policy
-//        row->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-//        row->setMinimumHeight(40);  // Set a minimum height for the row
-//
-//        // Add row to the container's layout
-//        layout->addWidget(row);
-//    }
-//
-//    // Add a stretch to push rows to the top
-//    layout->addStretch();
-//
-//    // Update sizes for proper display
-//    ui->ing_container_edit->updateGeometry();
-//
-//    // Force layout update
-//    layout->activate();
-//    ui->ing_container_edit->adjustSize();
-//
-//    // If inside a scroll area, update the scroll area's widget size
-//    if (QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->ing_container_edit->parent()->parent())) {
-//        if (QWidget* contentWidget = scrollArea->widget()) {
-//            contentWidget->adjustSize();
-//        }
-//    }
-//}
 
 
 void MainWindow::add_method_to_user_page_edit() {
@@ -1295,31 +1255,37 @@ void MainWindow::on_go_favorite_btn_clicked()
 
 void MainWindow::display_favorite()
 {
-    QLayoutItem* item;
-    QWidget* scrollWidgetFavorite = new QWidget;
-    QGridLayout* favorite_grid = new QGridLayout(scrollWidgetFavorite);
+    if (!favorite_grid) {
+        qDebug() << "Error: favorite_grid is null";
+        return;
+    }
 
+    // Clear existing widgets from the grid
+    QLayoutItem* item;
     while ((item = favorite_grid->takeAt(0)) != nullptr) {
         if (item->widget()) {
-            delete item->widget();
+            item->widget()->deleteLater();
         }
         delete item;
     }
 
-
     qDebug() << "Favorite recipes count:" << loged_in_user->favorite_recipes_num;
 
-   
-    if (ui->scrollArea_3->widget()) {
-        ui->scrollArea_3->takeWidget()->deleteLater();
+    // Take ownership of the existing scroll area's widget if exists
+    QWidget* scrollWidgetFavorite = ui->scrollArea_3->takeWidget();
+    if (!scrollWidgetFavorite) {
+        scrollWidgetFavorite = new QWidget();
     }
+
+    // Create new grid layout on the widget
+    delete favorite_grid; // Delete old layout if exists
+    favorite_grid = new QGridLayout(scrollWidgetFavorite);
 
     int r = 0, c = 0;
     for (int i = 0; i < loged_in_user->favorite_recipes_num; i++)
     {
         int recipe_id = loged_in_user->favorite_recipes[i];
         int recipe_index = recipes_id_to_index[recipe_id];
-
         if (recipe_index == -1 || recipe_index >= num_of_recipes || !recipes[recipe_index]) {
             qDebug() << "Invalid recipe ID:" << recipe_id << "at index:" << recipe_index;
             continue;
@@ -1344,16 +1310,22 @@ void MainWindow::display_favorite()
 
         QPushButton* button = new QPushButton("View details");
         button->setStyleSheet("color:rgb(0,0,0);");
-        connect(button, &QPushButton::clicked, this, [this, recipe = recipes[recipe_index]]() {
-            assign_recipe_page(recipe);
+
+        // Need to copy the pointer to avoid issues with lambdas
+        QSharedPointer<Recipe> recipe_ptr = recipes[recipe_index];
+        connect(button, &QPushButton::clicked, this, [this, recipe_ptr]() {
+            assign_recipe_page(recipe_ptr);
             ui->stackedWidget->setCurrentWidget(ui->recipe_page);
             });
 
         QPushButton* button_delete = new QPushButton("حذف من المفضلة");
         button_delete->setStyleSheet("color:rgb(0,0,0);");
-        connect(button_delete, &QPushButton::clicked, this, [this, i]() {
+
+        // Pass the current index i
+        int current_index = i;
+        connect(button_delete, &QPushButton::clicked, this, [this, current_index]() {
             QMessageBox::information(this, "Info", "Has deleted from favorite");
-            delete_favorite_btn(i);
+            delete_favorite_btn(current_index);
             display_favorite();
             });
 
@@ -1363,7 +1335,8 @@ void MainWindow::display_favorite()
         layout->addWidget(button_delete);
 
         c = i % 4;
-        if (!c && i) r++;
+        if (c == 0 && i > 0) r++;
+
         favorite_grid->addWidget(widget, r, c);
     }
 
@@ -1374,25 +1347,43 @@ void MainWindow::display_favorite()
 
 void MainWindow::delete_favorite_btn(int id_favorite)
 {
-
-
+    // Get the actual recipe ID from the array
+    int recipe_id = loged_in_user->favorite_recipes[id_favorite];
     int& fav_num = loged_in_user->favorite_recipes_num;
-    loged_in_user->favorite_recipes[id_favorite] = -1;
-    for (int j = 0; j < fav_num; j++)
-    {
-        // if the id refers to deleted recipe 
-        // switch it with the last one and decrease favorite_recipes_num
-        if (recipes_id_to_index[loged_in_user->favorite_recipes[j]] == -1)
-        {
-            int last_id = loged_in_user->favorite_recipes[fav_num - 1];
-            loged_in_user->favorite_recipes[fav_num - 1] = 0;
-            loged_in_user->favorite_recipes[j] = last_id;
 
-            fav_num--;
-        }
+    // Shift all elements after the deleted one
+    for (int i = id_favorite; i < fav_num - 1; i++) {
+        loged_in_user->favorite_recipes[i] = loged_in_user->favorite_recipes[i + 1];
     }
 
+    // Clear the last element and decrease count
+    loged_in_user->favorite_recipes[fav_num - 1] = 0;
+    fav_num--;
+
 }
+
+
+//void MainWindow::delete_favorite_btn(int id_favorite)
+//{
+//
+//
+//    int& fav_num = loged_in_user->favorite_recipes_num;
+//    loged_in_user->favorite_recipes[id_favorite] = -1;
+//    for (int j = 0; j < fav_num; j++)
+//    {
+//        // if the id refers to deleted recipe 
+//        // switch it with the last one and decrease favorite_recipes_num
+//        if (recipes_id_to_index[loged_in_user->favorite_recipes[j]] == -1)
+//        {
+//            int last_id = loged_in_user->favorite_recipes[fav_num - 1];
+//            loged_in_user->favorite_recipes[fav_num - 1] = 0;
+//            loged_in_user->favorite_recipes[j] = last_id;
+//
+//            fav_num--;
+//        }
+//    }
+//
+//}
 
 void MainWindow::on_edit_user_btn_clicked()
 {

@@ -22,13 +22,14 @@ public:
 private:
     Ui::MainWindowClass *ui;
     QGridLayout* recipes_grid;
+    QGridLayout* favorite_grid;
     /****/
-    //QWidget* scrollWidgetFavorite = new QWidget;
-    //QGridLayout* favorite_grid = new QGridLayout(scrollWidgetFavorite);
+  /*  QWidget* scrollWidgetFavorite = new QWidget;
+    QGridLayout* favorite_grid = new QGridLayout(scrollWidgetFavorite);*/
     /**********/
     //QWidget* scrollWidgetEdition = new QWidget;
     //QGridLayout* edition_grid = new QGridLayout(scrollWidgetEdition);
-
+    QGridLayout* edition_grid;
     QList<QWidget*> recipe_pages;      // IDs of recipe pages
     QSharedPointer<Recipe> currentDisplayedRecipe = nullptr;
     bool isDescending = false; // Track sort order (false = ascending, true = descending)
@@ -89,7 +90,7 @@ private slots:
     void on_go_edition_page_btn_clicked();
     int get_ingredient_count_edit();
     int get_step_count_edit();
-
+    void delete_edition_btn(int id_edition);
     QString* get_ingredients_edit(int& out_count);
 
     QString* get_steps_edit(int& out_count);
