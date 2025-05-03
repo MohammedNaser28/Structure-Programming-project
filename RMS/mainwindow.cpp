@@ -1,16 +1,26 @@
 ﻿#include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui (new Ui::MainWindowClass) 
-    , recipes_grid(new QGridLayout)
-{
+    : QMainWindow(parent),
+    ui(new Ui::MainWindowClass),
+    recipes_grid(new QGridLayout){
 
 
 
     ui->setupUi(this);
     ui->scrollAreaWidgetContents->setLayout(recipes_grid);
     ui->scrollArea->setWidgetResizable(true);
+
+    // Set layouts for scroll widgets
+    //scrollWidgetFavorite->setLayout(favorite_grid);
+    //scrollWidgetEdition->setLayout(edition_grid);
+
+    //// Set scrollWidgetFavorite for scrollArea_3
+    //ui->scrollArea_3->setWidget(scrollWidgetFavorite);
+    //ui->scrollArea_3->setWidgetResizable(true);
+    //ui->scrollArea_4->setWidget(scrollWidgetFavorite);
+    //ui->scrollArea_4->setWidgetResizable(true);
+
     /**************************************************************************/
     //if(currentUser!=NULL)
     //    ui->user_name_label->setText(users[currentUser]->name);
@@ -24,6 +34,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->add_method_edit_btn_2, &QPushButton::clicked, this, &MainWindow::add_method_row_edition);
     connect(ui->add_ing_edit_btn_2, &QPushButton::clicked, this, &MainWindow::add_ingredient_row_edition);
+
+    connect(ui->sort_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(on_sort_combobox_clicked()));
 
 
 
@@ -100,11 +112,70 @@ void MainWindow::choose_image() {
 }
 
 
+
 void MainWindow::on_sort_combobox_clicked()
 {
-    ;
+    qInfo() << "SORT RUN" << '\n';
+    sort(recipes, num_of_recipes);
+    qInfo() << "SORT MIDDLE" << '\n';
+
+    display_recipe();
+    qInfo() << "SORT END" << '\n';
+
 }
 
+
+
+void MainWindow::on_arrangment_btn_clicked() {
+        isDescending = !isDescending;
+        ui->arrangment_btn->setIcon(QIcon(isDescending ? ":/MainWindow/sort-descending.png" : ":/sort.png"));
+        display_recipe(isDescending);
+}
+
+void MainWindow::sort(QSharedPointer<Recipe> recipes[], int size) {
+    // First, compact the array to move all non-null elements to the front
+   int index_combobox = ui->sort_combobox->currentIndex();
+    int nonNullCount = 0;
+    for (int i = 0; i < size; ++i) {
+        if (!recipes[i].isNull()) {
+            // Swap non-null element to its position in the compacted array
+            if (i != nonNullCount) {
+                QSharedPointer<Recipe> temp = recipes[i];
+                recipes[i] = recipes[nonNullCount];
+                recipes[nonNullCount] = temp;
+            }
+            nonNullCount++;
+        }
+    }
+
+    // Bubble sort the compacted non-null portion of the array
+    for (int i = 0; i < nonNullCount - 1; ++i) {
+        for (int j = 0; j < nonNullCount - i - 1; ++j) {
+            bool shouldSwap = false;
+
+            // Determine comparison based on criteria
+            if (index_combobox == 0) 
+                shouldSwap = (recipes[j]->title.toLower() > recipes[j + 1]->title.toLower());
+            else if (index_combobox == 1)
+                shouldSwap = (recipes[j]->cock_time > recipes[j + 1]->cock_time);
+            else if (index_combobox == 2)
+                shouldSwap = (recipes[j]->level > recipes[j + 1]->level);
+            else if(index_combobox == 3)
+                shouldSwap = (recipes[j]->ing_num > recipes[j + 1]->ing_num);
+            //else if (index_combobox == 4)
+                //shouldSwap = (recipes[j]->(recipes[j]->ing_sum / recipes[j]->ing_num) > recipes[j + 1]->ing_num);
+            // Perform swap if needed
+            if (shouldSwap) {
+                QSharedPointer<Recipe> temp = recipes[j];
+                recipes[j] = recipes[j + 1];
+                recipes[j + 1] = temp;
+            }
+        }
+    }
+    
+
+
+}
 
 
 void MainWindow::on_search_btn_clicked() {
@@ -130,7 +201,11 @@ void MainWindow::on_search_btn_clicked() {
         }
         else if (searchType == 1) { // Time search
             bool ok;
-            int targetTime = input.toDouble(&ok);
+            qInfo() << "INPUT TIME" << " " << input;
+            double targetTime = input.toDouble(&ok);
+
+            qInfo() << "OUT TIME" << " " << targetTime;
+
             if (!ok || targetTime <= 0) {
                 QMessageBox::warning(this, "Error", "Invalid time format. Please enter a positive number.");
                 delete[] results;
@@ -156,6 +231,7 @@ void MainWindow::on_search_btn_clicked() {
         }
 
         if (resultCount > 0) {
+            sort(results, resultCount);
             display_search_home(results, resultCount);
         }
         else {
@@ -170,6 +246,8 @@ void MainWindow::on_search_btn_clicked() {
         QMessageBox::critical(this, "Error", "An unexpected error occurred.");
     }
 }
+
+
 
 // Display function (unchanged but needs proper implementation)
 void MainWindow::display_search_home(QSharedPointer<Recipe>* recipes, int count) {
@@ -359,9 +437,9 @@ void MainWindow::display_edition_page_user()
 
 
     qDebug() << "Edition recipes count:" << loged_in_user->my_recipes_num;
+    QWidget* scrollWidgetEdition = new QWidget;
+QGridLayout* edition_grid = new QGridLayout(scrollWidgetEdition);
 
-    QWidget* scrollWidget = new QWidget;
-    QGridLayout* edition_grid = new QGridLayout(scrollWidget);
 
     if (ui->scrollArea_4->widget()) {
         ui->scrollArea_4->takeWidget()->deleteLater();
@@ -404,7 +482,7 @@ void MainWindow::display_edition_page_user()
 
 
 
-    ui->scrollArea_4->setWidget(scrollWidget);
+    ui->scrollArea_4->setWidget(scrollWidgetEdition);
     ui->scrollArea_4->setWidgetResizable(true);
     qDebug() << "scrollArea_3 visible:" << ui->scrollArea_3->isVisible();
 }
@@ -890,11 +968,25 @@ int MainWindow::get_step_count() {
 //    ui->stackedWidget->setCurrentWidget(recipe_pages[r_ptr->id]);
 //}
 //
-void MainWindow::display_recipe()
+void MainWindow::display_recipe(bool arrang)
 {
+    QLayoutItem* item;
+    while ((item = recipes_grid->takeAt(0)) != nullptr) {
+        if (item->widget()) {
+            delete item->widget();
+        }
+        delete item;
+    }
+
+
     int r = 0, c = 0;
-    for (int i = 0; i < num_of_recipes; i++)
+    for (int i = arrang ? num_of_recipes - 1 : 0;
+        arrang ? i >= 0 : i < num_of_recipes;
+        i += arrang ? -1 : 1)
     {
+        if (recipes[i].isNull())
+            continue;
+
         QWidget* widget = new QWidget;
 
         QVBoxLayout* layout = new QVBoxLayout(widget);
@@ -1056,6 +1148,37 @@ void MainWindow::assign_recipe_page(QSharedPointer<Recipe> r_ptr)
 
 }
 
+void MainWindow::on_delete_recipe_btn_clicked() {
+    // return to homepage or wherever you want
+    ui->stackedWidget->setCurrentWidget(ui->home_page);
+
+    // check if loged_in_user had the recipe in his favorite array
+    // other users gets checked at log in and and when save_users gets excuted
+    int& fav_num = loged_in_user->favorite_recipes_num;
+    for (int j = 0; j < fav_num; j++)
+    {
+        // if the id refers to deleted recipe 
+        // switch it with the last one and decrease favorite_recipes_num
+        if (recipes_id_to_index[loged_in_user->favorite_recipes[j]] == -1)
+        {
+            int last_id = loged_in_user->favorite_recipes[fav_num - 1];
+            loged_in_user->favorite_recipes[fav_num - 1] = 0;
+            loged_in_user->favorite_recipes[j] = last_id;
+
+            fav_num--;
+        }
+    }
+
+    // now delete all pointers and the object will be deleted automatically for us
+    recipes[recipes_id_to_index[currentDisplayedRecipe->id]] = nullptr;  // delete from recipes[]
+    recipes_id_to_index[currentDisplayedRecipe->id] = -1;                // delete from recipes_id_to_index
+    --num_of_recipes;
+    currentDisplayedRecipe = nullptr;                                    // delete from current 
+    display_recipe();
+}
+
+
+
 void MainWindow::assign_admin_page()
 {
 
@@ -1172,13 +1295,21 @@ void MainWindow::on_go_favorite_btn_clicked()
 
 void MainWindow::display_favorite()
 {
+    QLayoutItem* item;
+    QWidget* scrollWidgetFavorite = new QWidget;
+    QGridLayout* favorite_grid = new QGridLayout(scrollWidgetFavorite);
+
+    while ((item = favorite_grid->takeAt(0)) != nullptr) {
+        if (item->widget()) {
+            delete item->widget();
+        }
+        delete item;
+    }
 
 
     qDebug() << "Favorite recipes count:" << loged_in_user->favorite_recipes_num;
 
-    QWidget* scrollWidget = new QWidget;
-    QGridLayout* favorite_grid = new QGridLayout(scrollWidget);
-
+   
     if (ui->scrollArea_3->widget()) {
         ui->scrollArea_3->takeWidget()->deleteLater();
     }
@@ -1218,18 +1349,49 @@ void MainWindow::display_favorite()
             ui->stackedWidget->setCurrentWidget(ui->recipe_page);
             });
 
+        QPushButton* button_delete = new QPushButton("حذف من المفضلة");
+        button_delete->setStyleSheet("color:rgb(0,0,0);");
+        connect(button_delete, &QPushButton::clicked, this, [this, i]() {
+            QMessageBox::information(this, "Info", "Has deleted from favorite");
+            delete_favorite_btn(i);
+            display_favorite();
+            });
+
         layout->addWidget(title);
         layout->addWidget(image);
         layout->addWidget(button);
+        layout->addWidget(button_delete);
 
         c = i % 4;
         if (!c && i) r++;
         favorite_grid->addWidget(widget, r, c);
     }
 
-    ui->scrollArea_3->setWidget(scrollWidget);
+    ui->scrollArea_3->setWidget(scrollWidgetFavorite);
     ui->scrollArea_3->setWidgetResizable(true);
     qDebug() << "scrollArea_3 visible:" << ui->scrollArea_3->isVisible();
+}
+
+void MainWindow::delete_favorite_btn(int id_favorite)
+{
+
+
+    int& fav_num = loged_in_user->favorite_recipes_num;
+    loged_in_user->favorite_recipes[id_favorite] = -1;
+    for (int j = 0; j < fav_num; j++)
+    {
+        // if the id refers to deleted recipe 
+        // switch it with the last one and decrease favorite_recipes_num
+        if (recipes_id_to_index[loged_in_user->favorite_recipes[j]] == -1)
+        {
+            int last_id = loged_in_user->favorite_recipes[fav_num - 1];
+            loged_in_user->favorite_recipes[fav_num - 1] = 0;
+            loged_in_user->favorite_recipes[j] = last_id;
+
+            fav_num--;
+        }
+    }
+
 }
 
 void MainWindow::on_edit_user_btn_clicked()

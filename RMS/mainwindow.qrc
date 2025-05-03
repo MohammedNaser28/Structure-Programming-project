@@ -5,5 +5,7 @@
         <file>search-interface-symbol.png</file>
         <file>home.png</file>
         <file>star.png</file>
+        <file>sort.png</file>
+        <file>sort-descending.png</file>
     </qresource>
 </RCC>

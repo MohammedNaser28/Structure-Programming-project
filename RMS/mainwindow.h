@@ -22,9 +22,16 @@ public:
 private:
     Ui::MainWindowClass *ui;
     QGridLayout* recipes_grid;
+    /****/
+    //QWidget* scrollWidgetFavorite = new QWidget;
+    //QGridLayout* favorite_grid = new QGridLayout(scrollWidgetFavorite);
+    /**********/
+    //QWidget* scrollWidgetEdition = new QWidget;
+    //QGridLayout* edition_grid = new QGridLayout(scrollWidgetEdition);
+
     QList<QWidget*> recipe_pages;      // IDs of recipe pages
     QSharedPointer<Recipe> currentDisplayedRecipe = nullptr;
-
+    bool isDescending = false; // Track sort order (false = ascending, true = descending)
 private slots:
 
     /*GENERAL*/
@@ -45,8 +52,9 @@ private slots:
     //void create_recipe_page(QSharedPointer<Recipe> r_ptr);
 
     void on_search_btn_clicked();
-    void on_sort_combobox_clicked();
-    //QSharedPointer<Recipe>*  searchRecipe(int& input);
+    void sort(QSharedPointer<Recipe> recipes[], int size);
+    void on_sort_combobox_clicked();  
+    void on_arrangment_btn_clicked();
     //QSharedPointer<Recipe> * searchRecipe(QString& input,bool ingred=false);
     void display_search_home(QSharedPointer<Recipe>* recipes, int count);
     /********/
@@ -56,10 +64,10 @@ private slots:
     void choose_image();
     int get_ingredient_count();
     int get_step_count();
-    void display_recipe();
+    void display_recipe(bool arrang=false);
     void on_submit_recipe_btn_clicked();
     void assign_recipe_page(QSharedPointer<Recipe> r_ptr);
-
+    void on_delete_recipe_btn_clicked();
     void assign_admin_page();
     /**************************************/
     void on_add_favorite_btn_clicked();
@@ -68,6 +76,7 @@ private slots:
 
     void display_favorite();
 
+    void delete_favorite_btn(int id_favorite);
     /*******************************/
     void on_edit_user_btn_clicked();
     void assign_edition_user_page();

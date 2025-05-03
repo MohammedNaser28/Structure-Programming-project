@@ -121,6 +121,7 @@ void load_users()
 
     // get number of users
     stream >> num_of_users;
+    stream.readLine(); // Consume the newline after num_of_users
 
     // append each user to users list
     qInfo() << "loading" << num_of_users << "users...";
@@ -138,14 +139,23 @@ void load_users()
         stream >> temp;
         user_ptr->favorite_recipes_num = temp.toInt();
 
-        for (int j = 0; j < user_ptr->favorite_recipes_num; j++)
-        {
-            stream >> temp;
-            user_ptr->favorite_recipes[j] = temp.toInt();
+        if (user_ptr->favorite_recipes_num > 0) {
+            // Read the favorite recipes line
+            stream.readLine(); // Consume the newline after favorite_recipes_num
+            QString favLine = stream.readLine();
+            QStringList favList = favLine.split(" ");
+
+            for (int j = 0; j < user_ptr->favorite_recipes_num; j++) {
+                user_ptr->favorite_recipes[j] = favList[j].toInt();
+            }
         }
 
-        qInfo() << "loading" << users[i]->my_recipes_num << " recipes...";
-        for (int c = 0; c < users[c]->my_recipes_num; c++)
+        // Read my_recipes_num
+        stream >> user_ptr->my_recipes_num;
+        stream.readLine(); // Consume the newline after my_recipes_num
+
+        qInfo() << "loading" << user_ptr->my_recipes_num << " recipes...";
+        for (int c = 0; c < user_ptr->my_recipes_num; c++)
         {
             QSharedPointer<Recipe> recipe_ptr(new Recipe());
 
@@ -158,6 +168,7 @@ void load_users()
             recipe_ptr->rates_num = stream.readLine().toInt();
             recipe_ptr->imagePath = stream.readLine();
             recipe_ptr->ing_num = stream.readLine().toInt();
+
             QString ingred = stream.readLine();
             QStringList ingredList = ingred.split(",");
             for (int j = 0; j < recipe_ptr->ing_num; j++)
@@ -168,21 +179,18 @@ void load_users()
             recipe_ptr->steps_num = stream.readLine().toInt();
             QString step = stream.readLine();
             QStringList sl = step.split(",");
-            for (int j = 0; j < recipe_ptr->ing_num; j++)
+            for (int j = 0; j < recipe_ptr->steps_num; j++)
             {
-                recipe_ptr->steps[j] = ingredList[j];
+                recipe_ptr->steps[j] = sl[j];
             }
 
-            users[i]->my_recipes[c] = recipe_ptr;
+            user_ptr->my_recipes[c] = recipe_ptr;
         }
-
     }
 
     file.close();
     qInfo() << file_name << " was loaded successfully!";
 }
-
-
 
 /*
     Recipe:
