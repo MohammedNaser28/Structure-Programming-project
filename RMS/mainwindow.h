@@ -56,6 +56,7 @@ private slots:
     void on_submit_recipe_btn_clicked();
     void assign_recipe_page(QSharedPointer<Recipe> r_ptr);
 
+    void assign_admin_page();
     /**************************************/
     void on_add_favorite_btn_clicked();
 

@@ -40,6 +40,8 @@ void MainWindow::startup()
         ui->delete_recipe_btn->setVisible(true);
         ui->rate_spin_user->setVisible(false);
         ui->rate_label->setVisible(false);
+        ui->add_favorite_btn->setVisible(false);
+
     }
     else {
         ui->add_recipe_admin_btn->setVisible(false);
@@ -48,7 +50,7 @@ void MainWindow::startup()
         ui->delete_recipe_btn->setVisible(false);
         ui->rate_spin_user->setVisible(true);
         ui->rate_label->setVisible(true);
-
+        ui->add_favorite_btn->setVisible(true);
     }
 
     ui->rate_spin_user->setRange(0, 5);
@@ -71,12 +73,14 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_logout_btn_clicked()
 {
+    currentDisplayedRecipe = nullptr;
     loged_in_user = nullptr;
     emit switchToDialog();
 }
 
 void MainWindow::on_add_recipe_admin_btn_clicked()
 {
+    currentDisplayedRecipe = nullptr;
     ui->stackedWidget->setCurrentWidget(ui->admin_page);
 
 }
@@ -84,8 +88,8 @@ void MainWindow::on_add_recipe_admin_btn_clicked()
 
 void MainWindow::on_home_btn_clicked()
 {
-
-    ui->stackedWidget->setCurrentWidget(ui->home_page);
+    currentDisplayedRecipe = nullptr;
+  ui->stackedWidget->setCurrentWidget(ui->home_page);
     display_recipe();
 }
 
@@ -265,8 +269,34 @@ void MainWindow::add_ingred_to_user_page_edit() {
 
 
     /*****ingred******/
-        qDebug() << "Ingredients count:" << currentDisplayedRecipe->ing_num;
-    for (int i = 0; i < currentDisplayedRecipe->ing_num;i++)
+    QLayout* method_layout = ui->ing_container_2->layout();
+    if (!method_layout) {
+        method_layout = new QVBoxLayout(ui->ing_container_2);
+        qDebug() << "Created new layout for ing_container_2";
+    }
+
+    // Clear existing rows (preserve the button)
+    // Iterate backwards to safely remove items
+    while (method_layout->count() > 0) {
+        QLayoutItem* item = method_layout->takeAt(0); // Take first item
+        if (!item) continue;
+
+        QWidget* widget = item->widget();
+        if (widget) {
+            // Only delete non-button widgets
+            if (widget != ui->add_ing_edit_btn_2) {
+                delete widget;
+            }
+            else {
+                // Keep the button alive but remove from layout temporarily
+                ui->ing_container_2->layout()->removeWidget(widget);
+            }
+        }
+        delete item; // Delete the layout item
+    }
+    method_layout->addWidget(ui->add_ing_edit_btn_2);
+
+        for (int i = 0; i < currentDisplayedRecipe->ing_num;i++)
     {
         qDebug() << "Ingredient" << i << ":" << currentDisplayedRecipe->ingredients[i] << '\n';
         QWidget* row = new QWidget;
@@ -391,7 +421,35 @@ void MainWindow::add_ingred_to_user_page_edit() {
 
 void MainWindow::add_method_to_user_page_edit() {
 
+    QLayout* method_layout = ui->steps_container_2->layout();
+    if (!method_layout) {
+        method_layout = new QVBoxLayout(ui->steps_container_2);
+        qDebug() << "Created new layout for ing_container_2";
+    }
+
+    // Clear existing rows (preserve the button)
+    // Iterate backwards to safely remove items
+    while (method_layout->count() > 0) {
+        QLayoutItem* item = method_layout->takeAt(0); // Take first item
+        if (!item) continue;
+
+        QWidget* widget = item->widget();
+        if (widget) {
+            // Only delete non-button widgets
+            if (widget != ui->add_method_edit_btn_2) {
+                delete widget;
+            }
+            else {
+                // Keep the button alive but remove from layout temporarily
+                ui->steps_container_2->layout()->removeWidget(widget);
+            }
+        }
+        delete item; // Delete the layout item
+    }
+    method_layout->addWidget(ui->add_method_edit_btn_2);
+
     /*****steps******/
+
     for (int i = 0; i < currentDisplayedRecipe->steps_num;i++)
     {
         QWidget* row = new QWidget;
@@ -585,6 +643,7 @@ int MainWindow::get_ingredient_count() {
         if (!(lineEdit->text().trimmed() == "")) {
             ++count;
         }
+        qInfo() << "LINEDIT: " << lineEdit;
     }
 
     return count;
@@ -706,8 +765,8 @@ void MainWindow::display_recipe()
         QPushButton* button = new QPushButton("View details");
         button->setStyleSheet("color:rgb(0,0,0);");
         connect(button, &QPushButton::clicked, this, [=]() {
-            assign_recipe_page(recipes[i]);
             ui->stackedWidget->setCurrentWidget(ui->recipe_page);
+            assign_recipe_page(recipes[i]);
             });
 
 
@@ -726,13 +785,42 @@ void MainWindow::on_submit_recipe_btn_clicked()
 {
 
 
+ /*   delete[] currentDisplayedRecipe->ingredients;
+    delete[] currentDisplayedRecipe->steps;*/
+    QSharedPointer<Recipe> recipe_ptr;
 
-       
-    QSharedPointer<Recipe> recipe_ptr(new Recipe());
-    recipe_ptr->generate_id();
-    recipes[num_of_recipes] = recipe_ptr;
-    recipes_id_to_index[recipe_ptr->id] = num_of_recipes;
-    num_of_recipes++;
+    
+    // Check if we're editing an existing recipe or creating a new one
+    if (currentDisplayedRecipe != nullptr) {
+        // We're editing an existing recipe - use the existing pointer
+        recipe_ptr = currentDisplayedRecipe;
+
+        // Clean up existing arrays to prevent memory leaks
+        //if (recipe_ptr->ingredients != nullptr) {
+        //    delete[] recipe_ptr->ingredients;
+        //    recipe_ptr->ingredients = nullptr;
+        //}
+
+        //if (recipe_ptr->steps != nullptr) {
+        //    delete[] recipe_ptr->steps;
+        //    recipe_ptr->steps = nullptr;
+        //}
+    }
+    else {
+        // We're creating a new recipe
+        recipe_ptr = QSharedPointer<Recipe>(new Recipe());
+        recipe_ptr->generate_id();
+        recipes[num_of_recipes] = recipe_ptr;
+        recipes_id_to_index[recipe_ptr->id] = num_of_recipes;
+        num_of_recipes++;
+    }
+
+
+
+    //recipe_ptr->generate_id();
+    //recipes[num_of_recipes] = recipe_ptr;
+    //recipes_id_to_index[recipe_ptr->id] = num_of_recipes;
+    //num_of_recipes++;
 
 
     // Get ingredients
@@ -760,13 +848,13 @@ void MainWindow::on_submit_recipe_btn_clicked()
 
     // Assign ingredients
     recipe_ptr->ing_num = num_ingredients;
-    for (int i = 1; i < num_ingredients; ++i) {
+    for (int i = 0; i < num_ingredients; ++i) {
         recipe_ptr->ingredients[i] = ingredients_array[i];
     }
 
     // Assign steps
     recipe_ptr->steps_num = num_steps;
-    for (int i = 1; i < num_steps; ++i) {
+    for (int i = 0; i < num_steps; ++i) {
         recipe_ptr->steps[i] = steps_array[i];
     }
 
@@ -785,6 +873,9 @@ void MainWindow::on_submit_recipe_btn_clicked()
 
 void MainWindow::assign_recipe_page(QSharedPointer<Recipe> r_ptr)
 {
+    // Clear existing items in ingredient and step lists
+    ui->ingred_list->clear();
+    ui->steps_list->clear();
     currentDisplayedRecipe = r_ptr;
     ui->img_perview->setPixmap(QPixmap(r_ptr->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
     ui->img_perview->setAlignment(Qt::AlignCenter);
@@ -819,6 +910,75 @@ void MainWindow::assign_recipe_page(QSharedPointer<Recipe> r_ptr)
         ing_layout->addWidget(ui->steps_list);
         ing_layout->setSpacing(5);
 
+}
+
+void MainWindow::assign_admin_page()
+{
+
+    if (currentDisplayedRecipe == nullptr)
+    {
+        qDebug() << "NULLL";
+    }
+    qDebug() << "IN ASSigned ADMIN PAGE";
+    ui->desc_field->setPlainText(currentDisplayedRecipe->description);
+    ui->title_field->setText(currentDisplayedRecipe->title);
+    ui->level_combobox_btn->setCurrentIndex(currentDisplayedRecipe->level);
+    
+
+    ui->time_spin_btn->setValue(currentDisplayedRecipe->cock_time);
+    ui->category_combobox_btn->setCurrentIndex(currentDisplayedRecipe->category);
+    ui->image_path_line->setText(currentDisplayedRecipe->imagePath);
+    /*****add******/
+    //qDebug() << "Ingredients count:" << currentDisplayedRecipe->ing_num;
+    for (int i = 0; i < currentDisplayedRecipe->ing_num;i++)
+    {
+        qDebug() << "Ingredient" << i << ":" << currentDisplayedRecipe->ingredients[i] << '\n';
+        QWidget* row = new QWidget;
+        row->setLayoutDirection(Qt::RightToLeft);
+        QHBoxLayout* row_layout = new QHBoxLayout(row);
+        row_layout->setSpacing(5);
+        row_layout->setDirection(QBoxLayout::LeftToRight);
+        QLineEdit* edit = new QLineEdit;
+        edit->setText(currentDisplayedRecipe->ingredients[i]);
+        QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
+        edit->setStyleSheet("color:rgb(0,0,0);");
+        rm->setStyleSheet("color:rgb(0,0,0);");
+
+        connect(rm, &QPushButton::clicked, this, &MainWindow::remove_row);
+        row_layout->addWidget(edit);
+        row_layout->addWidget(rm);
+        QLayout* method_layout = ui->ing_container->layout();
+        method_layout->addWidget(row);
+        qDebug() << "Add Ingredient" << i << ":" << currentDisplayedRecipe->ingredients[i] << '\n';
+
+    }
+    for (int i = 0; i < currentDisplayedRecipe->steps_num;i++)
+    {
+        //qDebug() << "Ingredient" << i << ":" << currentDisplayedRecipe->steps[i] << '\n';
+        QWidget* row = new QWidget;
+        row->setLayoutDirection(Qt::RightToLeft);
+        QHBoxLayout* row_layout = new QHBoxLayout(row);
+        row_layout->setSpacing(5);
+        row_layout->setDirection(QBoxLayout::LeftToRight);
+        QLineEdit* edit = new QLineEdit;
+        edit->setText(currentDisplayedRecipe->steps[i]);
+        QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
+        edit->setStyleSheet("color:rgb(0,0,0);");
+        rm->setStyleSheet("color:rgb(0,0,0);");
+
+        connect(rm, &QPushButton::clicked, this, &MainWindow::remove_row);
+        row_layout->addWidget(edit);
+        row_layout->addWidget(rm);
+        QLayout* method_layout = ui->steps_container->layout();
+        method_layout->addWidget(row);
+        qDebug() << "Add Ingredient" << i << ":" << currentDisplayedRecipe->steps[i] << '\n';
+
+    }
+
+   /* delete[] currentDisplayedRecipe->ingredients;
+    delete[] currentDisplayedRecipe->steps;*/
+
+    qDebug() << "OUT FROM ADMIN ASSign";
 }
 
 // ADDFvorite
@@ -930,9 +1090,18 @@ void MainWindow::display_favorite()
 
 void MainWindow::on_edit_user_btn_clicked()
 {
+    if (loged_in_user->isAdmin == true) {
+
+        ui->stackedWidget->setCurrentWidget(ui->admin_page);
+        assign_admin_page();
+    }
+    else {
 
     ui->stackedWidget->setCurrentWidget(ui->user_edit_page);
     assign_edition_user_page();
+
+    }
+
 
 }
 
