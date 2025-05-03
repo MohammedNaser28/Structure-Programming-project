@@ -7,5 +7,7 @@
         <file>star.png</file>
         <file>sort.png</file>
         <file>sort-descending.png</file>
+        <file>systemicon.webp</file>
+        <file>down.png</file>
     </qresource>
 </RCC>

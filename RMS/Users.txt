@@ -1,41 +1,33 @@
-6
+3
 1
-m
-m
-m
-1
-26
+h
+h
+h
 0
 0
-mo
-mo
-mo
-1
-25
 0
+a
+a
+a
 1
-k
-k
-k
-0
+1
+1
+1
+العنوان الأول
+
+1.5
 0
 1
-mohamed_311
-mohamed
-123
 1
-2
-0
-0
-userFav
-user
-12
-5
-18 0 1 2 19
-0
-0
-jh
-m
+C:/Users/11/Documents/New folder (3)/Structure-Programming-project/RMS/star.png
 1
+المكون الثاني
+1
+المكون الأول 
 0
+r
+r
+r
+1
+1
 0

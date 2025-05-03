@@ -8,7 +8,8 @@
 int main(int argc, char* argv[])
 {
     QApplication a(argc, argv);
-
+    a.setLayoutDirection(Qt::RightToLeft);
+    a.setWindowIcon(QIcon(":/MainWindow/systemicon.webp"));
     a.setStyleSheet(
         "QMessageBox {"
         "    background-color: #fefefe;"
@@ -33,6 +34,23 @@ int main(int argc, char* argv[])
         "QPushButton:pressed {"
         "    background-color: #0277BD;"
         "}"
+        "QComboBox {"
+        "    border: 1px solid gray;"
+        "    border-radius: 4px;"
+        "    padding: 2px;"
+        "    background-color: #f0f0f0;"
+        "    font-size: 14px;"
+        "}"
+        "QComboBox::drop-down {"
+        "    border: 0px;"
+        "    background-color: transparent;"
+        "}"
+        "QComboBox::down-arrow {"
+        "    image: url(:/MainWindow/down.png);"
+        "    width: 12px;"
+        "    height: 12px;"
+        "}"
+
     );
     // intialize recipes_id_to_index
     for (int i = 0; i < 10000; i++)

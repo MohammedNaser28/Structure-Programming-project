@@ -127,17 +127,10 @@ private slots:
     void on_logout_btn_clicked();
     void on_add_recipe_admin_btn_clicked();
 
-    //void on_save_recipe_btn_clicked();
-
-    //void on_display_recipe_btn_clicked();
-
-    //void create_recipe_page(QSharedPointer<Recipe> r_ptr);
-
     void on_search_btn_clicked();
     void sort(QSharedPointer<Recipe> recipes[], int size);
     void on_sort_combobox_clicked();  
     void on_arrangment_btn_clicked();
-    //QSharedPointer<Recipe> * searchRecipe(QString& input,bool ingred=false);
     void display_search_home(QSharedPointer<Recipe>* recipes, int count);
     /********/
     void add_ingredient_row();

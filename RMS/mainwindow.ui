@@ -32,7 +32,7 @@
 </string>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="home_page">
      <widget class="QScrollArea" name="scrollArea">
@@ -83,7 +83,7 @@
       <widget class="QComboBox" name="sort_combobox">
        <property name="geometry">
         <rect>
-         <x>910</x>
+         <x>950</x>
          <y>30</y>
          <width>131</width>
          <height>28</height>
@@ -184,7 +184,7 @@ font: 11pt &quot;Reem Kufi&quot;;
       <widget class="QPushButton" name="arrangment_btn">
        <property name="geometry">
         <rect>
-         <x>1080</x>
+         <x>1140</x>
          <y>30</y>
          <width>31</width>
          <height>24</height>
@@ -671,7 +671,7 @@ font: 11pt &quot;Reem Kufi&quot;;
       <widget class="QComboBox" name="sort_combobox_favorite_2">
        <property name="geometry">
         <rect>
-         <x>900</x>
+         <x>920</x>
          <y>30</y>
          <width>111</width>
          <height>28</height>

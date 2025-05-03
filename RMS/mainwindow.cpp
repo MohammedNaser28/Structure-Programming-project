@@ -841,85 +841,7 @@ int MainWindow::get_step_count() {
 }
 
 
-//void MainWindow::create_recipe_page(QSharedPointer<Recipe> r_ptr)
-//{
-//    if (recipe_pages[r_ptr->id] == nullptr)
-//    {
-//        QWidget* widget = new QWidget;
-//        widget->setLayoutDirection(Qt::RightToLeft);
-//
-//        QFont f("Tahoma", 10);
-//        widget->setFont(f);
-//
-//
-//        QLabel* title = new QLabel(r_ptr->title);
-//        QFont title_font("Tahoma", 16, QFont::Bold);
-//        title->setFont(title_font);
-//
-//        QString categ = (r_ptr->category == 0) ? "حادق" : "حلو";
-//        QLabel* category = new QLabel(categ);
-//
-//        QString l;
-//        if (r_ptr->level == 0) l = "سهل" ;
-//        else if (r_ptr->level == 1) l = "متوسط";
-//        else l = "صعب";
-//        QLabel* level = new QLabel(l);
-//
-//        QLabel* cock_time = new QLabel(QString("%1 دقيقه").arg(r_ptr->cock_time));
-//
-//        int num = (!r_ptr->rates_num) ? 0 : r_ptr->rates_sum / r_ptr->rates_num;
-//        QLabel* rate = new QLabel(QString("%1 من 5").arg(num));
-//
-//        QHBoxLayout* infoBar = new QHBoxLayout();
-//        infoBar->addWidget(category);
-//        infoBar->addWidget(level);
-//        infoBar->addWidget(cock_time);
-//        infoBar->addWidget(rate);
-//
-//
-//        QLabel* des_title = new QLabel("الوصف");
-//        QFont des_title_font("Tahoma", 12, QFont::Bold);
-//        des_title->setFont(des_title_font);
-//        QLabel* description = new QLabel(r_ptr->description);
-//        description->setWordWrap(true);
-//
-//
-//        QLabel* ing_title = new QLabel("المكونات");
-//        QFont ing_title_font("Tahoma", 12, QFont::Bold);
-//        ing_title->setFont(ing_title_font);
-//        QListWidget* ing = new QListWidget();
-//        for (int i = 0; i < r_ptr->ing_num;i++)
-//            ing->addItem(r_ptr->ingredients[i]);
-//
-//        QVBoxLayout* title_layout = new QVBoxLayout;
-//        title_layout->addWidget(title);
-//        title_layout->addLayout(infoBar);
-//        title_layout->setSpacing(10);
-//
-//        QVBoxLayout* des_layout = new QVBoxLayout;
-//        des_layout->addWidget(des_title);
-//        des_layout->addWidget(description);
-//        des_layout->setSpacing(5);
-//
-//        QVBoxLayout* ing_layout = new QVBoxLayout;
-//        ing_layout->addWidget(ing_title);
-//        ing_layout->addWidget(ing);
-//        ing_layout->setSpacing(5);
-//
-//        QVBoxLayout* layout = new QVBoxLayout;
-//        layout->addLayout(title_layout);
-//        layout->addLayout(des_layout);
-//        layout->addLayout(ing_layout);
-//
-//        layout->setSpacing(20);
-//
-//        widget->setLayout(layout);
-//        ui->stackedWidget->addWidget(widget);
-//        recipe_pages[r_ptr->id] = widget;
-//    }
-//    ui->stackedWidget->setCurrentWidget(recipe_pages[r_ptr->id]);
-//}
-//
+
 void MainWindow::display_recipe(bool arrang)
 {
     QLayoutItem* item;
@@ -979,8 +901,7 @@ void MainWindow::on_submit_recipe_btn_clicked()
 {
 
 
- /*   delete[] currentDisplayedRecipe->ingredients;
-    delete[] currentDisplayedRecipe->steps;*/
+
     QSharedPointer<Recipe> recipe_ptr;
 
     
@@ -989,16 +910,6 @@ void MainWindow::on_submit_recipe_btn_clicked()
         // We're editing an existing recipe - use the existing pointer
         recipe_ptr = currentDisplayedRecipe;
 
-        // Clean up existing arrays to prevent memory leaks
-        //if (recipe_ptr->ingredients != nullptr) {
-        //    delete[] recipe_ptr->ingredients;
-        //    recipe_ptr->ingredients = nullptr;
-        //}
-
-        //if (recipe_ptr->steps != nullptr) {
-        //    delete[] recipe_ptr->steps;
-        //    recipe_ptr->steps = nullptr;
-        //}
     }
     else {
         // We're creating a new recipe
@@ -1008,13 +919,6 @@ void MainWindow::on_submit_recipe_btn_clicked()
         recipes_id_to_index[recipe_ptr->id] = num_of_recipes;
         num_of_recipes++;
     }
-
-
-
-    //recipe_ptr->generate_id();
-    //recipes[num_of_recipes] = recipe_ptr;
-    //recipes_id_to_index[recipe_ptr->id] = num_of_recipes;
-    //num_of_recipes++;
 
 
     // Get ingredients
@@ -1085,13 +989,10 @@ void MainWindow::assign_recipe_page(QSharedPointer<Recipe> r_ptr)
         else  ui->display_level_recipe->setText("مستوى الصعوبة:   صعب");
        
 
-        //    QLabel* ing_title = new QLabel("المكونات");
-        //QFont ing_title_font("Tahoma", 12, QFont::Bold);
-        //ing_title->setFont(ing_title_font);
+
         for (int i = 0; i < r_ptr->ing_num;i++)
             ui->ingred_list->addItem(r_ptr->ingredients[i]);
         QVBoxLayout* ing_layout = new QVBoxLayout;
-        //ing_layout->addWidget(ing_title);
         ing_layout->addWidget(ui->ingred_list);
         ing_layout->setSpacing(5);
 
@@ -1100,7 +1001,6 @@ void MainWindow::assign_recipe_page(QSharedPointer<Recipe> r_ptr)
         for (int i = 0; i < r_ptr->steps_num;i++)
             ui->steps_list->addItem(r_ptr->steps[i]);
         QVBoxLayout* _layout = new QVBoxLayout;
-        //ing_layout->addWidget(ing_title);
         ing_layout->addWidget(ui->steps_list);
         ing_layout->setSpacing(5);
 
@@ -1367,28 +1267,6 @@ void MainWindow::delete_favorite_btn(int id_favorite)
 }
 
 
-//void MainWindow::delete_favorite_btn(int id_favorite)
-//{
-//
-//
-//    int& fav_num = loged_in_user->favorite_recipes_num;
-//    loged_in_user->favorite_recipes[id_favorite] = -1;
-//    for (int j = 0; j < fav_num; j++)
-//    {
-//        // if the id refers to deleted recipe 
-//        // switch it with the last one and decrease favorite_recipes_num
-//        if (recipes_id_to_index[loged_in_user->favorite_recipes[j]] == -1)
-//        {
-//            int last_id = loged_in_user->favorite_recipes[fav_num - 1];
-//            loged_in_user->favorite_recipes[fav_num - 1] = 0;
-//            loged_in_user->favorite_recipes[j] = last_id;
-//
-//            fav_num--;
-//        }
-//    }
-//
-//}
-
 void MainWindow::on_edit_user_btn_clicked()
 {
     if (loged_in_user->isAdmin == true) {
@@ -1447,39 +1325,3 @@ QString* MainWindow::get_steps(int& out_count) {
     }
     return steps;
 }
-
-
-
-//void MainWindow::on_save_recipe_btn_clicked()
-//{
-//    // take input
-//    QSharedPointer<Recipe> recipe_ptr(new Recipe());
-//    recipe_ptr->generate_id();
-//    recipes[num_of_recipes] = recipe_ptr;
-//    recipes_id_to_index[recipe_ptr->id] = num_of_recipes;
-//    num_of_recipes++;
-//
-//    recipe_ptr->title = ui->title_line->text();
-//    recipe_ptr->title = recipe_ptr->title.trimmed();
-//
-//    recipe_ptr->description = ui->description_text->toPlainText();
-//    recipe_ptr->description = recipe_ptr->description.trimmed();
-//
-//    QString ingredients = ui->ingredients_text->toPlainText();
-//    ingredients = ingredients.trimmed();
-//    QStringList ing_list = ingredients.split(",");
-//    recipe_ptr->ing_num = ing_list.size();
-//    for (int i = 0; i < recipe_ptr->ing_num; i++)
-//    {
-//        recipe_ptr->ingredients[i] = ing_list[i].trimmed();
-//    }
-//
-//
-//    recipe_ptr->category = ui->category_combobox->currentIndex();
-//    recipe_ptr->level = ui->level_combobox->currentIndex();
-//
-//    recipe_ptr->cock_time = ui->cock_time_spinbox->value();
-//
-//    qInfo() << "Recipe" << recipe_ptr->id << "added successfully!";
-//}
-//
