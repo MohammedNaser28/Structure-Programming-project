@@ -5,7 +5,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui(new Ui::MainWindowClass),
     recipes_grid(new QGridLayout),
     favorite_grid(new QGridLayout),
-    edition_grid(new QGridLayout) {
+    edition_grid(new QGridLayout),
+    all_recipe_grid(new QGridLayout)
+{
 
 
 
@@ -22,11 +24,52 @@ MainWindow::MainWindow(QWidget *parent)
     ui->scrollArea_3->setWidgetResizable(true);
     ui->scrollAreaWidgetContents_4->setLayout(edition_grid);
     ui->scrollArea_4->setWidgetResizable(true);
+    ui->scrollAreaWidgetContents_5->setLayout(all_recipe_grid);
+    ui->scrollArea_5->setWidgetResizable(true);
 
     /**************************************************************************/
-    //if(currentUser!=NULL)
-    //    ui->user_name_label->setText(users[currentUser]->name);
 
+    // Set stylesheet to change text color
+    ui->menuRecipe->setStyleSheet(
+        "QMenuBar {"
+        "    background-color: #2f2f2f;"
+        "}"
+        "QMenuBar::item {"
+        "    color: white;"          // <<== Change menu bar item text color to white
+        "    padding: 4px 10px;"
+        "}"
+        "QMenu {"
+        "    background-color: #f0f0f0;"
+        "    color: black;"          // <<== Change menu item text color
+        "}"
+        "QMenu::item:selected {"
+        "    background-color: #a0a0a0;"
+        "}"
+    );
+
+    ui->menubar->setStyleSheet(
+        "QMenuBar {"
+        "    background-color: #2f2f2f;"
+        "}"
+        "QMenuBar::item {"
+        "    color: white;"          // <<== Change menu bar item text color to white
+        "    padding: 4px 10px;"
+        "}"
+        "QMenu {"
+        "    background-color: #f0f0f0;"
+        "    color: black;"          // <<== Change menu item text color
+        "}"
+        "QMenu::item:selected {"
+        "    background-color: #a0a0a0;"
+        "}"
+    );
+    /************************/
+    connect(ui->actionDisplay_all_recipes, &QAction::triggered, this, &MainWindow::display_recipe);
+    connect(ui->actionDisplay_favorites_recipes, &QAction::triggered, this, &MainWindow::on_go_favorite_btn_clicked);
+    connect(ui->actionDisplay_suggest_recipes, &QAction::triggered, this, &MainWindow::on_home_btn_clicked);
+     connect(ui->actionDisplay_my_recipes, &QAction::triggered, this, &MainWindow::on_go_edition_page_btn_clicked);
+
+    /****************/
     ui->image_path_line->setPlaceholderText(QStringLiteral("مسار الصورة"));
 
     /**************************************************************************/
@@ -55,7 +98,8 @@ void MainWindow::startup()
         ui->rate_spin_user->setVisible(false);
         ui->rate_label->setVisible(false);
         ui->add_favorite_btn->setVisible(false);
-
+        ui->actionDisplay_favorites_recipes->setEnabled(false);
+        ui->actionDisplay_my_recipes->setEnabled(false);
     }
     else {
         ui->add_recipe_admin_btn->setVisible(false);
@@ -65,6 +109,8 @@ void MainWindow::startup()
         ui->rate_spin_user->setVisible(true);
         ui->rate_label->setVisible(true);
         ui->add_favorite_btn->setVisible(true);
+        ui->actionDisplay_favorites_recipes->setEnabled(true);
+        ui->actionDisplay_my_recipes->setEnabled(true);
     }
 
     ui->rate_spin_user->setRange(0, 5);
@@ -74,7 +120,7 @@ void MainWindow::startup()
 void MainWindow::reload_recipe_first_time()
 {
     ui->stackedWidget->setCurrentWidget(ui->home_page);
-    display_recipe();
+    suggest_recipes(5);
 }
 
 
@@ -84,6 +130,122 @@ MainWindow::~MainWindow()
     qDeleteAll(recipe_pages);
     recipe_pages.clear();
 }
+
+void MainWindow::suggest_recipes(int numOfsuggests )
+{
+
+    qInfo() << "INSUGGEST";
+    QLayoutItem* item;
+    while ((item = recipes_grid->takeAt(0)) != nullptr) {
+        if (item->widget()) {
+            delete item->widget();
+        }
+        delete item;
+    }
+    qInfo() << "MIddleSUGGEST";
+
+
+    if (num_of_recipes < numOfsuggests)
+        numOfsuggests = num_of_recipes;
+    if (numOfsuggests <= 0) {
+        qInfo() << "No recipes to suggest - numOfsuggests is" << numOfsuggests;
+        return; // Exit if there’s nothing to display
+    }
+    srand(time(0));
+    int r = 0, c = 0;
+    int validRecipes = 0;
+    qInfo() << "MIddleSUGewGEST";
+
+    for (int i = 0; i < numOfsuggests; i++)
+    {
+        qInfo() << "EDIT";
+        int index = rand() % num_of_recipes; //The % operator ensures the random number is within the bounds of the recipes array.
+
+        // show recipe
+
+
+        QWidget* widget = new QWidget;
+
+        QVBoxLayout* layout = new QVBoxLayout(widget);
+
+        QLabel* title = new QLabel(recipes[index]->title);
+        title->setAlignment(Qt::AlignCenter);
+        title->setStyleSheet(titleStyle);
+        QLabel* image = new QLabel;
+        image->setPixmap(QPixmap(recipes[index]->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
+
+        image->setAlignment(Qt::AlignCenter);
+
+        QPushButton* button = new QPushButton("اعرض الوصفة");
+        button->setStyleSheet(view_button_details);
+        connect(button, &QPushButton::clicked, this, [=]() {
+            ui->stackedWidget->setCurrentWidget(ui->recipe_page);
+            assign_recipe_page(recipes[index]);
+            });
+
+
+        layout->addWidget(title);
+        layout->addWidget(image); // ADDED: Image label
+        layout->addWidget(button);
+
+        // Calculate grid position: 4 columns per row
+        c = validRecipes % 4;
+        r = validRecipes / 4;
+        validRecipes++;
+
+        // Add to grid
+        recipes_grid->addWidget(widget, r, c);
+        qInfo() << "Widget0  " << widget;
+    }
+    /*
+    
+
+
+    int r = 0, c = 0;
+    int validRecipes = 0;
+    for (int i = arrang ? num_of_recipes - 1 : 0;
+        arrang ? i >= 0 : i < num_of_recipes;
+        i += arrang ? -1 : 1)
+    {
+        if (recipes[i].isNull())
+            continue;
+
+        QWidget* widget = new QWidget;
+
+        QVBoxLayout* layout = new QVBoxLayout(widget);
+
+        QLabel* title = new QLabel(recipes[i]->title);
+        title->setAlignment(Qt::AlignCenter);
+        title->setStyleSheet(titleStyle);
+         QLabel *image = new QLabel;
+         image->setPixmap(QPixmap(recipes[i]->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
+
+         image->setAlignment(Qt::AlignCenter);
+
+        QPushButton* button = new QPushButton("اعرض الوصفة");
+        button->setStyleSheet(view_button_details);
+        connect(button, &QPushButton::clicked, this, [=]() {
+            ui->stackedWidget->setCurrentWidget(ui->recipe_page);
+            assign_recipe_page(recipes[i]);
+            });
+
+
+        layout->addWidget(title);
+        layout->addWidget(image); // ADDED: Image label
+        layout->addWidget(button);
+
+        // Calculate grid position: 4 columns per row
+        c = validRecipes % 4;
+        r = validRecipes / 4;
+        validRecipes++;
+
+        // Add to grid
+        recipes_grid->addWidget(widget, r, c);
+    }
+    
+    */
+}
+
 
 void MainWindow::on_logout_btn_clicked()
 {
@@ -105,7 +267,8 @@ void MainWindow::on_home_btn_clicked()
 {
     currentDisplayedRecipe = nullptr;
   ui->stackedWidget->setCurrentWidget(ui->home_page);
-    display_recipe();
+    /*display_recipe();*/
+  suggest_recipes(5);
 }
 
 void MainWindow::choose_image() {
@@ -117,12 +280,9 @@ void MainWindow::choose_image() {
 
 void MainWindow::on_sort_combobox_clicked()
 {
-    qInfo() << "SORT RUN" << '\n';
     sort(recipes, num_of_recipes);
-    qInfo() << "SORT MIDDLE" << '\n';
 
     display_recipe();
-    qInfo() << "SORT END" << '\n';
 
 }
 
@@ -182,9 +342,13 @@ void MainWindow::sort(QSharedPointer<Recipe> recipes[], int size) {
 
 void MainWindow::on_search_btn_clicked() {
     QString input = ui->search_field->text().trimmed();
-    if (input.isEmpty()) {
-        QMessageBox::information(this, "Info", "Please enter something to search.");
-        return;
+    if (input.isEmpty())
+    {
+        input = ui->search_field_2->text().trimmed();
+        if (input.isEmpty()) {
+            QMessageBox::information(this, "معلومة", "ادخل كلمة للبحث");
+            return;
+    }
     }
 
     const int MAX_RESULTS = 100;
@@ -234,7 +398,7 @@ void MainWindow::on_search_btn_clicked() {
 
         if (resultCount > 0) {
             sort(results, resultCount);
-            display_search_home(results, resultCount);
+            display_search_all(results, resultCount);
         }
         else {
             QMessageBox::information(this, "No Results", "No matching recipes found.");
@@ -260,11 +424,11 @@ void MainWindow::on_search_btn_clicked() {
 }
 
 
-void MainWindow::display_search_home(QSharedPointer<Recipe>* recipes, int count) {
+void MainWindow::display_search_all(QSharedPointer<Recipe>* recipes, int count) {
     // Clear previous results
-    ui->stackedWidget->setCurrentWidget(ui->home_page);
+    ui->stackedWidget->setCurrentWidget(ui->all_recipes);
     QLayoutItem* item;
-    while ((item = recipes_grid->takeAt(0)) != nullptr) {
+    while ((item = all_recipe_grid->takeAt(0)) != nullptr) {
         delete item->widget();
         delete item;
     }
@@ -293,15 +457,60 @@ void MainWindow::display_search_home(QSharedPointer<Recipe>* recipes, int count)
 
 
             layout->addWidget(title);
-            layout->addWidget(image); // ADDED: Image label
+            layout->addWidget(image); 
             layout->addWidget(button);
 
             col = i % 4;
             if (!col && i) row++;
-            recipes_grid->addWidget(widget, row, col);
+            all_recipe_grid->addWidget(widget, row, col);
         
     }
 }
+
+void MainWindow::display_search(QSharedPointer<Recipe>* recipes, int count, QGridLayout* layout_grid, QWidget* stacked_page) {
+    ui->stackedWidget->setCurrentWidget(stacked_page);
+    QLayoutItem* item;
+    while ((item = layout_grid->takeAt(0)) != nullptr) {
+        delete item->widget();
+        delete item;
+    }
+
+    // Display logic
+    int row = 0, col = 0;
+    for (int i = 0; i < count; i++) {
+
+        QWidget* widget = new QWidget;
+
+        QVBoxLayout* layout = new QVBoxLayout(widget);
+
+        QLabel* title = new QLabel(recipes[i]->title);
+        title->setAlignment(Qt::AlignCenter);
+        title->setStyleSheet(titleStyle);
+        QLabel* image = new QLabel;
+        image->setPixmap(QPixmap(recipes[i]->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
+        image->setAlignment(Qt::AlignCenter);
+
+        QPushButton* button = new QPushButton("اعرض الوصفة");
+        button->setStyleSheet(view_button_details);
+        connect(button, &QPushButton::clicked, this, [=]() {
+            ui->stackedWidget->setCurrentWidget(ui->recipe_page);
+            assign_recipe_page(recipes[i]);
+            });
+
+
+        layout->addWidget(title);
+        layout->addWidget(image);
+        layout->addWidget(button);
+
+        col = i % 4;
+        if (!col && i) row++;
+        layout_grid->addWidget(widget, row, col);
+
+    }
+
+}
+
+
 
 void MainWindow::add_ingredient_row() {
     QWidget* row = new QWidget;
@@ -754,24 +963,7 @@ QString* MainWindow::get_ingredients_edit(int& out_count)
         ingredients[i] = text;
         qDebug() << "LineEdit Text:" << text;
     }
-        //QLayout* container_layout = ui->ing_container_2->layout();
-        //int count = container_layout->count();
-        //out_count = count;
-        //for (int i = 0; i < count; ++i) {
-        //    QWidget* row = container_layout->itemAt(i)->widget();
-        //    if (row) {
-        //        QLayout* row_layout = row->layout();
-        //        if (row_layout) {
-        //            QLineEdit* edit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
-        //            if (edit) {
-        //                ingredients[i] = edit->text();
-        //            }
-        //        }
-        //    }
-        //}
-
-
-        return ingredients;
+   return ingredients;
     
 
 }
@@ -788,18 +980,7 @@ QString* MainWindow::get_steps_edit(int& out_count) {
         steps[i] = text;
         qDebug() << "LineEdit Text:" << text;
     }
-        //for (int i = 0; i < count; ++i) {
-        //    QWidget* row = container_layout->itemAt(i)->widget();
-        //    if (row) {
-        //        QLayout* row_layout = row->layout();
-        //        if (row_layout) {
-        //            QLineEdit* edit = qobject_cast<QLineEdit*>(row_layout->itemAt(0)->widget());
-        //            if (edit) {
-        //                steps[i] = edit->text();
-        //            }
-        //        }
-        //    }
-        //}
+
         return steps;
     
 
@@ -844,14 +1025,14 @@ int MainWindow::get_step_count() {
 
 void MainWindow::display_recipe(bool arrang)
 {
+    ui->stackedWidget->setCurrentWidget(ui->all_recipes);
     QLayoutItem* item;
-    while ((item = recipes_grid->takeAt(0)) != nullptr) {
+    while ((item = all_recipe_grid->takeAt(0)) != nullptr) {
         if (item->widget()) {
             delete item->widget();
         }
         delete item;
     }
-
 
     int r = 0, c = 0;
     int validRecipes = 0;
@@ -859,8 +1040,10 @@ void MainWindow::display_recipe(bool arrang)
         arrang ? i >= 0 : i < num_of_recipes;
         i += arrang ? -1 : 1)
     {
+
         if (recipes[i].isNull())
             continue;
+        qInfo() << "HdfGf554fHGH";
 
         QWidget* widget = new QWidget;
 
@@ -869,10 +1052,10 @@ void MainWindow::display_recipe(bool arrang)
         QLabel* title = new QLabel(recipes[i]->title);
         title->setAlignment(Qt::AlignCenter);
         title->setStyleSheet(titleStyle);
-         QLabel *image = new QLabel;
-         image->setPixmap(QPixmap(recipes[i]->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
+        QLabel* image = new QLabel;
+        image->setPixmap(QPixmap(recipes[i]->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
 
-         image->setAlignment(Qt::AlignCenter);
+        image->setAlignment(Qt::AlignCenter);
 
         QPushButton* button = new QPushButton("اعرض الوصفة");
         button->setStyleSheet(view_button_details);
@@ -892,82 +1075,107 @@ void MainWindow::display_recipe(bool arrang)
         validRecipes++;
 
         // Add to grid
-        recipes_grid->addWidget(widget, r, c);
+        all_recipe_grid->addWidget(widget, r, c);
     }
 }
 
 
 void MainWindow::on_submit_recipe_btn_clicked()
 {
+    // Step 1: Collect all input values into local variables
+    QString title = ui->title_field->text().trimmed();
+    QString description = ui->desc_field->toPlainText().trimmed();
+    int category = ui->category_combobox_btn->currentIndex();
+    int level = ui->level_combobox_btn->currentIndex();
+    int cock_time = ui->time_spin_btn->value();
+    QString imagePath = ui->image_path_line->text().trimmed();
+    int num_ingredients = get_ingredient_count();
+    int num_steps = get_step_count();
 
-
-
-    QSharedPointer<Recipe> recipe_ptr;
-
-    
-    // Check if we're editing an existing recipe or creating a new one
-    if (currentDisplayedRecipe != nullptr) {
-        // We're editing an existing recipe - use the existing pointer
-        recipe_ptr = currentDisplayedRecipe;
-
+    // Step 2: Validate all required fields
+    // If any field is missing, show a warning and return without saving
+    if (title.isEmpty()) {
+        show_warning_messageBox(this, "يجب إضافة عنوان للوصفة");
+        return;
     }
-    else {
-        // We're creating a new recipe
+    if (description.isEmpty()) {
+        show_warning_messageBox(this, "يجب إضافة وصف لللوصفة");
+        return;
+    }
+    if (imagePath.isEmpty()) {
+        show_warning_messageBox(this, "يجب إضافة صورة للوصفة");
+        return;
+    }
+    if (num_ingredients == 0) {
+        show_warning_messageBox(this, "يجب إضافة مكونات للوصفة");
+        return;
+    }
+    if (num_steps == 0) {
+        show_warning_messageBox(this, "يجب إضافة خطوات للوصفة");
+        return;
+    }
+
+    // Step 3: All required fields are present, proceed to retrieve additional data
+    QString* ingredients_array = get_ingredients(num_ingredients);
+    QString* steps_array = get_steps(num_steps);
+
+    // Step 4: Create or update the recipe
+    QSharedPointer<Recipe> recipe_ptr;
+    if (currentDisplayedRecipe == nullptr) {
+        // Creating a new recipe
         recipe_ptr = QSharedPointer<Recipe>(new Recipe());
         recipe_ptr->generate_id();
         recipes[num_of_recipes] = recipe_ptr;
         recipes_id_to_index[recipe_ptr->id] = num_of_recipes;
         num_of_recipes++;
     }
+    else {
+        // Editing an existing recipe
+        recipe_ptr = currentDisplayedRecipe;
+    }
 
+    // Step 5: Assign data to the recipe object
+    recipe_ptr->title = title;
+    recipe_ptr->description = description;
+    recipe_ptr->category = category;
+    recipe_ptr->level = level;
+    recipe_ptr->cock_time = cock_time;
+    recipe_ptr->imagePath = imagePath;
 
-    // Get ingredients
-    int num_ingredients = get_ingredient_count();
-    QString* ingredients_array = get_ingredients(num_ingredients);
-
-    // Get steps
-    int num_steps =get_step_count();
-    QString* steps_array = get_steps(num_steps);
-
-
-    /***************************** Assign data from ui ************************/
-    recipe_ptr->title = ui->title_field->text();
-    recipe_ptr->title = recipe_ptr->title.trimmed();
-
-    recipe_ptr->description = ui->desc_field->toPlainText();
-    recipe_ptr->description = recipe_ptr->description.trimmed();
-    recipe_ptr->category = ui->category_combobox_btn->currentIndex();
-    recipe_ptr->level = ui->level_combobox_btn->currentIndex();
-
-    recipe_ptr->cock_time = ui->time_spin_btn->value();
-    recipe_ptr->imagePath = ui->image_path_line->text();
-
-  
-
-    // Assign ingredients
     recipe_ptr->ing_num = num_ingredients;
     for (int i = 0; i < num_ingredients; ++i) {
         recipe_ptr->ingredients[i] = ingredients_array[i];
     }
 
-    // Assign steps
     recipe_ptr->steps_num = num_steps;
     for (int i = 0; i < num_steps; ++i) {
         recipe_ptr->steps[i] = steps_array[i];
     }
 
-    // Clean up dynamically allocated arrays
+    // Step 6: Clean up dynamically allocated arrays
     delete[] ingredients_array;
     delete[] steps_array;
 
+    // Step 7: Clear all input fields after successful submission
+    ui->title_field->clear();
+    ui->desc_field->clear();
+    ui->category_combobox_btn->setCurrentIndex(0); // Reset to default (assuming 0 is valid)
+    ui->level_combobox_btn->setCurrentIndex(0);    // Reset to default
+    ui->time_spin_btn->setValue(0);                // Reset to 0
+    ui->image_path_line->clear();
 
-    qDebug() << "Number of ingredients:" << get_ingredient_count();
-    qDebug() << "Number of steps:" << get_step_count();
-    qInfo() << "Recipe" << recipe_ptr->id << "added successfully!";
+    // Clear ingredients and steps (assuming these functions exist)
+    //clear_ingredients();
+    //clear_steps();
 
+    // Step 8: Reset the current displayed recipe
+    currentDisplayedRecipe = nullptr;
 
+    show_success_messageBox(this, "تم إضافة الوصفة بنجاح");
+
+    // Step 9: Log success
+    qInfo() << "Recipe" << recipe_ptr->id << "added/updated successfully!";
 }
-
 
 void MainWindow::assign_recipe_page(QSharedPointer<Recipe> r_ptr)
 {
@@ -1021,7 +1229,6 @@ void MainWindow::on_delete_recipe_btn_clicked() {
     recipes[num_of_recipes - 1].clear();           // drop the QSharedPointer
     recipes_id_to_index[currentDisplayedRecipe->id] = -1;           // mark “gone”
     --num_of_recipes;   
-    ui->stackedWidget->setCurrentWidget(ui->home_page);
     // delete from current 
     display_recipe();
 }
@@ -1158,7 +1365,6 @@ void MainWindow::assign_admin_page()
     {
         qDebug() << "NULLL";
     }
-    qDebug() << "IN ASSigned ADMIN PAGE";
     ui->desc_field->setPlainText(currentDisplayedRecipe->description);
     ui->title_field->setText(currentDisplayedRecipe->title);
     ui->level_combobox_btn->setCurrentIndex(currentDisplayedRecipe->level);
@@ -1438,4 +1644,15 @@ QString* MainWindow::get_steps(int& out_count) {
         qDebug() << "LineEdit Text:" << text;
     }
     return steps;
+}
+
+void MainWindow::show_warning_messageBox(QWidget* parent, const QString& message)
+{
+    QMessageBox::warning(parent, QObject::tr("تحذير"), message);
+}
+
+void MainWindow::show_success_messageBox(QWidget* parent, const QString& message)
+{
+    QMessageBox::information(parent, QObject::tr("نجاح"), message);
+
 }

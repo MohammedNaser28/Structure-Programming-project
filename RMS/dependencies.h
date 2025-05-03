@@ -11,3 +11,6 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QFileDialog>
+#include <QScrollArea>
+#include <QMessageBox>
+#include <QString>

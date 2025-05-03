@@ -32,7 +32,7 @@
 </string>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>6</number>
     </property>
     <widget class="QWidget" name="home_page">
      <widget class="QScrollArea" name="scrollArea">
@@ -792,343 +792,6 @@ font: 11pt &quot;Reem Kufi&quot;;
       </widget>
      </widget>
     </widget>
-    <widget class="QWidget" name="user_edit_page_2">
-     <widget class="QScrollArea" name="scrollArea_5">
-      <property name="geometry">
-       <rect>
-        <x>-10</x>
-        <y>19</y>
-        <width>1400</width>
-        <height>551</height>
-       </rect>
-      </property>
-      <property name="widgetResizable">
-       <bool>true</bool>
-      </property>
-      <widget class="QWidget" name="scrollAreaWidgetContents_2">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>1398</width>
-         <height>549</height>
-        </rect>
-       </property>
-       <widget class="QLabel" name="rate_label_2">
-        <property name="geometry">
-         <rect>
-          <x>870</x>
-          <y>280</y>
-          <width>55</width>
-          <height>30</height>
-         </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">image: url(:/MainWindow/star.png);</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-       <widget class="QDoubleSpinBox" name="rate_spin_user_2">
-        <property name="geometry">
-         <rect>
-          <x>931</x>
-          <y>276</y>
-          <width>71</width>
-          <height>31</height>
-         </rect>
-        </property>
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">font: 10pt &quot;Segoe UI&quot;;
-color:rgb(0,0,0)</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="display_level_recipe_2">
-        <property name="geometry">
-         <rect>
-          <x>539</x>
-          <y>60</y>
-          <width>231</width>
-          <height>40</height>
-         </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color:rgb(0,0,0);
-
-border:none;
-border-radius:15px;
-/*background-color: rgb(170, 85, 0);*/
-padding:5px;
-font:500 12pt &quot;Reem Kufi&quot;;
-</string>
-        </property>
-        <property name="text">
-         <string>مستوى الصعوبة</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="display_avg_rate_2">
-        <property name="geometry">
-         <rect>
-          <x>540</x>
-          <y>120</y>
-          <width>231</width>
-          <height>40</height>
-         </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color:rgb(0,0,0);
-
-border:none;
-border-radius:15px;
-/*background-color: rgb(170, 85, 0);*/
-padding:5px;
-font:500 12pt &quot;Reem Kufi&quot;;
-</string>
-        </property>
-        <property name="text">
-         <string>متوسط التقييمات:</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="steps_label_3">
-        <property name="geometry">
-         <rect>
-          <x>1200</x>
-          <y>330</y>
-          <width>171</width>
-          <height>41</height>
-         </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">
-border:none;
-border-radius:15px;
-padding:5px;
-font:500 18pt &quot;Reem Kufi&quot;;
-color:rgb(0,0,0);
-</string>
-        </property>
-        <property name="text">
-         <string>الخطوات:</string>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="add_favorite_btn_2">
-        <property name="geometry">
-         <rect>
-          <x>1060</x>
-          <y>270</y>
-          <width>171</width>
-          <height>40</height>
-         </rect>
-        </property>
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">
-border:none;
-border-radius:15px;
-padding:5px;
-font:500 12pt &quot;Reem Kufi&quot;;
-color:rgb(0,0,0);
-background-color: rgb(255, 0, 127);</string>
-        </property>
-        <property name="text">
-         <string>أضف للمفضلة</string>
-        </property>
-        <property name="icon">
-         <iconset resource="mainwindow.qrc">
-          <normaloff>:/MainWindow/heart.png</normaloff>:/MainWindow/heart.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>25</width>
-          <height>25</height>
-         </size>
-        </property>
-       </widget>
-       <widget class="QLabel" name="img_edit_preview">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>10</y>
-          <width>481</width>
-          <height>251</height>
-         </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">border:none;
-border-radius:10px;
-</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-       <widget class="QLabel" name="inged_label_2">
-        <property name="geometry">
-         <rect>
-          <x>320</x>
-          <y>330</y>
-          <width>171</width>
-          <height>41</height>
-         </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">
-border:none;
-border-radius:15px;
-padding:5px;
-font:500 18pt &quot;Reem Kufi&quot;;
-color:rgb(0,0,0);
-</string>
-        </property>
-        <property name="text">
-         <string>المكونات:</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="display_time_recipe_2">
-        <property name="geometry">
-         <rect>
-          <x>610</x>
-          <y>10</y>
-          <width>161</width>
-          <height>40</height>
-         </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">border:none;
-border-radius:15px;
-/*background-color: rgb(170, 85, 0);*/
-padding:5px;
-font:500 12pt &quot;Reem Kufi&quot;;
-color:rgb(0,0,0);
-</string>
-        </property>
-        <property name="text">
-         <string>وقت الطهو:</string>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="edit_user_btn_2">
-        <property name="geometry">
-         <rect>
-          <x>1240</x>
-          <y>270</y>
-          <width>150</width>
-          <height>40</height>
-         </rect>
-        </property>
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">border:none;
-border-radius:15px;
-background-color: rgb(170, 85, 0);
-padding:5px;
-font:500 12pt &quot;Reem Kufi&quot;;
-color:rgb(0,0,0)</string>
-        </property>
-        <property name="text">
-         <string>تعديل الوصفة</string>
-        </property>
-       </widget>
-       <widget class="QWidget" name="ing_container_edit" native="true">
-        <property name="geometry">
-         <rect>
-          <x>30</x>
-          <y>380</y>
-          <width>491</width>
-          <height>52</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_4">
-         <item>
-          <widget class="QPushButton" name="add_ing_edit_btn">
-           <property name="styleSheet">
-            <string notr="true">font: 16pt &quot;Reem Kufi&quot;;
-color:rgb(0, 0, 0);
-border:1px  solid red;
-border-radius:10px;</string>
-           </property>
-           <property name="text">
-            <string> + إضافة المزيد</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="steps_container_edit" native="true">
-        <property name="geometry">
-         <rect>
-          <x>730</x>
-          <y>380</y>
-          <width>651</width>
-          <height>52</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_5">
-         <item>
-          <widget class="QPushButton" name="add_method_edit_btn">
-           <property name="styleSheet">
-            <string notr="true">font: 16pt &quot;Reem Kufi&quot;;
-color:rgb(0, 0, 0);
-border:1px  solid red;
-border-radius:10px;</string>
-           </property>
-           <property name="text">
-            <string> + إضافة المزيد</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QPlainTextEdit" name="desc_edit_field">
-        <property name="geometry">
-         <rect>
-          <x>800</x>
-          <y>10</y>
-          <width>581</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color:rgb(0,0,0);
-font: 13pt &quot;Reem Kufi&quot;;
-border:none;
-border-radius:8px;</string>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="save_edit_recipe_btn">
-        <property name="geometry">
-         <rect>
-          <x>600</x>
-          <y>220</y>
-          <width>150</width>
-          <height>40</height>
-         </rect>
-        </property>
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">border:none;
-border-radius:15px;
-padding:5px;
-font:500 12pt &quot;Reem Kufi&quot;;
-color:rgb(0,0,0);
-background-color: rgb(170, 0, 0);</string>
-        </property>
-        <property name="text">
-         <string>حفظ تعديل الوصفة</string>
-        </property>
-       </widget>
-      </widget>
-     </widget>
-    </widget>
     <widget class="QWidget" name="admin_page">
      <widget class="QScrollArea" name="scrollArea_2">
       <property name="geometry">
@@ -1223,7 +886,12 @@ color:rgb(0, 0, 0);</string>
          </widget>
         </item>
         <item>
-         <widget class="QPlainTextEdit" name="desc_field"/>
+         <widget class="QPlainTextEdit" name="desc_field">
+          <property name="styleSheet">
+           <string notr="true">color:rgb(0,0,0);
+font: 500 14pt &quot;Cairo&quot;;</string>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QLabel" name="time_label">
@@ -1544,6 +1212,180 @@ color:rgb(0, 0, 0);</string>
       </widget>
      </widget>
     </widget>
+    <widget class="QWidget" name="all_recipes">
+     <widget class="QScrollArea" name="scrollArea_5">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>140</y>
+        <width>1380</width>
+        <height>431</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(242, 235, 220);
+</string>
+      </property>
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents_5">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>1378</width>
+         <height>429</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="frame_3">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>50</y>
+        <width>1371</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border:none;</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
+      </property>
+      <widget class="QComboBox" name="sort_combobox_2">
+       <property name="geometry">
+        <rect>
+         <x>950</x>
+         <y>30</y>
+         <width>131</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color:rgb(0,0,0);
+font: 11pt &quot;Reem Kufi&quot;;
+padding:4px;</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>ترتيب بالعنوان هجائيا</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>ترتيب بالوقت</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>ترتيب بمستوى الصعوبة</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>عدد المكونات</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QLineEdit" name="search_field_2">
+       <property name="geometry">
+        <rect>
+         <x>310</x>
+         <y>30</y>
+         <width>501</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 255, 255);
+border:none;
+border-radius:8px;
+color:rgb(0,0,0);
+font: 500 12pt &quot;Cairo&quot;;</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="search_btn_2">
+       <property name="geometry">
+        <rect>
+         <x>830</x>
+         <y>30</y>
+         <width>51</width>
+         <height>29</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">/*background-color: rgb(255, 255, 255);
+*/border:none;</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="mainwindow.qrc">
+         <normaloff>:/MainWindow/search-interface-symbol.png</normaloff>:/MainWindow/search-interface-symbol.png</iconset>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="search_combobox_2">
+       <property name="geometry">
+        <rect>
+         <x>180</x>
+         <y>30</y>
+         <width>121</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color:rgb(0,0,0);
+font: 11pt &quot;Reem Kufi&quot;;
+</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>بحث بالعنوان</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>بحث بالوقت</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>بحث بالمكونات</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QPushButton" name="arrangment_btn_2">
+       <property name="geometry">
+        <rect>
+         <x>1140</x>
+         <y>30</y>
+         <width>31</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="mainwindow.qrc">
+         <normaloff>:/MainWindow/sort-descending.png</normaloff>:/MainWindow/sort-descending.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+      </widget>
+     </widget>
+    </widget>
    </widget>
    <widget class="QPushButton" name="home_btn">
     <property name="geometry">
@@ -1771,28 +1613,40 @@ padding:4px;</string>
    </property>
    <widget class="QMenu" name="menuRecipe">
     <property name="title">
-     <string>Recipe</string>
+     <string>الوصفات</string>
     </property>
     <addaction name="actionDisplay_all_recipes"/>
     <addaction name="actionDisplay_suggest_recipes"/>
     <addaction name="actionDisplay_favorites_recipes"/>
+    <addaction name="actionDisplay_my_recipes"/>
+   </widget>
+   <widget class="QMenu" name="logout_menubar">
+    <property name="title">
+     <string>تسجيل خروج</string>
+    </property>
    </widget>
    <addaction name="menuRecipe"/>
+   <addaction name="logout_menubar"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionDisplay_all_recipes">
    <property name="text">
-    <string>Display all recipes</string>
+    <string>عرص كل الوصفات</string>
    </property>
   </action>
   <action name="actionDisplay_suggest_recipes">
    <property name="text">
-    <string>Display suggest recipes</string>
+    <string>عرض الوصفات المقترحة</string>
    </property>
   </action>
   <action name="actionDisplay_favorites_recipes">
    <property name="text">
-    <string>Display favorites recipes</string>
+    <string>عرض الوصفات المفضلة</string>
+   </property>
+  </action>
+  <action name="actionDisplay_my_recipes">
+   <property name="text">
+    <string>عرص وصفاتي</string>
    </property>
   </action>
  </widget>

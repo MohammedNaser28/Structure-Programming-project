@@ -3,7 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_mainwindow.h"
 #include "global.h"
-#include <QScrollArea>
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; };
@@ -23,6 +23,7 @@ private:
     Ui::MainWindowClass *ui;
     QGridLayout* recipes_grid;
     QGridLayout* favorite_grid;
+    QGridLayout* all_recipe_grid;
     /****/
   /*  QWidget* scrollWidgetFavorite = new QWidget;
     QGridLayout* favorite_grid = new QGridLayout(scrollWidgetFavorite);*/
@@ -114,6 +115,10 @@ private:
         "background-color: transparent;"
         "border: none;";
       
+
+
+
+
 private slots:
 
     /*GENERAL*/
@@ -123,7 +128,7 @@ private slots:
 
     /**************/
     void on_home_btn_clicked();
-
+    void suggest_recipes(int numOfsuggests=0);
     void on_logout_btn_clicked();
     void on_add_recipe_admin_btn_clicked();
 
@@ -131,7 +136,8 @@ private slots:
     void sort(QSharedPointer<Recipe> recipes[], int size);
     void on_sort_combobox_clicked();  
     void on_arrangment_btn_clicked();
-    void display_search_home(QSharedPointer<Recipe>* recipes, int count);
+    void display_search_all(QSharedPointer<Recipe>* recipes, int count);
+    void display_search(QSharedPointer<Recipe>* recipes, int count, QGridLayout* layout_grid , QWidget* stacked_page);
     /********/
     void add_ingredient_row();
     void add_method_row();
@@ -172,7 +178,8 @@ private slots:
     QString* get_ingredients(int& out_count);
 
     QString* get_steps(int& out_count);
-
+    void show_warning_messageBox(QWidget* parent, const QString& message);
+    void show_success_messageBox(QWidget* parent, const QString& message);
 signals:
     void switchToDialog();
 };

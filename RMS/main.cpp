@@ -52,6 +52,11 @@ int main(int argc, char* argv[])
         "}"
 
     );
+
+
+    QMainWindow window;
+
+ 
     // intialize recipes_id_to_index
     for (int i = 0; i < 10000; i++)
         recipes_id_to_index[i] = -1;
