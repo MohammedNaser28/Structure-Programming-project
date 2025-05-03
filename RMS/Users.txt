@@ -9,8 +9,7 @@ h
 a
 a
 a
-1
-1
+0
 1
 1
 العنوان الأول
@@ -28,6 +27,5 @@ C:/Users/11/Documents/New folder (3)/Structure-Programming-project/RMS/star.png
 r
 r
 r
-1
-1
+0
 0

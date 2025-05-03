@@ -477,8 +477,8 @@ void MainWindow::display_edition_page_user() {
         button->setCursor(Qt::PointingHandCursor);
         QSharedPointer<Recipe> recipe_ptr = loged_in_user->my_recipes[i];
         connect(button, &QPushButton::clicked, this, [this, recipe_ptr]() {
-            assign_recipe_page(recipe_ptr);
             ui->stackedWidget->setCurrentWidget(ui->recipe_page);
+            assign_recipe_page(recipe_ptr);
             });
 
         QPushButton* button_delete = new QPushButton("حذف الوصفة");
@@ -971,6 +971,7 @@ void MainWindow::on_submit_recipe_btn_clicked()
 
 void MainWindow::assign_recipe_page(QSharedPointer<Recipe> r_ptr)
 {
+    currentDisplayedRecipe = r_ptr;
     // Clear existing items in ingredient and step lists
     ui->ingred_list->clear();
     ui->steps_list->clear();
@@ -1006,36 +1007,161 @@ void MainWindow::assign_recipe_page(QSharedPointer<Recipe> r_ptr)
 
 }
 
+//void MainWindow::on_delete_recipe_btn_clicked() {
+//    // return to homepage or wherever you want
+//    ui->stackedWidget->setCurrentWidget(ui->home_page);
+//    // check if loged_in_user had the recipe in his favorite array
+//    // other users gets checked at log in and and when save_users gets excuted
+//    if (loged_in_user->isAdmin == false) {
+//
+//    int& fav_num = loged_in_user->favorite_recipes_num;
+//    for (int j = 0; j < fav_num; j++)
+//    {
+//        // if the id refers to deleted recipe 
+//        // switch it with the last one and decrease favorite_recipes_num
+//        if (recipes_id_to_index[loged_in_user->favorite_recipes[j]] == -1)
+//        {
+//            int last_id = loged_in_user->favorite_recipes[fav_num - 1];
+//            loged_in_user->favorite_recipes[fav_num - 1] = 0;
+//            loged_in_user->favorite_recipes[j] = last_id;
+//
+//            fav_num--;
+//        }
+//    }
+//    }
+//
+//    // now delete all pointers and the object will be deleted automatically for us
+//    recipes[recipes_id_to_index[currentDisplayedRecipe->id]] = nullptr;  // delete from recipes[]
+//    recipes_id_to_index[currentDisplayedRecipe->id] = -1;                // delete from recipes_id_to_index
+//    --num_of_recipes;
+//    currentDisplayedRecipe = nullptr;                                    // delete from current 
+//    display_recipe();
+//}
+
 void MainWindow::on_delete_recipe_btn_clicked() {
-    // return to homepage or wherever you want
-    ui->stackedWidget->setCurrentWidget(ui->home_page);
+    // Check if there's a recipe to delete
+    if (!currentDisplayedRecipe) {
+        qInfo() << "No recipe to delete";
+        return;
+    }
 
-    // check if loged_in_user had the recipe in his favorite array
-    // other users gets checked at log in and and when save_users gets excuted
-    int& fav_num = loged_in_user->favorite_recipes_num;
-    for (int j = 0; j < fav_num; j++)
-    {
-        // if the id refers to deleted recipe 
-        // switch it with the last one and decrease favorite_recipes_num
-        if (recipes_id_to_index[loged_in_user->favorite_recipes[j]] == -1)
-        {
-            int last_id = loged_in_user->favorite_recipes[fav_num - 1];
-            loged_in_user->favorite_recipes[fav_num - 1] = 0;
-            loged_in_user->favorite_recipes[j] = last_id;
 
-            fav_num--;
+    // Get the recipe ID
+    int recipe_id = currentDisplayedRecipe->id;
+
+    // Find the recipe in the array by ID instead of relying on the map
+    short index = -1;
+    for (short i = 0; i < num_of_recipes; i++) {
+        if (recipes[i] && recipes[i]->id == recipe_id) {
+            index = i;
+            break;
         }
     }
 
-    // now delete all pointers and the object will be deleted automatically for us
-    recipes[recipes_id_to_index[currentDisplayedRecipe->id]] = nullptr;  // delete from recipes[]
-    recipes_id_to_index[currentDisplayedRecipe->id] = -1;                // delete from recipes_id_to_index
-    --num_of_recipes;
-    currentDisplayedRecipe = nullptr;                                    // delete from current 
+    // Log the current state for debugging
+    qInfo() << "Attempting to delete recipe ID:" << recipe_id << "at index:" << index;
+    qInfo() << "Current num_of_recipes:" << num_of_recipes;
+
+    // Validate the index
+    if (index < 0 || index >= num_of_recipes || !recipes[index]) {
+        qInfo() << "Invalid recipe index for ID:" << recipe_id;
+        return;
+    }
+
+    qInfo() << "Deleting recipe ID:" << recipe_id << "at index:" << index;
+
+    // Shift recipes to fill the gap
+    for (short i = index; i < num_of_recipes - 1; i++) {
+        recipes[i] = recipes[i + 1];
+    }
+
+    // Clear the last slot and update state
+    recipes[num_of_recipes - 1].reset();  // Reset the QSharedPointer
+    num_of_recipes--;
+
+    // Reset the ID-to-index mapping for the deleted recipe
+    recipes_id_to_index[recipe_id] = -1;
+
+    // Update the ID-to-index mapping for all recipes
+    for (short i = 0; i < num_of_recipes; i++) {
+        if (recipes[i]) {
+            recipes_id_to_index[recipes[i]->id] = i;
+        }
+    }
+
+    // Clear the current recipe
+    currentDisplayedRecipe.reset();
+
+    // Update the UI
+    ui->stackedWidget->setCurrentWidget(ui->home_page);
     display_recipe();
+
+    // Log final state
+    qInfo() << "After deletion, num_of_recipes:" << num_of_recipes;
+    for (short i = 0; i < num_of_recipes; i++) {
+        if (recipes[i]) {
+            qInfo() << "recipes[" << i << "] ID:" << recipes[i]->id << ", index in map:" << recipes_id_to_index[recipes[i]->id];
+        }
+    }
 }
-
-
+//void MainWindow::on_delete_recipe_btn_clicked() {
+//    // Check if there's a recipe to delete
+//    if (!currentDisplayedRecipe) {
+//        qDebug() << "No recipe to delete";
+//        ui->stackedWidget->setCurrentWidget(ui->home_page);
+//        return;
+//    }
+//
+//    // Get the recipe ID and its index in the recipes array
+//    int recipe_id = currentDisplayedRecipe->id;
+//    int recipe_index = recipes_id_to_index.value(recipe_id, -1);
+//
+//    // Validate the recipe index
+//    if (recipe_index < 0 || recipe_index >= num_of_recipes || !recipes[recipe_index]) {
+//        qDebug() << "Invalid recipe index for ID:" << recipe_id;
+//        ui->stackedWidget->setCurrentWidget(ui->home_page);
+//        return;
+//    }
+//
+//    // Delete the recipe from the recipes array and shift elements
+//    delete recipes[recipe_index];  // Free the memory
+//    for (int i = recipe_index; i < num_of_recipes - 1; i++) {
+//        recipes[i] = recipes[i + 1];
+//    }
+//    recipes[num_of_recipes - 1] = nullptr;
+//    num_of_recipes--;
+//
+//    // Update recipes_id_to_index
+//    recipes_id_to_index.remove(recipe_id);
+//    for (int i = 0; i < num_of_recipes; i++) {
+//        if (recipes[i]) {
+//            recipes_id_to_index[recipes[i]->id] = i;
+//        }
+//    }
+//
+//    // Remove the recipe from the logged-in user's favorites, if applicable
+//    if (loged_in_user) {
+//        int& fav_num = loged_in_user->favorite_recipes_num;
+//        for (int j = 0; j < fav_num; ) {  // No increment here
+//            if (loged_in_user->favorite_recipes[j] == recipe_id) {
+//                // Shift elements to remove the favorite
+//                for (int k = j; k < fav_num - 1; k++) {
+//                    loged_in_user->favorite_recipes[k] = loged_in_user->favorite_recipes[k + 1];
+//                }
+//                loged_in_user->favorite_recipes[fav_num - 1] = 0;
+//                fav_num--;
+//            }
+//            else {
+//                j++;  // Only increment if no deletion occurs
+//            }
+//        }
+//    }
+//
+//    // Clear the current recipe and update the UI
+//    currentDisplayedRecipe = nullptr;
+//    display_recipe();
+//    ui->stackedWidget->setCurrentWidget(ui->home_page);
+//}
 
 void MainWindow::assign_admin_page()
 {
@@ -1218,8 +1344,8 @@ void MainWindow::display_favorite()
         // Need to copy the pointer to avoid issues with lambdas
         QSharedPointer<Recipe> recipe_ptr = recipes[recipe_index];
         connect(button, &QPushButton::clicked, this, [this, recipe_ptr]() {
-            assign_recipe_page(recipe_ptr);
             ui->stackedWidget->setCurrentWidget(ui->recipe_page);
+            assign_recipe_page(recipe_ptr);
             });
 
         QPushButton* button_delete = new QPushButton("حذف من المفضلة");
