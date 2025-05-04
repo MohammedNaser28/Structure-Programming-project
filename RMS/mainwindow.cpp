@@ -214,26 +214,26 @@ void MainWindow::display_recipe(QSharedPointer<Recipe> r_ptr)
 
     // delete all
     const QList<QWidget*>& ingredients = ui->ing_container->findChildren<QWidget*>();
-    for (int i = 1; i < ingredients.size(); i++)
+    for (int i = 0; i < ingredients.size(); i++)
     {
         ingredients[i]->deleteLater();
     }
 
     // set ingredients
-    for (int i = 1; i < r_ptr->ing_num; i++)
+    for (int i = 0; i < r_ptr->ing_num; i++)
     {
         add_ingredient_row(r_ptr->ingredients[i]);
     }
 
     // delete all
     const QList<QWidget*>& steps = ui->steps_container->findChildren<QWidget*>();
-    for (int i = 1; i < steps.size(); i++)
+    for (int i = 0; i < steps.size(); i++)
     {
         steps[i]->deleteLater();
     }
 
     // set steps
-    for (int i = 1; i < r_ptr->steps_num; i++)
+    for (int i = 0; i < r_ptr->steps_num; i++)
     {
         add_step_row(r_ptr->steps[i]);
     }
@@ -305,22 +305,22 @@ void MainWindow::display_all_recipes()
 void MainWindow::delete_recipe(QSharedPointer<Recipe> r_ptr)
 {
 
-    // check if loged_in_user had the recipe in his favorite array
+    // check if loged_in_user had the recipe in his favorite array   (won't need it since only admin can delete)
     // other users gets checked at log in and and when save_users gets excuted
-    int &fav_num = loged_in_user->favorite_recipes_num;
-    for (int j = 0; j < fav_num; j++)
-    {
-        // if the id refers to deleted recipe 
-        // switch it with the last one and decrease favorite_recipes_num
-        if (recipes_id_to_index[loged_in_user->favorite_recipes[j]] == -1)
-        {
-            int last_id = loged_in_user->favorite_recipes[fav_num - 1];
-            loged_in_user->favorite_recipes[fav_num - 1] = 0;
-            loged_in_user->favorite_recipes[j] = last_id;
+    //int &fav_num = loged_in_user->favorite_recipes_num;
+    //for (int j = 0; j < fav_num; j++)
+    //{
+    //    // if the id refers to deleted recipe 
+    //    // switch it with the last one and decrease favorite_recipes_num
+    //    if (recipes_id_to_index[loged_in_user->favorite_recipes[j]] == -1)
+    //    {
+    //        int last_id = loged_in_user->favorite_recipes[fav_num - 1];
+    //        loged_in_user->favorite_recipes[fav_num - 1] = 0;
+    //        loged_in_user->favorite_recipes[j] = last_id;
 
-            fav_num--;
-        }
-    }
+    //        fav_num--;
+    //    }
+    //}
 
     // now delete all pointers to current recipe and it will automatically delete the objet for us 
     short idx = recipes_id_to_index[r_ptr->id];
@@ -337,18 +337,3 @@ void MainWindow::delete_recipe(QSharedPointer<Recipe> r_ptr)
 
     on_home_page_btn_clicked();
 }
-
-//void MainWindow::delete_edition_btn(int id_edition)
-//{
-//
-//    // Remove from user's my_recipes
-//    for (int j = id_edition; j < loged_in_user->my_recipes_num - 1; j++) {
-//        loged_in_user->my_recipes[j] = loged_in_user->my_recipes[j + 1];
-//    }
-//    loged_in_user->my_recipes[loged_in_user->my_recipes_num - 1].reset();
-//    loged_in_user->my_recipes_num--;
-//
-//    currentDisplayedRecipe = nullptr;
-//    qDebug() << "Deleted user recipe at index:" << id_edition << "New my_recipes_num:" << loged_in_user->my_recipes_num;
-//
-//}
