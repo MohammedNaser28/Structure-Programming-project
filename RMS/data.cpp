@@ -8,6 +8,10 @@
 
     int favorite_recipes_num = 0;
     int favorite_recipes[100];  // IDs of favorite recipes
+
+    QString name;
+    int my_recipes_num = 0;
+    QSharedPointer<Recipe> my_recipes[100];
 */
 
 void save_users()
@@ -120,10 +124,13 @@ void load_users()
     QString description;
     int cock_time;
     int level;
-    int rates_sum, rates_num;
+    QString imagePath = "";
 
     int ing_num = 0;
     QString ingredients[100];
+
+   int steps_num = 0;
+   QString steps[100] {};
 */
 
 void save_recipes()
@@ -145,7 +152,10 @@ void save_recipes()
     // write each recipe
     for (int i = 0; i < num_of_recipes; i++)
     {
-        if (recipes[i] == nullptr) continue;
+        if (recipes[i] == nullptr)
+        {
+            continue;
+        }
 
         stream << recipes[i]->id << Qt::endl;
         stream << recipes[i]->category << Qt::endl;
@@ -153,9 +163,9 @@ void save_recipes()
         stream << recipes[i]->description << Qt::endl;
         stream << recipes[i]->cock_time << Qt::endl;
         stream << recipes[i]->level << Qt::endl;
-        stream << recipes[i]->rates_sum << Qt::endl;
-        stream << recipes[i]->rates_num << Qt::endl;
+        stream << recipes[i]->imagePath << Qt::endl;
 
+        // save ingredients
         stream << recipes[i]->ing_num << Qt::endl;
         QString ing;
         for (int j = 0; j < recipes[i]->ing_num; j++)
@@ -164,11 +174,21 @@ void save_recipes()
         }
         ing.chop(1);
         stream << ing << Qt::endl;
+
+        // save steps
+        stream << recipes[i]->steps_num << Qt::endl;
+        QString step;
+        for (int j = 0; j < recipes[i]->steps_num; j++)
+        {
+            step.append(QString("%1,").arg(recipes[i]->steps[j]));
+        }
+        step.chop(1);
+        stream << step << Qt::endl;
     }
 
 
     file.close();
-    qInfo() << num_of_recipes << "Recipes were saved successfully!";
+    //qInfo() << num_of_recipes << "Recipes were saved successfully!";
 }
 
 void load_recipes()
@@ -202,16 +222,15 @@ void load_recipes()
     for (int i = 0; i < num_of_recipes; i++)
     {
         QSharedPointer<Recipe> recipe_ptr(new Recipe());
-
         recipe_ptr->id = stream.readLine().toInt();
         recipe_ptr->category = stream.readLine().toInt();
         recipe_ptr->title = stream.readLine();
         recipe_ptr->description = stream.readLine();
-        recipe_ptr->cock_time = stream.readLine().toInt();
+        recipe_ptr->cock_time = stream.readLine().toDouble();
         recipe_ptr->level = stream.readLine().toInt();
-        recipe_ptr->rates_sum = stream.readLine().toInt();
-        recipe_ptr->rates_num = stream.readLine().toInt();
+        recipe_ptr->imagePath = stream.readLine();
 
+        // load ingredients
         recipe_ptr->ing_num = stream.readLine().toInt();
         QString s = stream.readLine();
         QStringList sl = s.split(",");
@@ -220,6 +239,14 @@ void load_recipes()
             recipe_ptr->ingredients[j] = sl[j];
         }
 
+        // load steps
+        recipe_ptr->steps_num = stream.readLine().toInt();
+        s = stream.readLine();
+        sl = s.split(",");
+        for (int j = 0; j < recipe_ptr->steps_num; j++)
+        {
+            recipe_ptr->steps[j] = sl[j];
+        }
         recipes[i] = recipe_ptr;
         recipes_id_to_index[recipe_ptr->id] = i;
     }

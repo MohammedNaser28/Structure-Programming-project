@@ -13,9 +13,9 @@ struct Recipe
    int category = 0;
    QString title;
    QString description;
-   int cock_time = 0;
+   double cock_time = 0;
    int level = 0;
-   int rates_sum = 0, rates_num = 0;
+   QString imagePath = "";
 
    int ing_num = 0;
    QString ingredients[100] {};
@@ -23,14 +23,11 @@ struct Recipe
    int steps_num = 0;
    QString steps[100] {};
 
-   QString imagePath = "";
-
    void generate_id()
    {
        id = next_id;
        next_id++;
    }
-
 };
 
 struct User
@@ -39,6 +36,7 @@ struct User
    ~User() {}
 
    bool isAdmin = false;
+   QString name;
    QString username;
    QString password;
 
