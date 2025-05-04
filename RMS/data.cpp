@@ -164,8 +164,6 @@ void load_users()
             recipe_ptr->description = stream.readLine();
             recipe_ptr->cock_time = stream.readLine().toDouble();
             recipe_ptr->level = stream.readLine().toInt();
-            recipe_ptr->rates_sum = stream.readLine().toInt();
-            recipe_ptr->rates_num = stream.readLine().toInt();
             recipe_ptr->imagePath = stream.readLine();
             recipe_ptr->ing_num = stream.readLine().toInt();
 
@@ -233,8 +231,6 @@ void save_recipes()
         stream << recipes[i]->description << Qt::endl;
         stream << recipes[i]->cock_time << Qt::endl;
         stream << recipes[i]->level << Qt::endl;
-        stream << recipes[i]->rates_sum << Qt::endl;
-        stream << recipes[i]->rates_num << Qt::endl;
         stream << recipes[i]->imagePath << Qt::endl;
         stream << recipes[i]->ing_num << Qt::endl;
 
@@ -302,24 +298,22 @@ void load_recipes()
         recipe_ptr->description = stream.readLine();
         recipe_ptr->cock_time = stream.readLine().toDouble();
         recipe_ptr->level = stream.readLine().toInt();
-        recipe_ptr->rates_sum = stream.readLine().toInt();
-        recipe_ptr->rates_num = stream.readLine().toInt();
-        //stream << recipes[i]->imagePath << Qt::endl;
         recipe_ptr->imagePath = stream.readLine();
+
         recipe_ptr->ing_num = stream.readLine().toInt();
         QString ingred = stream.readLine();
         QStringList ingredList = ingred.split(",");
         for (int j = 0; j < recipe_ptr->ing_num; j++)
         {
-            recipe_ptr->ingredients[j] = ingredList[j];
+            recipe_ptr->ingredients[j] = ingred[j];
         }
 
         recipe_ptr->steps_num = stream.readLine().toInt();
         QString step = stream.readLine();
         QStringList sl = step.split(",");
-        for (int j = 0; j < recipe_ptr->ing_num; j++)
+        for (int j = 0; j < recipe_ptr->steps_num; j++)
         {
-            recipe_ptr->steps[j] = ingredList[j];
+            recipe_ptr->steps[j] = step[j];
         }
 
         recipes[i] = recipe_ptr;

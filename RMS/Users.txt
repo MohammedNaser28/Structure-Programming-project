@@ -1,4 +1,4 @@
-4
+2
 1
 h
 h
@@ -6,32 +6,20 @@ h
 0
 0
 0
-a
-a
-a
-0
-1
-1
-العنوان الأول
-
-1.5
-0
-1
-1
-C:/Users/11/Documents/New folder (3)/Structure-Programming-project/RMS/star.png
-1
-المكون الثاني
-1
-المكون الأول 
-0
 r
 r
 r
 0
+1
 0
+54
+45
 0
-s
-s
-s
-0
-0
+2
+1
+1
+1
+1
+1
+1
+1

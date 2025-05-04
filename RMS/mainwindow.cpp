@@ -15,9 +15,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->scrollAreaWidgetContents->setLayout(recipes_grid);
     ui->scrollArea->setWidgetResizable(true);
 
-    // Set layouts for scroll widgets
-    //scrollWidgetFavorite->setLayout(favorite_grid);
-    //scrollWidgetEdition->setLayout(edition_grid);
 
     //// Set scrollWidgetFavorite for scrollArea_3
     ui->scrollAreaWidgetContents_3->setLayout(favorite_grid);
@@ -80,8 +77,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->add_method_edit_btn_2, &QPushButton::clicked, this, &MainWindow::add_method_row_edition);
     connect(ui->add_ing_edit_btn_2, &QPushButton::clicked, this, &MainWindow::add_ingredient_row_edition);
 
-    connect(ui->sort_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(on_sort_combobox_clicked()));
+    connect(ui->sort_combobox_all, SIGNAL(currentIndexChanged(int)), this, SLOT(on_sort_combobox_all_clicked()));
+    connect(ui->search_btn_all, &QPushButton::clicked, this, &MainWindow::on_search_btn_clicked);
+    connect(ui->sort_combobox_edition, SIGNAL(currentIndexChanged(int)), this, SLOT(on_sort_combobox_edition()));
+    //connect(ui->sort_combobox_favorite, SIGNAL(currentIndexChanged(int)), this, SLOT(on_sort_combobox_all_clicked()));
 
+
+    /**********************/
+    ui->desc_field->setLayoutDirection(Qt::RightToLeft);
+    ui->desc_edit_field_2->setLayoutDirection(Qt::RightToLeft);
 
     //edition_grid.fill(nullptr, 1000);
     recipe_pages.fill(nullptr, 1000);
@@ -95,8 +99,8 @@ void MainWindow::startup()
         ui->go_edition_page_btn->setVisible(false);
         ui->add_recipe_admin_btn->setVisible(true);
         ui->delete_recipe_btn->setVisible(true);
-        ui->rate_spin_user->setVisible(false);
-        ui->rate_label->setVisible(false);
+        //ui->rate_spin_user->setVisible(false);
+        //ui->rate_label->setVisible(false);
         ui->add_favorite_btn->setVisible(false);
         ui->actionDisplay_favorites_recipes->setEnabled(false);
         ui->actionDisplay_my_recipes->setEnabled(false);
@@ -106,14 +110,14 @@ void MainWindow::startup()
         ui->go_favorite_btn->setVisible(true);
         ui->go_edition_page_btn->setVisible(true);
         ui->delete_recipe_btn->setVisible(false);
-        ui->rate_spin_user->setVisible(true);
-        ui->rate_label->setVisible(true);
+        //ui->rate_spin_user->setVisible(true);
+        //ui->rate_label->setVisible(true);
         ui->add_favorite_btn->setVisible(true);
         ui->actionDisplay_favorites_recipes->setEnabled(true);
         ui->actionDisplay_my_recipes->setEnabled(true);
     }
 
-    ui->rate_spin_user->setRange(0, 5);
+    //ui->rate_spin_user->setRange(0, 5);
     reload_recipe_first_time();
 }
 
@@ -197,53 +201,7 @@ void MainWindow::suggest_recipes(int numOfsuggests )
         recipes_grid->addWidget(widget, r, c);
         qInfo() << "Widget0  " << widget;
     }
-    /*
     
-
-
-    int r = 0, c = 0;
-    int validRecipes = 0;
-    for (int i = arrang ? num_of_recipes - 1 : 0;
-        arrang ? i >= 0 : i < num_of_recipes;
-        i += arrang ? -1 : 1)
-    {
-        if (recipes[i].isNull())
-            continue;
-
-        QWidget* widget = new QWidget;
-
-        QVBoxLayout* layout = new QVBoxLayout(widget);
-
-        QLabel* title = new QLabel(recipes[i]->title);
-        title->setAlignment(Qt::AlignCenter);
-        title->setStyleSheet(titleStyle);
-         QLabel *image = new QLabel;
-         image->setPixmap(QPixmap(recipes[i]->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
-
-         image->setAlignment(Qt::AlignCenter);
-
-        QPushButton* button = new QPushButton("اعرض الوصفة");
-        button->setStyleSheet(view_button_details);
-        connect(button, &QPushButton::clicked, this, [=]() {
-            ui->stackedWidget->setCurrentWidget(ui->recipe_page);
-            assign_recipe_page(recipes[i]);
-            });
-
-
-        layout->addWidget(title);
-        layout->addWidget(image); // ADDED: Image label
-        layout->addWidget(button);
-
-        // Calculate grid position: 4 columns per row
-        c = validRecipes % 4;
-        r = validRecipes / 4;
-        validRecipes++;
-
-        // Add to grid
-        recipes_grid->addWidget(widget, r, c);
-    }
-    
-    */
 }
 
 
@@ -254,10 +212,38 @@ void MainWindow::on_logout_btn_clicked()
     emit switchToDialog();
 }
 
+void MainWindow::on_order_btn_all_clicked()
+{
+    isDescending = !isDescending;
+    ui->order_btn_all->setIcon(QIcon(isDescending ? ":/MainWindow/sort-descending.png" : ":/MainWindow/sort.png"));
+    display_recipe(isDescending);
+}
+
 void MainWindow::on_add_recipe_admin_btn_clicked()
 {
-    currentDisplayedRecipe = nullptr;
+    qInfo() << "CLicked 3";
+
+    // Step 7: Clear all input fields after successful submission
+    ui->title_field->clear();
+    ui->desc_field->clear();
+    ui->category_combobox_btn->setCurrentIndex(0); // Reset to default (assuming 0 is valid)
+    ui->level_combobox_btn->setCurrentIndex(0);    // Reset to default
+    ui->time_spin_btn->setValue(0);                // Reset to 0
+    ui->image_path_line->clear();
+
+    const QList<QPushButton*>& ing_btns = ui->ing_container->findChildren<QPushButton*>();
+    for (auto btn : ing_btns) {
+        if (btn->objectName() != "add_ing_btn") btn->click();
+    }
+    const QList<QPushButton*>& steps_btns = ui->steps_container->findChildren<QPushButton*>();
+    for (auto btn : steps_btns) {
+        if (btn->objectName() != "add_method_btn") btn->click();
+    }
+    qInfo() << "CLicked 4";
+    //currentDisplayedRecipe = nullptr;
     ui->stackedWidget->setCurrentWidget(ui->admin_page);
+    qInfo() << "CLicked 4";
+
 
 }
 
@@ -278,7 +264,7 @@ void MainWindow::choose_image() {
 
 
 
-void MainWindow::on_sort_combobox_clicked()
+void MainWindow::on_sort_combobox_all_clicked()
 {
     sort(recipes, num_of_recipes);
 
@@ -288,15 +274,10 @@ void MainWindow::on_sort_combobox_clicked()
 
 
 
-void MainWindow::on_arrangment_btn_clicked() {
-        isDescending = !isDescending;
-        ui->arrangment_btn->setIcon(QIcon(isDescending ? ":/MainWindow/sort-descending.png" : ":/MainWindow/sort.png"));
-        display_recipe(isDescending);
-}
 
 void MainWindow::sort(QSharedPointer<Recipe> recipes[], int size) {
     // First, compact the array to move all non-null elements to the front
-   int index_combobox = ui->sort_combobox->currentIndex();
+   int index_combobox = ui->sort_combobox_all->currentIndex();
     int nonNullCount = 0;
     for (int i = 0; i < size; ++i) {
         if (!recipes[i].isNull()) {
@@ -324,8 +305,6 @@ void MainWindow::sort(QSharedPointer<Recipe> recipes[], int size) {
                 shouldSwap = (recipes[j]->level > recipes[j + 1]->level);
             else if(index_combobox == 3)
                 shouldSwap = (recipes[j]->ing_num > recipes[j + 1]->ing_num);
-            //else if (index_combobox == 4)
-                //shouldSwap = (recipes[j]->(recipes[j]->ing_sum / recipes[j]->ing_num) > recipes[j + 1]->ing_num);
             // Perform swap if needed
             if (shouldSwap) {
                 QSharedPointer<Recipe> temp = recipes[j];
@@ -339,22 +318,24 @@ void MainWindow::sort(QSharedPointer<Recipe> recipes[], int size) {
 
 }
 
-
 void MainWindow::on_search_btn_clicked() {
     QString input = ui->search_field->text().trimmed();
+    int searchType = ui->search_combobox->currentIndex();
+
     if (input.isEmpty())
     {
-        input = ui->search_field_2->text().trimmed();
+        input = ui->search_field_all->text().trimmed();
+        searchType = ui->search_combobox_all->currentIndex();
+
         if (input.isEmpty()) {
             QMessageBox::information(this, "معلومة", "ادخل كلمة للبحث");
             return;
-    }
+        }
     }
 
     const int MAX_RESULTS = 100;
     QSharedPointer<Recipe>* results = new QSharedPointer<Recipe>[MAX_RESULTS];
     int resultCount = 0;
-    int searchType = ui->search_combobox->currentIndex();
 
     try {
         // Handle all three search types
@@ -397,6 +378,8 @@ void MainWindow::on_search_btn_clicked() {
         }
 
         if (resultCount > 0) {
+            ui->search_field->clear();
+            ui->search_field_all->clear();
             sort(results, resultCount);
             display_search_all(results, resultCount);
         }
@@ -467,7 +450,7 @@ void MainWindow::display_search_all(QSharedPointer<Recipe>* recipes, int count) 
     }
 }
 
-void MainWindow::display_search(QSharedPointer<Recipe>* recipes, int count, QGridLayout* layout_grid, QWidget* stacked_page) {
+void MainWindow::display_search_private(QSharedPointer<Recipe>* recipes, int count, QGridLayout* layout_grid, QWidget* stacked_page) {
     ui->stackedWidget->setCurrentWidget(stacked_page);
     QLayoutItem* item;
     while ((item = layout_grid->takeAt(0)) != nullptr) {
@@ -510,6 +493,87 @@ void MainWindow::display_search(QSharedPointer<Recipe>* recipes, int count, QGri
 
 }
 
+void MainWindow::on_search_btn_edition_clicked() {
+    QString input = ui->search_field_edition->text().trimmed();
+    int searchType = ui->search_combobox_edition->currentIndex();
+
+    if (input.isEmpty())
+    {
+        QMessageBox::information(this, "معلومة", "ادخل كلمة للبحث");
+        return;
+    }
+
+    const int MAX_RESULTS = 100;
+    QSharedPointer<Recipe>* results = new QSharedPointer<Recipe>[MAX_RESULTS];
+    int resultCount = 0;
+
+    try {
+        // Handle all three search types
+        if (searchType == 0) { // Title search
+            for (int i = 0; i < loged_in_user->my_recipes_num && resultCount < 100; i++) {
+                if (loged_in_user->my_recipes[i]->title.toLower().contains(input.toLower())) {
+                    results[resultCount++] = loged_in_user->my_recipes[i];
+                }
+            }
+        }
+        else if (searchType == 1) { // Time search
+            bool ok;
+            qInfo() << "INPUT TIME" << " " << input;
+            double targetTime = input.toDouble(&ok);
+
+            qInfo() << "OUT TIME" << " " << targetTime;
+
+            if (!ok || targetTime <= 0) {
+                QMessageBox::warning(this, "Error", "Invalid time format. Please enter a positive number.");
+                delete[] results;
+                return;
+            }
+
+            for (int i = 0; i < num_of_recipes && resultCount < MAX_RESULTS; i++) {
+                if (recipes[i]->cock_time == targetTime) {
+                    results[resultCount++] = recipes[i];
+                }
+            }
+        }
+        else if (searchType == 2) { // Ingredient search
+            QString searchTerm = input.toLower();
+            for (int i = 0; i < num_of_recipes && resultCount < MAX_RESULTS; i++) {
+                for (int j = 0; j < 100; j++) {
+                    if (recipes[i]->ingredients[j].toLower().contains(searchTerm)) {
+                        results[resultCount++] = recipes[i];
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (resultCount > 0) {
+            ui->search_field_edition->clear();
+            sort(results, resultCount);
+            display_search_private(results, resultCount, edition_grid, ui->myedition_page);
+        }
+        else {
+            QMessageBox::information(this, "No Results", "No matching recipes found.");
+        }
+
+        // Don't delete the results array here!
+              // Store it for later use when clicking "View details"
+              // Clean up the previous results if they exist
+        if (searchResults != nullptr) {
+            delete[] searchResults;
+        }
+
+        // Save the new results and count
+        searchResults = results;
+        searchResultCount = resultCount;
+    }
+    catch (...) {
+        delete[] results; // Ensure memory cleanup on error
+        searchResults = nullptr;
+        searchResultCount = 0;
+        QMessageBox::critical(this, "خطأ", "خطا  غير متوقع");
+    }
+}
 
 
 void MainWindow::add_ingredient_row() {
@@ -520,7 +584,7 @@ void MainWindow::add_ingredient_row() {
     row_layout->setDirection(QBoxLayout::LeftToRight);
     QLineEdit* edit = new QLineEdit;
     edit->setPlaceholderText(QStringLiteral("مكون"));
-    edit->setStyleSheet(view_button_details);
+            edit->setStyleSheet("color:rgb(0,0,0);");
     edit->setCursor(Qt::PointingHandCursor);
 
     QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
@@ -541,7 +605,7 @@ void MainWindow::add_ingredient_row_edition() {
     row_layout->setDirection(QBoxLayout::LeftToRight);
     QLineEdit* edit = new QLineEdit;
     edit->setPlaceholderText(QStringLiteral("مكون"));
-    edit->setStyleSheet(view_button_details);
+            edit->setStyleSheet("color:rgb(0,0,0);");
     edit->setCursor(Qt::PointingHandCursor);
 
     QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
@@ -553,7 +617,6 @@ void MainWindow::add_ingredient_row_edition() {
     row_layout->addWidget(rm);
     ui->ing_container_2->layout()->addWidget(row);
 }
-
 
 void MainWindow::remove_row() {
     QPushButton* btn = qobject_cast<QPushButton*>(sender());
@@ -575,7 +638,7 @@ void MainWindow::add_method_row() {
     edit->setCursor(Qt::PointingHandCursor);
 
     QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
-    edit->setStyleSheet(view_button_details);
+            edit->setStyleSheet("color:rgb(0,0,0);");
     rm->setStyleSheet(deleteButtonStyleDynamic);
     rm->setCursor(Qt::PointingHandCursor);
 
@@ -586,7 +649,6 @@ void MainWindow::add_method_row() {
     method_layout->addWidget(row);
 }
 
-
 void MainWindow::add_method_row_edition() {
     QWidget* row = new QWidget;
     row->setLayoutDirection(Qt::RightToLeft);
@@ -596,7 +658,7 @@ void MainWindow::add_method_row_edition() {
     QLineEdit* edit = new QLineEdit;
     edit->setPlaceholderText(QStringLiteral("اكتب الخطوة"));
     QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
-    edit->setStyleSheet(view_button_details);
+            edit->setStyleSheet("color:rgb(0,0,0);");
     edit->setCursor(Qt::PointingHandCursor);
 
     rm->setStyleSheet(deleteButtonStyle);
@@ -608,8 +670,6 @@ void MainWindow::add_method_row_edition() {
     QLayout* method_layout = ui->steps_container_2->layout();
     method_layout->addWidget(row);
 }
-
-
 
 void MainWindow::on_go_edition_page_btn_clicked()
 {
@@ -625,7 +685,7 @@ void MainWindow::on_go_edition_page_btn_clicked()
     display_edition_page_user();
 }
 
-void MainWindow::display_edition_page_user() {
+void MainWindow::display_edition_page_user(bool order) {
     if (!edition_grid) {
         qDebug() << "Error: edition_grid is null";
         return;
@@ -653,15 +713,15 @@ void MainWindow::display_edition_page_user() {
 
     const int columns = 4;
     int row = 0, col = 0;
-
-    for (int i = 0; i < loged_in_user->my_recipes_num; i++) {
+    for (int i = order ? loged_in_user->my_recipes_num - 1 : 0; order ? i >= 0 : loged_in_user->my_recipes_num; i += order ? -1 : 1)
+    {
         if (!loged_in_user->my_recipes[i]) {
             qDebug() << "Null recipe at index:" << i;
             continue;
         }
 
         int recipe_id = loged_in_user->my_recipes[i]->id;
-       
+
 
         QWidget* widget = new QWidget;
         QVBoxLayout* layout = new QVBoxLayout(widget);
@@ -673,7 +733,7 @@ void MainWindow::display_edition_page_user() {
         QLabel* image = new QLabel;
         QPixmap pixmap(loged_in_user->my_recipes[i]->imagePath);
         if (!pixmap.isNull()) {
-            image->setPixmap(pixmap.scaled(150,150, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            image->setPixmap(pixmap.scaled(150, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         }
         else {
             image->setText("No Image");
@@ -721,6 +781,7 @@ void MainWindow::display_edition_page_user() {
     ui->scrollArea_4->setWidgetResizable(true);
     qDebug() << "scrollArea_4 visible:" << ui->scrollArea_4->isVisible();
 }
+
 void MainWindow::delete_edition_btn(int id_edition)
 {
 
@@ -778,9 +839,8 @@ void MainWindow::add_ingred_to_user_page_edit() {
         row_layout->setDirection(QBoxLayout::LeftToRight);
         QLineEdit* edit = new QLineEdit;
         edit->setText(currentDisplayedRecipe->ingredients[i]);
+        edit->setStyleSheet("color:rgb(0,0,0);");
          QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
-        edit->setStyleSheet(view_button_details);
-        edit->setCursor(Qt::PointingHandCursor);
 
         rm->setStyleSheet(deleteButtonStyleDynamic);
         rm->setCursor(Qt::PointingHandCursor);
@@ -840,7 +900,7 @@ void MainWindow::add_method_to_user_page_edit() {
         QLineEdit* edit = new QLineEdit;
         edit->setText(currentDisplayedRecipe->steps[i]);
         QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
-        edit->setStyleSheet(view_button_details);
+         edit->setStyleSheet("color:rgb(0,0,0);");
         edit->setCursor(Qt::PointingHandCursor);
 
         rm->setStyleSheet(deleteButtonStyleDynamic);
@@ -873,7 +933,6 @@ void MainWindow::on_save_edit_recipe_btn_2_clicked()
     recipe_ptr->rates_num = currentDisplayedRecipe->rates_num;
     recipe_ptr->imagePath = currentDisplayedRecipe->imagePath;
 
-    // Generate a new unique ID
     recipe_ptr->generate_id();
 
 
@@ -891,9 +950,17 @@ void MainWindow::on_save_edit_recipe_btn_2_clicked()
     recipe_ptr->description = ui->desc_edit_field_2->toPlainText();
     recipe_ptr->description = recipe_ptr->description.trimmed();
 
+    if (recipe_ptr->description.isEmpty()) {
+        show_warning_messageBox(this,"الوصف لا يمكن أن يكون فارغاً");
+        return;
+    }
 
     // Assign ingredients
     recipe_ptr->ing_num = num_ingredients;
+        if (recipe_ptr->ing_num == 0) {
+            show_warning_messageBox(this, "يجب أن يكون هناك مكونات");
+            return;
+        }
     for (int i = 0; i < num_ingredients; ++i) {
         qDebug() << "ingredients " << i << recipe_ptr->ingredients[i] << "   ingredients_array  " << ingredients_array[i];
         recipe_ptr->ingredients[i] = ingredients_array[i];
@@ -901,6 +968,10 @@ void MainWindow::on_save_edit_recipe_btn_2_clicked()
 
     // Assign steps
     recipe_ptr->steps_num = num_steps;
+    if (recipe_ptr->steps_num == 0) {
+        show_warning_messageBox(this, "يجب أن يكون هناك خطوات");
+        return;
+    }
     for (int i = 0; i < num_steps; ++i) {
         qDebug() << "STEPS " << i << recipe_ptr->steps[i] << "   STEPS_array  " << steps_array[i];
         recipe_ptr->steps[i] = steps_array[i];
@@ -910,7 +981,7 @@ void MainWindow::on_save_edit_recipe_btn_2_clicked()
     delete[] ingredients_array;
     delete[] steps_array;
 
-
+    show_success_messageBox(this, "تم الإضافة إلى وصفاتي بنجاح");
     qDebug() << "Number of ingredients:" << get_ingredient_count();
     qDebug() << "Number of steps:" << get_step_count();
     qInfo() << "Recipe" << recipe_ptr->id << "added successfully!";
@@ -1156,24 +1227,12 @@ void MainWindow::on_submit_recipe_btn_clicked()
     delete[] ingredients_array;
     delete[] steps_array;
 
-    // Step 7: Clear all input fields after successful submission
-    ui->title_field->clear();
-    ui->desc_field->clear();
-    ui->category_combobox_btn->setCurrentIndex(0); // Reset to default (assuming 0 is valid)
-    ui->level_combobox_btn->setCurrentIndex(0);    // Reset to default
-    ui->time_spin_btn->setValue(0);                // Reset to 0
-    ui->image_path_line->clear();
-
-    // Clear ingredients and steps (assuming these functions exist)
-    //clear_ingredients();
-    //clear_steps();
 
     // Step 8: Reset the current displayed recipe
     currentDisplayedRecipe = nullptr;
-
     show_success_messageBox(this, "تم إضافة الوصفة بنجاح");
+    on_add_recipe_admin_btn_clicked();
 
-    // Step 9: Log success
     qInfo() << "Recipe" << recipe_ptr->id << "added/updated successfully!";
 }
 
@@ -1181,12 +1240,13 @@ void MainWindow::assign_recipe_page(QSharedPointer<Recipe> r_ptr)
 {
     currentDisplayedRecipe = r_ptr;
     // Clear existing items in ingredient and step lists
+
     ui->ingred_list->clear();
     ui->steps_list->clear();
     currentDisplayedRecipe = r_ptr;
     ui->img_perview->setPixmap(QPixmap(r_ptr->imagePath).scaled(ui->img_perview->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
     ui->img_perview->setAlignment(Qt::AlignCenter);
-
+    ui->title_recipe->setText(r_ptr->title);
     ui->desc_browser->setText(r_ptr->description);
     QString s = QString::number(r_ptr->cock_time,'f',2);
     ui->display_time_recipe->setText("وقت الطهو:  " + s);
@@ -1232,138 +1292,13 @@ void MainWindow::on_delete_recipe_btn_clicked() {
     // delete from current 
     display_recipe();
 }
-/**/
-//void MainWindow::on_delete_recipe_btn_clicked() {
-//    // Check if there's a recipe to delete
-//    if (!currentDisplayedRecipe) {
-//        qInfo() << "No recipe to delete";
-//        return;
-//    }
-//
-//
-//    // Get the recipe ID
-//    int recipe_id = currentDisplayedRecipe->id;
-//
-//    // Find the recipe in the array by ID instead of relying on the map
-//    short index = -1;
-//    for (short i = 0; i < num_of_recipes; i++) {
-//        if (recipes[i] && recipes[i]->id == recipe_id) {
-//            index = i;
-//            break;
-//        }
-//    }
-//
-//    // Log the current state for debugging
-//    qInfo() << "Attempting to delete recipe ID:" << recipe_id << "at index:" << index;
-//    qInfo() << "Current num_of_recipes:" << num_of_recipes;
-//
-//    // Validate the index
-//    if (index < 0 || index >= num_of_recipes || !recipes[index]) {
-//        qInfo() << "Invalid recipe index for ID:" << recipe_id;
-//        return;
-//    }
-//
-//    qInfo() << "Deleting recipe ID:" << recipe_id << "at index:" << index;
-//
-//    // Shift recipes to fill the gap
-//    for (short i = index; i < num_of_recipes - 1; i++) {
-//        recipes[i] = recipes[i + 1];
-//    }
-//
-//    // Clear the last slot and update state
-//    recipes[num_of_recipes - 1].reset();  // Reset the QSharedPointer
-//    num_of_recipes--;
-//
-//    // Reset the ID-to-index mapping for the deleted recipe
-//    recipes_id_to_index[recipe_id] = -1;
-//
-//    // Update the ID-to-index mapping for all recipes
-//    for (short i = 0; i < num_of_recipes; i++) {
-//        if (recipes[i]) {
-//            recipes_id_to_index[recipes[i]->id] = i;
-//        }
-//    }
-//
-//    // Clear the current recipe
-//    currentDisplayedRecipe.reset();
-//
-//    // Update the UI
-//    ui->stackedWidget->setCurrentWidget(ui->home_page);
-//    display_recipe();
-//
-//    // Log final state
-//    qInfo() << "After deletion, num_of_recipes:" << num_of_recipes;
-//    for (short i = 0; i < num_of_recipes; i++) {
-//        if (recipes[i]) {
-//            qInfo() << "recipes[" << i << "] ID:" << recipes[i]->id << ", index in map:" << recipes_id_to_index[recipes[i]->id];
-//        }
-//    }
-//}
-//void MainWindow::on_delete_recipe_btn_clicked() {
-//    // Check if there's a recipe to delete
-//    if (!currentDisplayedRecipe) {
-//        qDebug() << "No recipe to delete";
-//        ui->stackedWidget->setCurrentWidget(ui->home_page);
-//        return;
-//    }
-//
-//    // Get the recipe ID and its index in the recipes array
-//    int recipe_id = currentDisplayedRecipe->id;
-//    int recipe_index = recipes_id_to_index.value(recipe_id, -1);
-//
-//    // Validate the recipe index
-//    if (recipe_index < 0 || recipe_index >= num_of_recipes || !recipes[recipe_index]) {
-//        qDebug() << "Invalid recipe index for ID:" << recipe_id;
-//        ui->stackedWidget->setCurrentWidget(ui->home_page);
-//        return;
-//    }
-//
-//    // Delete the recipe from the recipes array and shift elements
-//    delete recipes[recipe_index];  // Free the memory
-//    for (int i = recipe_index; i < num_of_recipes - 1; i++) {
-//        recipes[i] = recipes[i + 1];
-//    }
-//    recipes[num_of_recipes - 1] = nullptr;
-//    num_of_recipes--;
-//
-//    // Update recipes_id_to_index
-//    recipes_id_to_index.remove(recipe_id);
-//    for (int i = 0; i < num_of_recipes; i++) {
-//        if (recipes[i]) {
-//            recipes_id_to_index[recipes[i]->id] = i;
-//        }
-//    }
-//
-//    // Remove the recipe from the logged-in user's favorites, if applicable
-//    if (loged_in_user) {
-//        int& fav_num = loged_in_user->favorite_recipes_num;
-//        for (int j = 0; j < fav_num; ) {  // No increment here
-//            if (loged_in_user->favorite_recipes[j] == recipe_id) {
-//                // Shift elements to remove the favorite
-//                for (int k = j; k < fav_num - 1; k++) {
-//                    loged_in_user->favorite_recipes[k] = loged_in_user->favorite_recipes[k + 1];
-//                }
-//                loged_in_user->favorite_recipes[fav_num - 1] = 0;
-//                fav_num--;
-//            }
-//            else {
-//                j++;  // Only increment if no deletion occurs
-//            }
-//        }
-//    }
-//
-//    // Clear the current recipe and update the UI
-//    currentDisplayedRecipe = nullptr;
-//    display_recipe();
-//    ui->stackedWidget->setCurrentWidget(ui->home_page);
-//}
 
 void MainWindow::assign_admin_page()
 {
-
     if (currentDisplayedRecipe == nullptr)
     {
         qDebug() << "NULLL";
+        return;
     }
     ui->desc_field->setPlainText(currentDisplayedRecipe->description);
     ui->title_field->setText(currentDisplayedRecipe->title);
@@ -1386,7 +1321,7 @@ void MainWindow::assign_admin_page()
         QLineEdit* edit = new QLineEdit;
         edit->setText(currentDisplayedRecipe->ingredients[i]);
         QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
-        edit->setStyleSheet(view_button_details);
+                edit->setStyleSheet("color:rgb(0,0,0);");
         edit->setCursor(Qt::PointingHandCursor);
 
         rm->setStyleSheet(deleteButtonStyleDynamic);
@@ -1411,7 +1346,7 @@ void MainWindow::assign_admin_page()
         QLineEdit* edit = new QLineEdit;
         edit->setText(currentDisplayedRecipe->steps[i]);
         QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
-        edit->setStyleSheet(view_button_details);
+                edit->setStyleSheet("color:rgb(0,0,0);");
         edit->setCursor(Qt::PointingHandCursor);
 
         rm->setStyleSheet(deleteButtonStyleDynamic);
@@ -1438,14 +1373,14 @@ void MainWindow::on_add_favorite_btn_clicked()
 
     // Check if we've reached the maximum number of favorites
     if (loged_in_user->favorite_recipes_num >= 100) {
-        QMessageBox::warning(nullptr, "Error", "You've reached the maximum number of favorite recipes!");
+        QMessageBox::warning(nullptr, "Error", "وصلت للحد الأقصى من عدد الوصفات المفضلة");
         return;
     }
 
     // Check if recipe is already in favorites
     for (int i = 0; i < loged_in_user->favorite_recipes_num; i++) {
         if (loged_in_user->favorite_recipes[i] == currentDisplayedRecipe->id) {
-            QMessageBox::information(nullptr, "Info", "Recipe is already in your favorites!");
+            QMessageBox::information(nullptr, "Info", "تم الإضافة للمفضلة");
             qInfo("Exist");
             return;
         }
@@ -1457,7 +1392,7 @@ void MainWindow::on_add_favorite_btn_clicked()
     loged_in_user->favorite_recipes[loged_in_user->favorite_recipes_num] = currentDisplayedRecipe->id;
     loged_in_user->favorite_recipes_num++;
 
-    QMessageBox::information(nullptr, "Success", "Recipe added to favorites!");
+    QMessageBox::information(nullptr, "Success", "تم إضافته بنجاح إلى المفضلة");
 
 }
     
@@ -1467,9 +1402,7 @@ void MainWindow::on_go_favorite_btn_clicked()
 {
     // Check if there are favorite recipes
     if (loged_in_user->favorite_recipes_num == 0) {
-        qDebug() << "No favorite recipes for user:" << loged_in_user->username;
-        // Optionally show a message
-        QMessageBox::information(this, "Info", "You have no favorite recipes.");
+        QMessageBox::information(this, "Info", "ليس لديك أي وصفات مفضلة");
         return;
     }
 
@@ -1477,7 +1410,97 @@ void MainWindow::on_go_favorite_btn_clicked()
     display_favorite();
 }
 
-void MainWindow::display_favorite()
+void MainWindow::on_search_btn_favorite_clicked()
+{
+        QString input = ui->search_field_favorite->text().trimmed();
+        int searchType = ui->sort_combobox_favorite->currentIndex();
+        if (input.isEmpty())
+        {
+            QMessageBox::information(this, "معلومة", "ادخل كلمة للبحث");
+            return;
+        }
+
+        const int MAX_RESULTS = 100;
+        QSharedPointer<Recipe>* results = new QSharedPointer<Recipe>[MAX_RESULTS];
+        int resultCount = 0;
+        int recipe_index;
+        try {
+            // Handle all three search types
+            if (searchType == 0) { // Title search
+                for (int i = 0; i < loged_in_user->favorite_recipes_num && resultCount < 100; i++) {
+                    recipe_index = recipes_id_to_index[loged_in_user->favorite_recipes[i]];
+                    if (recipes[recipe_index]->title.toLower().contains(input.toLower()))
+                        results[resultCount++] = recipes[i];
+                    
+                }
+            }
+            else if (searchType == 1) { // Time search
+                bool ok;
+                qInfo() << "INPUT TIME" << " " << input;
+                double targetTime = input.toDouble(&ok);
+
+                qInfo() << "OUT TIME" << " " << targetTime;
+
+                if (!ok || targetTime <= 0) {
+                    QMessageBox::warning(this, "Error", "Invalid time format. Please enter a positive number.");
+                    delete[] results;
+                    return;
+                }
+
+
+
+                for (int i = 0; i < loged_in_user->favorite_recipes_num && resultCount < MAX_RESULTS; i++) {
+                    recipe_index = recipes_id_to_index[loged_in_user->favorite_recipes[i]];
+                    if (recipes[recipe_index]->cock_time == targetTime) {
+                        results[resultCount++] = recipes[i];
+                    }
+                }
+            }
+            else if (searchType == 2) { // Ingredient search
+                QString searchTerm = input.toLower();
+                for (int i = 0; i < loged_in_user->favorite_recipes_num && resultCount < MAX_RESULTS; i++) {
+                    recipe_index = recipes_id_to_index[loged_in_user->favorite_recipes[i]];
+
+                    for (int j = 0; j < 100; j++) {
+                        if (recipes[recipe_index]->ingredients[j].toLower().contains(searchTerm)) {
+                            results[resultCount++] = recipes[i];
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (resultCount > 0) {
+                ui->search_field_favorite->clear();
+                sort(results, resultCount);
+                display_search_private(results, resultCount, favorite_grid, ui->favorite_page);
+            }
+            else {
+                QMessageBox::information(this, "No Results", "No matching recipes found.");
+            }
+
+            // Don't delete the results array here!
+                  // Store it for later use when clicking "View details"
+                  // Clean up the previous results if they exist
+            if (searchResults != nullptr) {
+                delete[] searchResults;
+            }
+
+            // Save the new results and count
+            searchResults = results;
+            searchResultCount = resultCount;
+        }
+        catch (...) {
+            delete[] results; // Ensure memory cleanup on error
+            searchResults = nullptr;
+            searchResultCount = 0;
+            QMessageBox::critical(this, "خطأ", "خطا  غير متوقع");
+        }
+    }
+
+
+
+void MainWindow::display_favorite(bool order)
 {
     if (!favorite_grid) {
         qDebug() << "Error: favorite_grid is null";
@@ -1493,9 +1516,7 @@ void MainWindow::display_favorite()
         delete item;
     }
 
-    qDebug() << "Favorite recipes count:" << loged_in_user->favorite_recipes_num;
 
-    // Take ownership of the existing scroll area's widget if exists
     QWidget* scrollWidgetFavorite = ui->scrollArea_3->takeWidget();
     if (!scrollWidgetFavorite) {
         scrollWidgetFavorite = new QWidget();
@@ -1506,7 +1527,8 @@ void MainWindow::display_favorite()
     favorite_grid = new QGridLayout(scrollWidgetFavorite);
 
     int r = 0, c = 0;
-    for (int i = 0; i < loged_in_user->favorite_recipes_num; i++)
+
+    for (int i = order ? loged_in_user->favorite_recipes_num - 1 : 0; order ? i >= 0 : loged_in_user->favorite_recipes_num; i += order ? -1 : 1)
     {
         int recipe_id = loged_in_user->favorite_recipes[i];
         int recipe_index = recipes_id_to_index[recipe_id];
@@ -1548,7 +1570,7 @@ void MainWindow::display_favorite()
         // Pass the current index i
         int current_index = i;
         connect(button_delete, &QPushButton::clicked, this, [this, current_index]() {
-            QMessageBox::information(this, "Info", "Has deleted from favorite");
+            QMessageBox::information(this, "Info", "تم الحذف من المفضلة");
             delete_favorite_btn(current_index);
             display_favorite();
             });
@@ -1568,7 +1590,11 @@ void MainWindow::display_favorite()
     ui->scrollArea_3->setWidgetResizable(true);
     qDebug() << "scrollArea_3 visible:" << ui->scrollArea_3->isVisible();
 }
-
+void MainWindow::on_sort_combobox_edition()
+{
+    sort(loged_in_user->my_recipes, loged_in_user->my_recipes_num);
+    display_edition_page_user();
+}
 void MainWindow::delete_favorite_btn(int id_favorite)
 {
     // Get the actual recipe ID from the array
@@ -1591,7 +1617,7 @@ void MainWindow::on_edit_user_btn_clicked()
 {
     if (loged_in_user->isAdmin == true) {
 
-        ui->stackedWidget->setCurrentWidget(ui->admin_page);
+        on_add_recipe_admin_btn_clicked();
         assign_admin_page();
     }
     else {
