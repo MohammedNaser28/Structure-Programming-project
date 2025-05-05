@@ -10,48 +10,8 @@ int main(int argc, char* argv[])
     QApplication a(argc, argv);
     a.setLayoutDirection(Qt::RightToLeft);
     a.setWindowIcon(QIcon(":/MainWindow/systemicon.webp"));
-    a.setStyleSheet(
-        "QMessageBox {"
-        "    background-color: #fefefe;"
-        "    border: 2px solid #ccc;"
-        "    border-radius: 10px;"
-        "}"
-        "QLabel {"
-        "    color: #333;"
-        "    font-size: 16px;"
-        "}"
-        "QPushButton {"
-        "    background-color: #03A9F4;"
-        "    color: white;"
-        "    padding: 6px 12px;"
-        "    border-radius: 8px;"
-        "    min-width: 75px;"
-        "    margin: 4px;"
-        "}"
-        "QPushButton:hover {"
-        "    background-color: #0288D1;"
-        "}"
-        "QPushButton:pressed {"
-        "    background-color: #0277BD;"
-        "}"
-        "QComboBox {"
-        "    border: 1px solid gray;"
-        "    border-radius: 4px;"
-        "    padding: 2px;"
-        "    background-color: #f0f0f0;"
-        "    font-size: 14px;"
-        "}"
-        "QComboBox::drop-down {"
-        "    border: 0px;"
-        "    background-color: transparent;"
-        "}"
-        "QComboBox::down-arrow {"
-        "    image: url(:/MainWindow/down.png);"
-        "    width: 12px;"
-        "    height: 12px;"
-        "}"
-
-    );
+    //a.setStyleSheet(scrollBarStyle);
+    a.setStyleSheet(scrollBarStyle + " " + messageBoxStyle);
 
 
     QMainWindow window;

@@ -140,6 +140,11 @@ void Register::on_switch_to_login_clicked()
     ui->stackedWidget->setCurrentWidget(ui->login_container);
 }
 
+//void Register::on_gfdgnfdgkj_clicked()
+//{
+//
+//}
+
 
 
 

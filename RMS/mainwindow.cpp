@@ -80,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->sort_combobox_all, SIGNAL(currentIndexChanged(int)), this, SLOT(on_sort_combobox_all_clicked()));
     connect(ui->search_btn_all, &QPushButton::clicked, this, &MainWindow::on_search_btn_clicked);
     connect(ui->sort_combobox_edition, SIGNAL(currentIndexChanged(int)), this, SLOT(on_sort_combobox_edition()));
-    //connect(ui->sort_combobox_favorite, SIGNAL(currentIndexChanged(int)), this, SLOT(on_sort_combobox_all_clicked()));
+    //connect(ui->sort_combobox_favorite, SIGNAL(currentIndexChanged(int)), this, SLOT(on_sort()));
 
 
     /**********************/
@@ -93,6 +93,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::startup()
 {
+    ui->user_name_label_2->setText( " أهلا وسهلا بك، " + loged_in_user->name);
     if (loged_in_user->isAdmin == true)
     {
         ui->go_favorite_btn->setVisible(false);
@@ -450,14 +451,37 @@ void MainWindow::display_search_all(QSharedPointer<Recipe>* recipes, int count) 
     }
 }
 
-void MainWindow::display_search_private(QSharedPointer<Recipe>* recipes, int count, QGridLayout* layout_grid, QWidget* stacked_page) {
+void MainWindow::display_search_private(QSharedPointer<Recipe>* recipes, int count, QGridLayout* layout_grid, QWidget* stacked_page,bool flag) {
     ui->stackedWidget->setCurrentWidget(stacked_page);
     QLayoutItem* item;
     while ((item = layout_grid->takeAt(0)) != nullptr) {
         delete item->widget();
         delete item;
     }
+    if (flag)
+    {
+        QWidget* scrollWidgetFavorite = ui->scrollArea_3->takeWidget();
+        if (!scrollWidgetFavorite) {
+            scrollWidgetFavorite = new QWidget();
+        }
+        ui->scrollArea_3->setWidget(scrollWidgetFavorite);
+        ui->scrollArea_3->setWidgetResizable(true);
+    }
+    else {
+        QWidget* scrollWidgetEdition = ui->scrollArea_4->takeWidget();
+        if (!scrollWidgetEdition) {
+            scrollWidgetEdition = new QWidget();
+        }
+        ui->scrollArea_4->setWidget(scrollWidgetEdition);
+        ui->scrollArea_4->setWidgetResizable(true);
+    }
 
+
+    QString different;
+    if (flag)
+        different = "المفضلة";
+    else
+        different = "وصفاتي";
     // Display logic
     int row = 0, col = 0;
     for (int i = 0; i < count; i++) {
@@ -473,23 +497,40 @@ void MainWindow::display_search_private(QSharedPointer<Recipe>* recipes, int cou
         image->setPixmap(QPixmap(recipes[i]->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
         image->setAlignment(Qt::AlignCenter);
 
-        QPushButton* button = new QPushButton("اعرض الوصفة");
+        QPushButton* button = new QPushButton("اعرض الوصفة" + different);
         button->setStyleSheet(view_button_details);
         connect(button, &QPushButton::clicked, this, [=]() {
             ui->stackedWidget->setCurrentWidget(ui->recipe_page);
             assign_recipe_page(recipes[i]);
             });
-
+        QPushButton* button_delete = new QPushButton(" حذف من" + different);
+        button_delete->setStyleSheet(deleteButtonStyle);
+        button_delete->setCursor(Qt::PointingHandCursor);
+        // Pass the current index i
+        int current_index = i;
+        connect(button_delete, &QPushButton::clicked, this, [this, current_index,flag,different]() {
+            QMessageBox::information(this, "Info", " تم الحذف من" + different);
+            if (flag)
+            {
+            delete_favorite_btn(current_index);
+            display_favorite();
+            }
+            else {
+                delete_edition_btn(current_index);
+                display_edition_page_user();
+            }
+            });
 
         layout->addWidget(title);
         layout->addWidget(image);
         layout->addWidget(button);
-
+        layout->addWidget(button_delete);
         col = i % 4;
         if (!col && i) row++;
         layout_grid->addWidget(widget, row, col);
 
     }
+
 
 }
 
@@ -499,6 +540,8 @@ void MainWindow::on_search_btn_edition_clicked() {
 
     if (input.isEmpty())
     {
+        ui->search_field_edition->clear();
+
         QMessageBox::information(this, "معلومة", "ادخل كلمة للبحث");
         return;
     }
@@ -550,7 +593,7 @@ void MainWindow::on_search_btn_edition_clicked() {
         if (resultCount > 0) {
             ui->search_field_edition->clear();
             sort(results, resultCount);
-            display_search_private(results, resultCount, edition_grid, ui->myedition_page);
+            display_search_private(results, resultCount, edition_grid, ui->myedition_page,false);
         }
         else {
             QMessageBox::information(this, "No Results", "No matching recipes found.");
@@ -1124,6 +1167,7 @@ void MainWindow::display_recipe(bool arrang)
         title->setAlignment(Qt::AlignCenter);
         title->setStyleSheet(titleStyle);
         QLabel* image = new QLabel;
+        qInfo() << recipes[i]->imagePath;;
         image->setPixmap(QPixmap(recipes[i]->imagePath).scaled(150, 150, Qt::KeepAspectRatio));
 
         image->setAlignment(Qt::AlignCenter);
@@ -1177,14 +1221,14 @@ void MainWindow::on_submit_recipe_btn_clicked()
         show_warning_messageBox(this, "يجب إضافة صورة للوصفة");
         return;
     }
-    if (num_ingredients == 0) {
-        show_warning_messageBox(this, "يجب إضافة مكونات للوصفة");
-        return;
-    }
-    if (num_steps == 0) {
-        show_warning_messageBox(this, "يجب إضافة خطوات للوصفة");
-        return;
-    }
+    //if (num_ingredients == 0) {
+    //    show_warning_messageBox(this, "يجب إضافة مكونات للوصفة");
+    //    return;
+    //}
+    //if (num_steps == 0) {
+    //    show_warning_messageBox(this, "يجب إضافة خطوات للوصفة");
+    //    return;
+    //}
 
     // Step 3: All required fields are present, proceed to retrieve additional data
     QString* ingredients_array = get_ingredients(num_ingredients);
@@ -1223,10 +1267,24 @@ void MainWindow::on_submit_recipe_btn_clicked()
         recipe_ptr->steps[i] = steps_array[i];
     }
 
-    // Step 6: Clean up dynamically allocated arrays
+     //Step 6: Clean up dynamically allocated arrays
     delete[] ingredients_array;
     delete[] steps_array;
+     // add ingredients
+    //const QList<QLineEdit*>& ingredients = ui->ing_container->findChildren<QLineEdit*>();
+    //recipe_ptr->ing_num = ingredients.size();
+    //for (int i = 0; i < recipe_ptr->ing_num; i++)
+    //{
+    //    recipe_ptr->ingredients[i] = ingredients[i]->text().trimmed();
+    //}
 
+    //// add steps
+    //const QList<QLineEdit*>& steps = ui->steps_container->findChildren<QLineEdit*>();
+    //recipe_ptr->steps_num = steps.size();
+    //for (int i = 0; i < recipe_ptr->steps_num; i++)
+    //{
+    //    recipe_ptr->steps[i] = steps[i]->text().trimmed();
+    //}
 
     // Step 8: Reset the current displayed recipe
     currentDisplayedRecipe = nullptr;
@@ -1235,6 +1293,9 @@ void MainWindow::on_submit_recipe_btn_clicked()
 
     qInfo() << "Recipe" << recipe_ptr->id << "added/updated successfully!";
 }
+
+
+
 
 void MainWindow::assign_recipe_page(QSharedPointer<Recipe> r_ptr)
 {
@@ -1256,7 +1317,11 @@ void MainWindow::assign_recipe_page(QSharedPointer<Recipe> r_ptr)
         if (r_ptr->level == 0)  ui->display_level_recipe->setText("مستوى العصوبة:   سهل");
         else if (r_ptr->level == 1)  ui->display_level_recipe->setText("مستوى الصعوبة:   متوسط");
         else  ui->display_level_recipe->setText("مستوى الصعوبة:   صعب");
-       
+        qInfo() << "level " << r_ptr->level;
+        QString category;
+        if (r_ptr->category == 0) ui->display_category_recipe->setText("التصنيف: حلو");
+        else ui->display_category_recipe->setText("التصنيف: حادق");
+        qInfo() << "level " << r_ptr->category;
 
 
         for (int i = 0; i < r_ptr->ing_num;i++)
@@ -1373,14 +1438,15 @@ void MainWindow::on_add_favorite_btn_clicked()
 
     // Check if we've reached the maximum number of favorites
     if (loged_in_user->favorite_recipes_num >= 100) {
-        QMessageBox::warning(nullptr, "Error", "وصلت للحد الأقصى من عدد الوصفات المفضلة");
+        //QMessageBox::warning(nullptr, "Error", "وصلت للحد الأقصى من عدد الوصفات المفضلة");
+        show_warning_messageBox(this, "وصلت للحد الأقصى من عدد الوصفات المفضلة");
         return;
     }
 
     // Check if recipe is already in favorites
     for (int i = 0; i < loged_in_user->favorite_recipes_num; i++) {
         if (loged_in_user->favorite_recipes[i] == currentDisplayedRecipe->id) {
-            QMessageBox::information(nullptr, "Info", "تم الإضافة للمفضلة");
+            QMessageBox::information(nullptr, "Info", "مضافة مسبقا للمفضلة");
             qInfo("Exist");
             return;
         }
@@ -1392,7 +1458,8 @@ void MainWindow::on_add_favorite_btn_clicked()
     loged_in_user->favorite_recipes[loged_in_user->favorite_recipes_num] = currentDisplayedRecipe->id;
     loged_in_user->favorite_recipes_num++;
 
-    QMessageBox::information(nullptr, "Success", "تم إضافته بنجاح إلى المفضلة");
+    //QMessageBox::information(nullptr, "Success", "تم إضافته بنجاح إلى المفضلة");
+    show_success_messageBox(this, "تم إضافته بنجاح إلى المفضلة");
 
 }
     
@@ -1413,9 +1480,19 @@ void MainWindow::on_go_favorite_btn_clicked()
 void MainWindow::on_search_btn_favorite_clicked()
 {
         QString input = ui->search_field_favorite->text().trimmed();
-        int searchType = ui->sort_combobox_favorite->currentIndex();
+        qInfo() << "SEARCH INPUT " << input;
+        int searchType = ui->search_combox_favorite->currentIndex();
+        qInfo() << "SEARCH TYPE " << searchType;
+
         if (input.isEmpty())
         {
+            ui->search_field_favorite->clear();
+            QLayoutItem* item;
+            while ((item = favorite_grid->takeAt(0)) != nullptr) {
+                delete item->widget();
+                delete item;
+            }
+            display_favorite();
             QMessageBox::information(this, "معلومة", "ادخل كلمة للبحث");
             return;
         }
@@ -1429,9 +1506,18 @@ void MainWindow::on_search_btn_favorite_clicked()
             if (searchType == 0) { // Title search
                 for (int i = 0; i < loged_in_user->favorite_recipes_num && resultCount < 100; i++) {
                     recipe_index = recipes_id_to_index[loged_in_user->favorite_recipes[i]];
+                    qInfo() << i << " T " << recipes[recipe_index]->title;
+                    qInfo() << i << " T " << recipes[i]->title;
+
                     if (recipes[recipe_index]->title.toLower().contains(input.toLower()))
-                        results[resultCount++] = recipes[i];
-                    
+                    {
+
+                        results[resultCount++] = recipes[recipe_index];
+                         qInfo()<<results[resultCount-1]->title << " DEBUG";
+                         qInfo() << recipes[i]->title << " DEBUG";
+
+                    }
+                        
                 }
             }
             else if (searchType == 1) { // Time search
@@ -1452,7 +1538,7 @@ void MainWindow::on_search_btn_favorite_clicked()
                 for (int i = 0; i < loged_in_user->favorite_recipes_num && resultCount < MAX_RESULTS; i++) {
                     recipe_index = recipes_id_to_index[loged_in_user->favorite_recipes[i]];
                     if (recipes[recipe_index]->cock_time == targetTime) {
-                        results[resultCount++] = recipes[i];
+                        results[resultCount++] = recipes[recipe_index];
                     }
                 }
             }
@@ -1462,18 +1548,21 @@ void MainWindow::on_search_btn_favorite_clicked()
                     recipe_index = recipes_id_to_index[loged_in_user->favorite_recipes[i]];
 
                     for (int j = 0; j < 100; j++) {
+                        qInfo() << recipes[recipe_index]->ingredients[j] + " INGRED ";
                         if (recipes[recipe_index]->ingredients[j].toLower().contains(searchTerm)) {
-                            results[resultCount++] = recipes[i];
+                            results[resultCount++] = recipes[recipe_index];
                             break;
                         }
                     }
                 }
             }
-
+            else if (searchType == 3) {
+                ;
+            }
             if (resultCount > 0) {
                 ui->search_field_favorite->clear();
                 sort(results, resultCount);
-                display_search_private(results, resultCount, favorite_grid, ui->favorite_page);
+                display_search_private(results, resultCount, favorite_grid, ui->favorite_page,true);
             }
             else {
                 QMessageBox::information(this, "No Results", "No matching recipes found.");
@@ -1550,6 +1639,7 @@ void MainWindow::display_favorite(bool order)
         }
         else {
             image->setText("No image");
+            image->setStyleSheet(titleStyle);
             qDebug() << "Failed to load image for recipe:" << recipes[recipe_index]->title;
         }
         image->setAlignment(Qt::AlignCenter);

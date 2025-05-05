@@ -31,86 +31,7 @@ private:
     bool isDescending = false; // Track sort order (false = ascending, true = descending)
     QSharedPointer<Recipe>* searchResults = nullptr;
     int searchResultCount = 0;
-    QString view_button_details = "QPushButton {"
-        "border: 2px solid #8f8f91;"
-        "border-radius: 15px;"
-        "padding: 4px;"
-        "width: 100px;"
-        "font: 500 18px \"Cairo\";"
-        "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-        "    stop: 0 #e0e0e0, stop: 1 #a0a0a0);"
-        "color: black;" // <<<< Text color set to black
-        "}"
-
-        "QPushButton:default {"
-        "border: 3px solid #5A5A5A;"
-        "padding: 4px;"
-        "font: 600 18px \"Cairo\";"
-        "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-        "    stop: 0 #d7d7d7, stop: 1 #b0b0b0);"
-        "color: black;"
-        "}"
-
-        "QPushButton:hover {"
-        "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-        "    stop: 0 #f0f0f0, stop: 1 #c0c0c0);"
-        "}"
-
-        "QPushButton:pressed {"
-        "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-        "    stop: 0 #dadbde, stop: 1 #f6f7fa);"
-        "}"
-
-        "QPushButton:flat {"
-        "border: none;"
-        "background: transparent;"
-        "font: 500 18px \"Cairo\";"
-        "color: black;"
-        "}";
-
-
-    QString deleteButtonStyleDynamic = "QPushButton {"
-        "border-radius: 15px;"
-        "background-color: rgb(255, 50, 50);"
-        "border: 2px solid #8f8f91;"
-        "padding:4px;"
-        "font:500 18px \"Cairo\";"
-        "color: white;"
-        "}"
-        "QPushButton:hover {"
-        "background-color: rgb(200, 0, 0);"
-        "}"
-        "QPushButton:pressed {"
-        "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-        "stop: 0 #dadbde, stop: 1 #f6f7fa);"
-        "}";
-
-    QString deleteButtonStyle = "QPushButton {"
-        "border-radius: 15px;"
-        "background-color: rgb(255, 50, 50);"
-        "border: 2px solid #8f8f91;"
-        "padding:4px;"
-        "width:100px;"
-        "font:500 18px \"Cairo\";"
-        "color: white;"
-        "}"
-        "QPushButton:hover {"
-        "background-color: rgb(200, 0, 0);"
-        "curosr:pointer;"
-        "}"
-        "QPushButton:pressed {"
-        "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-        "stop: 0 #dadbde, stop: 1 #f6f7fa);"
-        "}";
-    QString titleStyle =
-        "font: bold 18px 'Reem Kufi';"
-        "color: #2c2c2c;"
-        "padding: 3px;"
-        "margin-bottom: 4px;"
-        "background-color: transparent;"
-        "border: none;";
-      
-
+    
 
 
 
@@ -151,7 +72,7 @@ private slots:
                 /********/
     
     void display_search_all(QSharedPointer<Recipe>* recipes, int count);
-    void display_search_private(QSharedPointer<Recipe>* recipes, int count, QGridLayout* layout_grid, QWidget* stacked_page);
+    void display_search_private(QSharedPointer<Recipe>* recipes, int count, QGridLayout* layout_grid, QWidget* stacked_page,bool flag);
 
     /***SORT****/
     void sort(QSharedPointer<Recipe> recipes[], int size);

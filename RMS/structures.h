@@ -13,7 +13,7 @@ struct Recipe
    int category = 0;
    QString title;
    QString description;
-   double cock_time = 0;
+   int cock_time = 0;
    int level = 0;
    int rates_sum = 1, rates_num = 1;
 

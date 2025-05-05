@@ -259,17 +259,16 @@ void save_recipes()
     qInfo() << num_of_recipes << "Recipes were saved successfully!";
 }
 
+
 void load_recipes()
 {
     // we won't need to load again after the first log in
     if (num_of_recipes) return;
-
     // open the file
     QString file_name = "Recipes.txt";
     QFile file(file_name);
     if (!file.exists())
     {
-        
         qWarning() << file_name << " does not exist";
         return;
     }
@@ -279,50 +278,153 @@ void load_recipes()
         file.close();
         return;
     }
-
     // Create a stream
     QTextStream stream(&file);
-
     // get number of recipes
     num_of_recipes = stream.readLine().toInt();
-
     // append each recipe to recipes list
     qInfo() << "loading" << num_of_recipes << " recipes...";
     for (int i = 0; i < num_of_recipes; i++)
     {
         QSharedPointer<Recipe> recipe_ptr(new Recipe());
-
         recipe_ptr->id = stream.readLine().toInt();
-        recipe_ptr->category = stream.readLine().toInt();
-        recipe_ptr->title = stream.readLine();
-        recipe_ptr->description = stream.readLine();
-        recipe_ptr->cock_time = stream.readLine().toDouble();
-        recipe_ptr->level = stream.readLine().toInt();
-        recipe_ptr->imagePath = stream.readLine();
+        qInfo() << recipe_ptr->id;
 
+        recipe_ptr->category = stream.readLine().toInt();
+        qInfo() << recipe_ptr->category << " CATEGORY";
+
+
+        recipe_ptr->title = stream.readLine();
+        qInfo() << recipe_ptr->title << " title";
+
+        recipe_ptr->description = stream.readLine();
+        qInfo() << recipe_ptr->description << "  DESC";
+        recipe_ptr->cock_time = stream.readLine().toInt();
+        qInfo() << recipe_ptr->cock_time << " COCKTIME";
+
+        recipe_ptr->level = stream.readLine().toInt();
+        qInfo() << recipe_ptr->level << " LEVEL";
+
+
+
+        recipe_ptr->imagePath = stream.readLine();
+        qInfo() << recipe_ptr->imagePath << " IMG";
+
+        qInfo() << recipe_ptr->imagePath; 
         recipe_ptr->ing_num = stream.readLine().toInt();
         QString ingred = stream.readLine();
         QStringList ingredList = ingred.split(",");
-        for (int j = 0; j < recipe_ptr->ing_num; j++)
+
+        // Make sure we don't try to access more elements than exist in the list
+        int actualIngCount = qMin(recipe_ptr->ing_num, ingredList.size());
+        for (int j = 0; j < actualIngCount; j++)
         {
-            recipe_ptr->ingredients[j] = ingred[j];
+            if (j < 100) { // Your Recipe struct has arrays of size 100
+                recipe_ptr->ingredients[j] = ingredList.at(j);
+            }
         }
 
         recipe_ptr->steps_num = stream.readLine().toInt();
         QString step = stream.readLine();
-        QStringList sl = step.split(",");
-        for (int j = 0; j < recipe_ptr->steps_num; j++)
+        QStringList stepList = step.split(",");
+
+        // Make sure we don't try to access more elements than exist in the list
+        int actualStepsCount = qMin(recipe_ptr->steps_num, stepList.size());
+        for (int j = 0; j < actualStepsCount; j++)
         {
-            recipe_ptr->steps[j] = step[j];
+            if (j < 100) { // Your Recipe struct has arrays of size 100
+                recipe_ptr->steps[j] = stepList.at(j);
+            }
         }
 
         recipes[i] = recipe_ptr;
         recipes_id_to_index[recipe_ptr->id] = i;
     }
-
     if (num_of_recipes) next_id = recipes[num_of_recipes - 1]->id + 1;
-
     file.close();
     qInfo() << file_name << " was loaded successfully!";
 }
-
+//
+//void load_recipes()
+//{6
+//    // we won't need to load again after the first log in
+//    if (num_of_recipes) return;
+//
+//    // open the file
+//    QString file_name = "Recipes.txt";
+//    QFile file(file_name);
+//    if (!file.exists())
+//    {
+//        
+//        qWarning() << file_name << " does not exist";
+//        return;
+//    }
+//    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+//    {
+//        qCritical() << "Could not open " << file_name << ":" << file.errorString();
+//        file.close();
+//        return;
+//    }
+//
+//    // Create a stream
+//    QTextStream stream(&file);
+//
+//    // get number of recipes
+//    num_of_recipes = stream.readLine().toInt();
+//
+//    // append each recipe to recipes list
+//    qInfo() << "loading" << num_of_recipes << " recipes...";
+//    for (int i = 0; i < num_of_recipes; i++)
+//    {
+//        QSharedPointer<Recipe> recipe_ptr(new Recipe());
+//
+//        recipe_ptr->id = stream.readLine().toInt();
+//        qInfo() << recipe_ptr->id<<'\n';
+//        recipe_ptr->category = stream.readLine().toInt();
+//        qInfo() << recipe_ptr->category << '\n';
+//
+//        recipe_ptr->title = stream.readLine();
+//        qInfo() << recipe_ptr->title << '\n';
+//
+//        recipe_ptr->description = stream.readLine();
+//        qInfo() << recipe_ptr->description << '\n';
+//
+//        recipe_ptr->cock_time = stream.readLine().toDouble();
+//        qInfo() << recipe_ptr->cock_time << '\n';
+//
+//        recipe_ptr->level = stream.readLine().toInt();
+//        qInfo() << recipe_ptr->level << '\n';
+//
+//        recipe_ptr->imagePath = stream.readLine();
+//        qInfo() << recipe_ptr->imagePath;
+//        recipe_ptr->ing_num = stream.readLine().toInt();
+//        qInfo() << recipe_ptr->ing_num << '\n';
+//
+//        QString ingred = stream.readLine();
+//        QStringList ingredList = ingred.split(",");
+//        for (int j = 0; j < recipe_ptr->ing_num; j++)
+//        {
+//            recipe_ptr->ingredients[j] = ingredList[j];
+//            qInfo() << recipe_ptr->ingredients[j] << '\n';
+//
+//        }
+//
+//        recipe_ptr->steps_num = stream.readLine().toInt();
+//        QString step = stream.readLine();
+//        QStringList sl = step.split(",");
+//        for (int j = 0; j < recipe_ptr->steps_num; j++)
+//        {
+//            recipe_ptr->steps[j] = sl[j];
+//            qInfo() << recipe_ptr->steps[i] << '\n';
+//
+//        }
+//
+//        recipes[i] = recipe_ptr;
+//        recipes_id_to_index[recipe_ptr->id] = i;
+//    }
+//
+//    if (num_of_recipes) next_id = recipes[num_of_recipes - 1]->id + 1;
+//
+//    file.close();
+//    qInfo() << file_name << " was loaded successfully!";
+//}
