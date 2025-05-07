@@ -1,4 +1,20 @@
+<<<<<<< HEAD
 <RCC>
     <qresource prefix="MainWindow">
     </qresource>
 </RCC>
+=======
+<RCC>
+    <qresource prefix="/MainWindow">
+        <file>heart.png</file>
+        <file>logout.png</file>
+        <file>search-interface-symbol.png</file>
+        <file>home.png</file>
+        <file>star.png</file>
+        <file>sort.png</file>
+        <file>sort-descending.png</file>
+        <file>systemicon.webp</file>
+        <file>down.png</file>
+    </qresource>
+</RCC>
+>>>>>>> gui
