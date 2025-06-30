@@ -23,6 +23,67 @@ void MainWindow::setup_mainwindow()
 		ui->my_recipes_page_btn->setVisible(false);
 	}
 
+	// Homepage
+	// Generate random recipes
+	if (user->isAdmin) ui->random_recipes_container->setVisible(false);
+	else
+	{
+		ui->random_recipes_container->setVisible(true);
+
+		srand(static_cast<unsigned int>(time(0)));
+		int* random_idxs = new int[3];
+		for (int i = 0; i < 3; i++) random_idxs[i] = rand() % recipes_count;
+		while (random_idxs[0] == random_idxs[1] || random_idxs[0] == random_idxs[2] || random_idxs[1] == random_idxs[2])
+		{
+			if (random_idxs[0] == random_idxs[1])
+				random_idxs[1] = rand() % recipes_count;
+			else if (random_idxs[0] == random_idxs[2] || random_idxs[1] == random_idxs[2])
+				random_idxs[2] = rand() % recipes_count;
+		}
+		for(int i = 0; i < 3; i++) random_recipes[i] = recipes[random_idxs[i]];
+		fill_grid(ui->random_scrollArea, random_recipes, 3);
+	}
+
+	// Connect tabs
+	connect(ui->tabWidget, &QTabWidget::currentChanged, this, [this](bool) 
+		{
+            int tab = ui->tabWidget->currentIndex();
+
+			temp_recipes_count = 0;
+
+			if (tab == 0)
+			{
+				fill_grid(ui->all_recipes_scrollArea, recipes, recipes_count);
+			}
+			else if (tab == 1)
+			{
+				for (int i = 0; i < recipes_count; i++)
+				{
+					if (recipes[i]->category == 0)
+						temp_recipes[temp_recipes_count++] = recipes[i];
+				}
+				fill_grid(ui->savory_scrollArea, temp_recipes, temp_recipes_count);
+			}
+			else if (tab == 2)
+			{
+				for (int i = 0; i < recipes_count; i++)
+				{
+					if (recipes[i]->category == 1)
+						temp_recipes[temp_recipes_count++] = recipes[i];
+				}
+				fill_grid(ui->sweet_scrollArea, temp_recipes, temp_recipes_count);
+			}
+			else
+			{
+				for (int i = 0; i < recipes_count; i++)
+				{
+					if (recipes[i]->category == 2)
+						temp_recipes[temp_recipes_count++] = recipes[i];
+				}
+				fill_grid(ui->drinks_scrollArea, temp_recipes, temp_recipes_count);
+			}
+		});
+
 	// Recipe page
 	// Ingredients
 	connect(ui->add_ing_btn, &QPushButton::clicked, this, [this](bool) {add_ingredient_row();});
@@ -41,15 +102,19 @@ void MainWindow::setup_mainwindow()
 void MainWindow::on_home_page_btn_clicked()
 {
 	ui->stackedWidget->setCurrentWidget(ui->home_page);
-	fill_grid(ui->all_recipes_scrollArea, recipes, recipes_count);
+
+	if(ui->tabWidget->currentIndex() == 0)
+		fill_grid(ui->all_recipes_scrollArea, recipes, recipes_count);
+	else
+		ui->tabWidget->setCurrentIndex(0);
 }
 void MainWindow::on_add_recipe_btn_clicked()
 {
 	clear_recipe_page();
 
 	ui->buttons_menu->setVisible(false);
-	ui->submit_btn->setVisible(true);
-	connect(ui->submit_btn, &QPushButton::clicked, this, [&]() {
+	ui->save_btn->setVisible(true);
+	connect(ui->save_btn, &QPushButton::clicked, this, [&]() {
 		add_recipe();
 		on_add_recipe_btn_clicked();
 		});
@@ -84,7 +149,7 @@ void MainWindow::clear_recipe_page()
 	// disconnect all buttons from old slots to avoid errors
 	disconnect(ui->delete_btn, nullptr, nullptr, nullptr);
 	disconnect(ui->edit_btn, nullptr, nullptr, nullptr);
-	disconnect(ui->submit_btn, nullptr, nullptr, nullptr);
+	disconnect(ui->save_btn, nullptr, nullptr, nullptr);
 	disconnect(ui->favorite_btn, nullptr, nullptr, nullptr);
 	disconnect(ui->my_recipe_btn, nullptr, nullptr, nullptr);
 
@@ -227,8 +292,9 @@ void MainWindow::fill_grid(QScrollArea* scroll_area, QSharedPointer<Recipe>* rec
 	for (int i = 0; i < size; i++)
 	{
 		QWidget* widget = new QWidget;
+		widget->setMaximumWidth(350);
+		widget->setMinimumHeight(170);
 		QVBoxLayout* layout = new QVBoxLayout(widget);
-
 		QLabel* title = new QLabel(recipes_arr[i]->title);
 		title->setAlignment(Qt::AlignCenter);
 
@@ -301,7 +367,7 @@ void MainWindow::display_recipe(QSharedPointer<Recipe> r_ptr)
 	ui->buttons_menu->setVisible(true);
 	ui->delete_btn->setVisible(true);
 	ui->edit_btn->setVisible(true);
-	ui->submit_btn->setVisible(false);
+	ui->save_btn->setVisible(false);
 	ui->my_recipe_btn->setVisible(false);
 	ui->favorite_btn->setVisible(false);
 
@@ -320,10 +386,10 @@ void MainWindow::display_recipe(QSharedPointer<Recipe> r_ptr)
 		connect(ui->edit_btn, &QPushButton::clicked, this, [this, r_ptr]()
 			{
 				ui->buttons_menu->setVisible(false);
-				ui->submit_btn->setVisible(true);
+				ui->save_btn->setVisible(true);
 
-				connect(ui->submit_btn, &QPushButton::clicked, this, [this, r_ptr]() {
-					//QMessageBox::information(this, "Message", QString("تم تعديل " + r_ptr->title + " بنجاح"));
+				connect(ui->save_btn, &QPushButton::clicked, this, [this, r_ptr]() {
+					QMessageBox::information(this, "Message", QString("تم تعديل " + r_ptr->title + " بنجاح"));
 					fill_recipe_from_page(r_ptr);
 					display_recipe(r_ptr);
 					});
@@ -367,7 +433,7 @@ void MainWindow::connect_favorite_btn(QSharedPointer<Recipe> r_ptr)
 			{
 				user->favorites[user->favorites_count] = r_ptr;
 				user->favorites_count += 1;
-				//QMessageBox::information(this, "Message", QString("تم اضافة " + r_ptr->title + " للوصفات المفضله بنجاح"));
+				QMessageBox::information(this, "Message", QString("تم اضافة " + r_ptr->title + " للوصفات المفضله بنجاح"));
 				display_recipe(r_ptr);
 			});
 	}
@@ -384,7 +450,7 @@ void MainWindow::connect_favorite_btn(QSharedPointer<Recipe> r_ptr)
 				// delete last element and decrement count by 1
 				user->favorites[--user->favorites_count] = nullptr;
 
-				//QMessageBox::information(this, "Message", QString("تم حذف " + r_ptr->title + " من الوصفات المفضله بنجاح"));
+				QMessageBox::information(this, "Message", QString("تم حذف " + r_ptr->title + " من الوصفات المفضله بنجاح"));
 				display_recipe(r_ptr);
 			});
 	}
@@ -426,7 +492,7 @@ void MainWindow::connect_my_recipe_btn(QSharedPointer<Recipe> r_ptr)
 				// delete last element and decrement count by 1
 				user->my_recipes[--user->my_recipes_count] = nullptr;
 
-				//QMessageBox::information(this, "Message", QString("تم حذف " + r_ptr->title + " من وصفاتي بنجاح"));
+				QMessageBox::information(this, "Message", QString("تم حذف " + r_ptr->title + " من وصفاتي بنجاح"));
 				display_recipe(r_ptr);
 			});
 	}
@@ -454,7 +520,7 @@ void MainWindow::add_recipe()
 	// fill recipe
 	fill_recipe_from_page(r_ptr);
 
-	//QMessageBox::information(this, "Message", QString("الوصفه " + r_ptr->title + " اضيفت بنجاح"));
+	QMessageBox::information(this, "Message", QString("الوصفه " + r_ptr->title + " اضيفت بنجاح"));
 	qInfo() << "Recipe" << r_ptr->id << ". " << r_ptr->title << "added successfully!";
 
 	clear_recipe_page();
@@ -493,7 +559,7 @@ void MainWindow::delete_recipe(QSharedPointer<Recipe> r_ptr)
 	if (admin) recipes_id_to_index[r_ptr->id] = -1;       // mark “gone”
 	*count -= 1;
 
-	//QMessageBox::information(this, "Message", QString("تم مسح " + r_ptr->title + " بنجاح"));
+	QMessageBox::information(this, "Message", QString("تم حذف " + r_ptr->title + " بنجاح"));
 
 	clear_recipe_page();
 }

@@ -29,7 +29,7 @@
       <property name="minimumSize">
        <size>
         <width>921</width>
-        <height>71</height>
+        <height>57</height>
        </size>
       </property>
       <property name="frameShape">
@@ -183,28 +183,47 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="home_page">
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0" colspan="3">
-         <widget class="QGroupBox" name="groupBox">
-          <property name="title">
-           <string>All Recipes</string>
+       <layout class="QGridLayout" name="gridLayout_11">
+        <item row="0" column="0">
+         <widget class="QGroupBox" name="random_recipes_container">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>230</height>
+           </size>
           </property>
-          <layout class="QGridLayout" name="gridLayout_2">
+          <property name="font">
+           <font>
+            <family>Segoe UI</family>
+            <pointsize>9</pointsize>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LayoutDirection::RightToLeft</enum>
+          </property>
+          <property name="title">
+           <string>الوصفات المقترحه</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout">
            <item row="0" column="0">
-            <widget class="QScrollArea" name="all_recipes_scrollArea">
+            <widget class="QScrollArea" name="random_scrollArea">
+             <property name="layoutDirection">
+              <enum>Qt::LayoutDirection::RightToLeft</enum>
+             </property>
              <property name="widgetResizable">
               <bool>true</bool>
              </property>
-             <widget class="QWidget" name="all_recipes_widget">
+             <widget class="QWidget" name="random_widget">
               <property name="geometry">
                <rect>
                 <x>0</x>
                 <y>0</y>
                 <width>877</width>
-                <height>461</height>
+                <height>185</height>
                </rect>
               </property>
              </widget>
@@ -214,24 +233,121 @@
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>TextLabel</string>
+         <widget class="QTabWidget" name="tabWidget">
+          <property name="layoutDirection">
+           <enum>Qt::LayoutDirection::RightToLeft</enum>
           </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>text</string>
+          <property name="tabPosition">
+           <enum>QTabWidget::TabPosition::North</enum>
           </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>TextLabel</string>
+          <property name="tabShape">
+           <enum>QTabWidget::TabShape::Rounded</enum>
           </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="all_recipes_tab" native="true">
+           <attribute name="title">
+            <string>كل الوصفات</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="0" column="0">
+             <widget class="QScrollArea" name="all_recipes_scrollArea">
+              <property name="layoutDirection">
+               <enum>Qt::LayoutDirection::LeftToRight</enum>
+              </property>
+              <property name="widgetResizable">
+               <bool>true</bool>
+              </property>
+              <widget class="QWidget" name="all_recipes_widget">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>879</width>
+                 <height>256</height>
+                </rect>
+               </property>
+              </widget>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="savory_tab">
+           <attribute name="title">
+            <string>حادق</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_5">
+            <item row="0" column="0">
+             <widget class="QScrollArea" name="savory_scrollArea">
+              <property name="widgetResizable">
+               <bool>true</bool>
+              </property>
+              <widget class="QWidget" name="savory_widget">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>879</width>
+                 <height>256</height>
+                </rect>
+               </property>
+              </widget>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="sweet_tab">
+           <attribute name="title">
+            <string>حلو</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_7">
+            <item row="0" column="0">
+             <widget class="QScrollArea" name="sweet_scrollArea">
+              <property name="frameShape">
+               <enum>QFrame::Shape::Box</enum>
+              </property>
+              <property name="widgetResizable">
+               <bool>true</bool>
+              </property>
+              <widget class="QWidget" name="sweet_widget">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>877</width>
+                 <height>254</height>
+                </rect>
+               </property>
+              </widget>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="drinks_tab">
+           <attribute name="title">
+            <string>مشروبات</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_8">
+            <item row="0" column="0">
+             <widget class="QScrollArea" name="drinks_scrollArea">
+              <property name="widgetResizable">
+               <bool>true</bool>
+              </property>
+              <widget class="QWidget" name="drinks_widget">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>879</width>
+                 <height>256</height>
+                </rect>
+               </property>
+              </widget>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </item>
        </layout>
@@ -239,23 +355,47 @@
       <widget class="QWidget" name="favorite_page">
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
-         <widget class="QScrollArea" name="favorite_scrollArea">
-          <property name="frameShape">
-           <enum>QFrame::Shape::Box</enum>
+         <widget class="QGroupBox" name="groupBox">
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+            <bold>false</bold>
+           </font>
           </property>
-          <property name="widgetResizable">
-           <bool>true</bool>
+          <property name="accessibleName">
+           <string/>
           </property>
-          <widget class="QWidget" name="favorite_widget">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>899</width>
-             <height>524</height>
-            </rect>
-           </property>
-          </widget>
+          <property name="layoutDirection">
+           <enum>Qt::LayoutDirection::RightToLeft</enum>
+          </property>
+          <property name="title">
+           <string>الوصفات المفضله</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_9">
+           <item row="0" column="0">
+            <widget class="QScrollArea" name="favorite_scrollArea">
+             <property name="layoutDirection">
+              <enum>Qt::LayoutDirection::LeftToRight</enum>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Shape::Box</enum>
+             </property>
+             <property name="widgetResizable">
+              <bool>true</bool>
+             </property>
+             <widget class="QWidget" name="favorite_widget">
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>875</width>
+                <height>481</height>
+               </rect>
+              </property>
+             </widget>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
@@ -263,23 +403,44 @@
       <widget class="QWidget" name="my_recipes_page">
        <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="0">
-         <widget class="QScrollArea" name="my_recipes_scrollArea">
-          <property name="frameShape">
-           <enum>QFrame::Shape::Box</enum>
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+            <bold>false</bold>
+           </font>
           </property>
-          <property name="widgetResizable">
-           <bool>true</bool>
+          <property name="layoutDirection">
+           <enum>Qt::LayoutDirection::RightToLeft</enum>
           </property>
-          <widget class="QWidget" name="my_recipes_widget">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>899</width>
-             <height>524</height>
-            </rect>
-           </property>
-          </widget>
+          <property name="title">
+           <string>وصفاتي</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_10">
+           <item row="0" column="0">
+            <widget class="QScrollArea" name="my_recipes_scrollArea">
+             <property name="layoutDirection">
+              <enum>Qt::LayoutDirection::LeftToRight</enum>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Shape::Box</enum>
+             </property>
+             <property name="widgetResizable">
+              <bool>true</bool>
+             </property>
+             <widget class="QWidget" name="my_recipes_widget">
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>875</width>
+                <height>481</height>
+               </rect>
+              </property>
+             </widget>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
@@ -650,6 +811,9 @@
                </item>
                <item>
                 <widget class="QComboBox" name="level_combobox">
+                 <property name="layoutDirection">
+                  <enum>Qt::LayoutDirection::RightToLeft</enum>
+                 </property>
                  <item>
                   <property name="text">
                    <string>سهل</string>
@@ -691,6 +855,9 @@
                </item>
                <item>
                 <widget class="QComboBox" name="category_combobox">
+                 <property name="layoutDirection">
+                  <enum>Qt::LayoutDirection::RightToLeft</enum>
+                 </property>
                  <item>
                   <property name="text">
                    <string>حادق</string>
@@ -699,6 +866,11 @@
                  <item>
                   <property name="text">
                    <string>حلو</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>مشروب</string>
                   </property>
                  </item>
                 </widget>
@@ -769,7 +941,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="submit_btn">
+             <widget class="QPushButton" name="save_btn">
               <property name="minimumSize">
                <size>
                 <width>120</width>
@@ -783,7 +955,7 @@
                </size>
               </property>
               <property name="text">
-               <string>إضافة الوصفة</string>
+               <string>حفظ</string>
               </property>
              </widget>
             </item>

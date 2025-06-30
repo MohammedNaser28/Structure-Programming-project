@@ -20,6 +20,10 @@ public:
 private:
 	Ui::MainWindowClass *ui;
 
+    int temp_recipes_count = 0;
+    QSharedPointer<Recipe> temp_recipes[1000];
+    QSharedPointer<Recipe> random_recipes[3];
+
 
 public slots:
     void setup_mainwindow();
