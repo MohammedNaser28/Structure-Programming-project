@@ -56,44 +56,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="my_recipes_page_btn">
-         <property name="styleSheet">
-          <string notr="true">QPushButton
-{
-   border: none;
-   background-color: rgb(240,240,240);
-	text-decoration: underline;
-	font: 9pt &quot;Segoe UI&quot; rgb(0, 0, 0);
-	color: rgb(0, 0, 255)rgb(5, 80, 255);
-	color: rgb(39, 19, 255);
-
-}</string>
-         </property>
-         <property name="text">
-          <string>وصفاتي</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="my_favorites_page_btn">
-         <property name="styleSheet">
-          <string notr="true">QPushButton
-{
-   border: none;
-   background-color: rgb(240,240,240);
-	text-decoration: underline;
-	font: 9pt &quot;Segoe UI&quot; rgb(0, 0, 0);
-	color: rgb(0, 0, 255)rgb(5, 80, 255);
-	color: rgb(39, 19, 255);
-
-}</string>
-         </property>
-         <property name="text">
-          <string>الوصفات المفضله</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QPushButton" name="add_recipe_btn">
          <property name="font">
           <font>
@@ -183,7 +145,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="home_page">
        <layout class="QGridLayout" name="gridLayout">
@@ -203,8 +165,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>877</width>
-                <height>461</height>
+                <width>881</width>
+                <height>473</height>
                </rect>
               </property>
              </widget>
@@ -236,54 +198,6 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="favorite_page">
-       <layout class="QGridLayout" name="gridLayout_4">
-        <item row="0" column="0">
-         <widget class="QScrollArea" name="favorite_scrollArea">
-          <property name="frameShape">
-           <enum>QFrame::Shape::Box</enum>
-          </property>
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="favorite_widget">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>899</width>
-             <height>524</height>
-            </rect>
-           </property>
-          </widget>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="my_recipes_page">
-       <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="0">
-         <widget class="QScrollArea" name="my_recipes_scrollArea">
-          <property name="frameShape">
-           <enum>QFrame::Shape::Box</enum>
-          </property>
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="my_recipes_widget">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>899</width>
-             <height>524</height>
-            </rect>
-           </property>
-          </widget>
-         </widget>
-        </item>
-       </layout>
-      </widget>
       <widget class="QWidget" name="recipe_page">
        <layout class="QGridLayout" name="gridLayout_6">
         <item row="0" column="0">
@@ -303,7 +217,7 @@
              <x>0</x>
              <y>0</y>
              <width>903</width>
-             <height>528</height>
+             <height>533</height>
             </rect>
            </property>
            <property name="font">
@@ -312,36 +226,17 @@
             </font>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
+            <property name="spacing">
+             <number>12</number>
+            </property>
             <item>
-             <widget class="QWidget" name="buttons_menu" native="true">
-              <layout class="QHBoxLayout" name="horizontalLayout">
-               <item>
-                <spacer name="horizontalSpacer_4">
-                 <property name="orientation">
-                  <enum>Qt::Orientation::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
+             <widget class="QWidget" name="title_widget" native="true">
+              <property name="layoutDirection">
+               <enum>Qt::LayoutDirection::LeftToRight</enum>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_4">
                <item>
                 <widget class="QPushButton" name="edit_btn">
-                 <property name="minimumSize">
-                  <size>
-                   <width>100</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>120</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
                  <property name="text">
                   <string>تعديل</string>
                  </property>
@@ -349,83 +244,11 @@
                </item>
                <item>
                 <widget class="QPushButton" name="delete_btn">
-                 <property name="minimumSize">
-                  <size>
-                   <width>100</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>120</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
                  <property name="text">
                   <string>حذف</string>
                  </property>
                 </widget>
                </item>
-               <item>
-                <widget class="QPushButton" name="my_recipe_btn">
-                 <property name="minimumSize">
-                  <size>
-                   <width>100</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>120</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>اضف لوصفاتي</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="favorite_btn">
-                 <property name="minimumSize">
-                  <size>
-                   <width>100</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>120</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>اضف للمفضله</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="horizontalSpacer_5">
-                 <property name="orientation">
-                  <enum>Qt::Orientation::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QWidget" name="title_widget" native="true">
-              <property name="layoutDirection">
-               <enum>Qt::LayoutDirection::LeftToRight</enum>
-              </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_4">
                <item>
                 <widget class="QLineEdit" name="title_line">
                  <property name="minimumSize">
@@ -510,9 +333,6 @@
                </item>
                <item>
                 <widget class="QWidget" name="steps_container" native="true">
-                 <property name="layoutDirection">
-                  <enum>Qt::LayoutDirection::RightToLeft</enum>
-                 </property>
                  <layout class="QVBoxLayout" name="verticalLayout_3">
                   <property name="topMargin">
                    <number>0</number>
@@ -600,9 +420,6 @@
                </item>
                <item>
                 <widget class="QWidget" name="ing_container" native="true">
-                 <property name="layoutDirection">
-                  <enum>Qt::LayoutDirection::RightToLeft</enum>
-                 </property>
                  <layout class="QVBoxLayout" name="verticalLayout">
                   <property name="topMargin">
                    <number>0</number>
@@ -768,7 +585,7 @@
               </layout>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignmentFlag::AlignHCenter">
              <widget class="QPushButton" name="submit_btn">
               <property name="minimumSize">
                <size>
@@ -803,7 +620,7 @@
      <x>0</x>
      <y>0</y>
      <width>939</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

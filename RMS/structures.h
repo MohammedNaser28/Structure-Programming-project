@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "dependencies.h"
 
@@ -17,10 +17,10 @@ struct Recipe
    int level = 0;
    QString imagePath = "";
 
-   int ing_num = 0;
+   int ing_count = 0;
    QString ingredients[100] {};
 
-   int steps_num = 0;
+   int steps_count = 0;
    QString steps[100] {};
 
    void generate_id()
@@ -28,6 +28,7 @@ struct Recipe
        id = next_id;
        next_id++;
    }
+
 };
 
 struct User
@@ -40,9 +41,9 @@ struct User
    QString username;
    QString password;
 
-   int favorite_recipes_num = 0;
-   int favorite_recipes[100] {};  // IDs of favorite recipes
+   int favorites_count = 0;
+   QSharedPointer<Recipe> favorites[100] {};
 
-   int my_recipes_num = 0;
-   QSharedPointer<Recipe> my_recipes[100];
+   int my_recipes_count = 0;
+   QSharedPointer<Recipe> my_recipes[100] {};
 };

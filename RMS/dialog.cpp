@@ -38,30 +38,36 @@ void Dialog::on_log_in_btn_clicked()
     }
 
     // search for user
-    for (int i = 0; i < num_of_users; i++)
+    for (int i = 0; i < users_count; i++)
     {
         if (users[i]->username == username && users[i]->password == password)
         {
-            loged_in_user = users[i];
+            user = users[i];
             qInfo() << username << " loged in succesfully!";
 
             // Check if there ware deleted recipes in favorite
             // in case recipes deleted in previous sessions(log out without closing the app)
-            // were added to the favorite array of the current user
-            int &fav_num = loged_in_user ->favorite_recipes_num;
-            for (int j = 0; j < fav_num; j++)
+            // were in the favorite array of the current user
+            
+            int &fav_count = user->favorites_count;
+            for (int l = 0, r = fav_count - 1; l < r; l++)
             {
-                // if the id refers to deleted recipe 
-                // switch it with the last one and decrease favorite_recipes_num
-                if (recipes_id_to_index[loged_in_user ->favorite_recipes[j]] == -1)
-                {
-                    int last_id = loged_in_user ->favorite_recipes[fav_num - 1];
-                    loged_in_user ->favorite_recipes[fav_num - 1] = 0;
-                    loged_in_user ->favorite_recipes[j] = last_id;
+                while (l < r && recipes_id_to_index[user->favorites[r]->id] == -1)
+                    r--;
 
-                    fav_num--;
+                if (recipes_id_to_index[user->favorites[l]->id] == -1)
+                {
+					std::swap(user->favorites[l], user->favorites[r]);
+                    r--;
                 }
             }
+            int deleted = 0;
+            for (int i = fav_count-1; i > 0; i--)
+            {
+                if (recipes_id_to_index[user->favorites[i]->id] != -1) break;
+                else deleted++;
+            }
+            fav_count -= deleted;
 
             emit switchToMainWindow();
             break;
@@ -69,7 +75,7 @@ void Dialog::on_log_in_btn_clicked()
     }
 
     // if user was not found
-    if (loged_in_user.isNull())
+    if (user.isNull())
         QMessageBox::information(this, "Message", "User was not found please register first.");
 
     ui->username_line->clear();
@@ -89,7 +95,7 @@ void Dialog::on_register_btn_clicked()
     confirm_password = confirm_password.trimmed();
 
     // make sure user entered data
-    if (!username.size() | !password.size() || !confirm_password.size())
+    if (!username.size() || !password.size() || !confirm_password.size())
     {
         qWarning() << "Enter a Username and a Password";
         ui->warning_label->setText("Enter a Username and a Password");
@@ -104,7 +110,7 @@ void Dialog::on_register_btn_clicked()
     }
 
     // make sure user entered a unique username
-    for (int i = 0; i < num_of_users; i++)
+    for (int i = 0; i < users_count; i++)
     {
         if (username == users[i]->username)
         {
@@ -133,11 +139,13 @@ void Dialog::on_register_btn_clicked()
 
     // create new user and append it to the users list
     QSharedPointer<User> user_ptr(new User());
+    user = user_ptr;
+
     user_ptr->isAdmin = isAdmin;
     user_ptr->username = username;
     user_ptr->password = password;
-    users[num_of_users] = user_ptr;
-    num_of_users++;
+    users[users_count] = user_ptr;
+    users_count++;
 
     // switch to main window and clear register page and switch to log in
     emit switchToMainWindow();

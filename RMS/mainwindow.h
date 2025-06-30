@@ -16,24 +16,43 @@ public:
 	MainWindow(QWidget *parent = nullptr);
 	~MainWindow();
 
+
 private:
 	Ui::MainWindowClass *ui;
-    QGridLayout* recipes_grid;
+
 
 public slots:
+    void setup_mainwindow();
+
+    // Upper bar
     void on_home_page_btn_clicked();
-    void on_add_recipe_page_btn_clicked();
-    void display_all_recipes();
+    void on_add_recipe_btn_clicked();
+    void on_log_out_btn_clicked();
+    void on_my_favorites_page_btn_clicked();
+    void on_my_recipes_page_btn_clicked();
+
+
+
+    // recipe_page
+    void clear_recipe_page();  // Always clear recipe page and disconnect signals before you deal with a recipe
+    void fill_page_from_recipe(QSharedPointer<Recipe> r_ptr);
+    void fill_recipe_from_page(QSharedPointer<Recipe> r_ptr);
+
+    void connect_favorite_btn(QSharedPointer<Recipe> r_ptr);
+    void connect_my_recipe_btn(QSharedPointer<Recipe> r_ptr);
+
+    void fill_grid(QScrollArea* scroll_area, QSharedPointer<Recipe>* recipes_arr, int size); // fill any recipes grid
+    
     void add_ingredient_row(QString ing = "");
     void add_step_row(QString step = "");
     void remove_row();
 
-    void setup_mainwindow_page();
-    void on_log_out_btn_clicked();
-    void on_save_recipe_btn_clicked();
-    void display_recipe(QSharedPointer<Recipe> r_ptr);
 
+    // Functions
+    void display_recipe(QSharedPointer<Recipe> r_ptr);
+    void add_recipe();
     void delete_recipe(QSharedPointer<Recipe> r_ptr);
+
 
 
 signals:

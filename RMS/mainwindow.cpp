@@ -1,13 +1,12 @@
 ﻿#include "mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(QWidget* parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindowClass())
-    , recipes_grid(new QGridLayout)
 {
 	ui->setupUi(this);
-    this->setup_mainwindow_page();
-    this->on_home_page_btn_clicked();
+	setup_mainwindow();
+	on_home_page_btn_clicked();
 }
 
 MainWindow::~MainWindow()
@@ -15,325 +14,487 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-void MainWindow::setup_mainwindow_page()
+void MainWindow::setup_mainwindow()
 {
-    // Homepage 
-    ui->scrollAreaWidgetContents->setLayout(recipes_grid);
-    ui->scrollArea->setWidgetResizable(true);
+	// UpperBar 
+	if (user->isAdmin)
+	{
+		ui->my_favorites_page_btn->setVisible(false);
+		ui->my_recipes_page_btn->setVisible(false);
+	}
 
-    // Add Recipe page
-    // Scrollable central area
-    ui->scroll_area->setLayoutDirection(Qt::RightToLeft);
-    ui->scroll_content->setLayoutDirection(Qt::RightToLeft);
-    ui->scroll_content->layout()->setSpacing(12);
-    ui->scroll_area->setWidgetResizable(true);
+	// Recipe page
+	// Ingredients
+	connect(ui->add_ing_btn, &QPushButton::clicked, this, [this](bool) {add_ingredient_row();});
 
-    // Ingredients
-    ui->add_ing_layout->setDirection(QBoxLayout::RightToLeft);
-    ui->ing_container->setLayoutDirection(Qt::LeftToRight);
-    connect(ui->add_ing_btn, &QPushButton::clicked, this, [this](bool) {
-        add_ingredient_row();
-        });
+	// Steps
+	connect(ui->add_step_btn, &QPushButton::clicked, this, [this](bool) {add_step_row();});
 
-    add_ingredient_row();
-
-    // Method
-    ui->add_step_layout->setDirection(QBoxLayout::RightToLeft);
-    ui->steps_container->setLayoutDirection(Qt::LeftToRight);
-    connect(ui->add_step_btn, &QPushButton::clicked, this, [this](bool) {
-        add_step_row();
-        });
-    
-    add_step_row();
-
-    // Info row
-    ui->info_layout->setSpacing(10);
-    ui->info_layout->setDirection(QBoxLayout::RightToLeft);
-
-    // Image row
-    ui->img_layout->setDirection(QBoxLayout::RightToLeft);
-    connect(ui->browse_btn, &QPushButton::clicked, this, [this]() {
-        QString file = QFileDialog::getOpenFileName(this, QString("اختر صورة"), QString(), QString("صور (*.png *.jpg *.jpeg)"));
-        if (!file.isEmpty()) ui->image_path_line->setText(file);
-        }); 
+	// Image row
+	connect(ui->browse_btn, &QPushButton::clicked, this, [this]() {
+		QString file = QFileDialog::getOpenFileName(this, QString("اختر صورة"), QString(), QString("صور (*.png *.jpg *.jpeg)"));
+		if (!file.isEmpty()) ui->image_path_line->setText(file);
+		});
 }
+
+// Upper bar
+void MainWindow::on_home_page_btn_clicked()
+{
+	ui->stackedWidget->setCurrentWidget(ui->home_page);
+	fill_grid(ui->all_recipes_scrollArea, recipes, recipes_count);
+}
+void MainWindow::on_add_recipe_btn_clicked()
+{
+	clear_recipe_page();
+
+	ui->buttons_menu->setVisible(false);
+	ui->submit_btn->setVisible(true);
+	connect(ui->submit_btn, &QPushButton::clicked, this, [&]() {
+		add_recipe();
+		on_add_recipe_btn_clicked();
+		});
+
+	add_ingredient_row();
+	add_step_row();
+
+	ui->stackedWidget->setCurrentWidget(ui->recipe_page);
+
+}
+void MainWindow::on_log_out_btn_clicked()
+{
+	user = nullptr;
+	emit switchToDialog();
+}
+
+void MainWindow::on_my_favorites_page_btn_clicked()
+{
+	ui->stackedWidget->setCurrentWidget(ui->favorite_page);
+	fill_grid(ui->favorite_scrollArea, user->favorites, user->favorites_count);
+}
+void MainWindow::on_my_recipes_page_btn_clicked()
+{
+	ui->stackedWidget->setCurrentWidget(ui->my_recipes_page);
+	fill_grid(ui->my_recipes_scrollArea, user->my_recipes, user->my_recipes_count);
+}
+
+
+// recipe_page
+void MainWindow::clear_recipe_page()
+{
+	// disconnect all buttons from old slots to avoid errors
+	disconnect(ui->delete_btn, nullptr, nullptr, nullptr);
+	disconnect(ui->edit_btn, nullptr, nullptr, nullptr);
+	disconnect(ui->submit_btn, nullptr, nullptr, nullptr);
+	disconnect(ui->favorite_btn, nullptr, nullptr, nullptr);
+	disconnect(ui->my_recipe_btn, nullptr, nullptr, nullptr);
+
+	ui->title_line->clear();
+
+	const QList<QPushButton*>& ing_btns = ui->ing_container->findChildren<QPushButton*>();
+	for (auto btn : ing_btns) btn->click();
+
+	const QList<QPushButton*>& steps_btns = ui->steps_container->findChildren<QPushButton*>();
+	for (auto btn : steps_btns) btn->click();
+
+	ui->des_edit->clear();
+
+	ui->category_combobox->setCurrentIndex(0);
+	ui->level_combobox->setCurrentIndex(0);
+	ui->cock_time_spinbox->setValue(0);
+}
+void MainWindow::fill_page_from_recipe(QSharedPointer<Recipe> r_ptr)
+{
+	ui->title_line->setText(r_ptr->title);
+
+	// fill ingredients
+	for (int i = 0; i < r_ptr->ing_count; i++)
+		add_ingredient_row(r_ptr->ingredients[i]);
+
+	// fill steps
+	for (int i = 0; i < r_ptr->steps_count; i++)
+		add_step_row(r_ptr->steps[i]);
+
+	ui->des_edit->setText(r_ptr->description);
+
+	ui->category_combobox->setCurrentIndex(r_ptr->category);
+	ui->level_combobox->setCurrentIndex(r_ptr->level);
+	ui->cock_time_spinbox->setValue(r_ptr->cock_time);
+
+	// image
+
+	// go to page
+	ui->stackedWidget->setCurrentWidget(ui->recipe_page);
+
+}
+void MainWindow::fill_recipe_from_page(QSharedPointer<Recipe> r_ptr)
+{
+	// add title
+	r_ptr->title = ui->title_line->text().trimmed();
+
+	// add description
+	r_ptr->description = ui->des_edit->toPlainText().trimmed();
+
+	// add ingredients
+	const QList<QLineEdit*>& ingredients = ui->ing_container->findChildren<QLineEdit*>();
+	r_ptr->ing_count = ingredients.size();
+	for (int i = 0; i < r_ptr->ing_count; i++)
+	{
+		r_ptr->ingredients[i] = ingredients[i]->text().trimmed();
+	}
+
+	// add steps
+	const QList<QLineEdit*>& steps = ui->steps_container->findChildren<QLineEdit*>();
+	r_ptr->steps_count = steps.size();
+	for (int i = 0; i < r_ptr->steps_count; i++)
+	{
+		r_ptr->steps[i] = steps[i]->text().trimmed();
+	}
+
+	// add info
+	r_ptr->category = ui->category_combobox->currentIndex();
+	r_ptr->level = ui->level_combobox->currentIndex();
+	r_ptr->cock_time = ui->cock_time_spinbox->value();
+
+	// add image
+	r_ptr->imagePath = ui->image_path_line->text().trimmed();
+}
+
 void MainWindow::add_ingredient_row(QString ing)
 {
-    QWidget* row = new QWidget(ui->ing_container);
-    row->setLayoutDirection(Qt::RightToLeft);
-    QHBoxLayout* row_layout = new QHBoxLayout(row);
-    row_layout->setSpacing(5);
-    row_layout->setDirection(QBoxLayout::LeftToRight);
-    QLineEdit* edit = new QLineEdit;
-    edit->setMinimumHeight(30);
-    edit->setPlaceholderText(QStringLiteral("مكون"));
-    QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
-    if (!ing.isEmpty())
-    {
-        edit->setText(ing);
-        edit->setEnabled(false);
-        rm->setVisible(false);
-    }
-    connect(rm, &QPushButton::clicked, this, &MainWindow::remove_row);
-    row_layout->addWidget(edit);
-    row_layout->addWidget(rm);
-    ui->ing_container->layout()->addWidget(row);
+	QWidget* row = new QWidget(ui->ing_container);
+	QHBoxLayout* row_layout = new QHBoxLayout(row);
+	row_layout->setSpacing(5);
+
+	QLineEdit* edit = new QLineEdit;
+	edit->setMinimumHeight(30);
+	edit->setPlaceholderText("مكون");
+	QPushButton* rm = new QPushButton("حذف");
+	connect(rm, &QPushButton::clicked, this, &MainWindow::remove_row);
+	if (ing.isEmpty() == false)
+	{
+		edit->setText(ing);
+	}
+
+	row_layout->addWidget(edit);
+	row_layout->addWidget(rm);
+	ui->ing_container->layout()->addWidget(row);
 }
 void MainWindow::add_step_row(QString step)
 {
-    QWidget* row = new QWidget(ui->steps_container);
+	QWidget* row = new QWidget(ui->steps_container);
+	QHBoxLayout* row_layout = new QHBoxLayout(row);
+	row_layout->setSpacing(5);
 
-    row->setLayoutDirection(Qt::RightToLeft);
-    QHBoxLayout* row_layout = new QHBoxLayout(row);
-    row_layout->setSpacing(5);
-    row_layout->setDirection(QBoxLayout::LeftToRight);
-    QLineEdit* edit = new QLineEdit;
-    edit->setMinimumHeight(30);
-    edit->setPlaceholderText(QStringLiteral("اكتب الخطوة"));
-    QPushButton* rm = new QPushButton(QStringLiteral("حذف"));
-    if (!step.isEmpty())
-    {
-        edit->setText(step);
-        edit->setEnabled(false);
-        rm->setVisible(false);
-    }
-    connect(rm, &QPushButton::clicked, this, &MainWindow::remove_row);
-    row_layout->addWidget(edit);
-    row_layout->addWidget(rm);
-    QLayout* step_layout = ui->steps_container->layout();
-    step_layout->addWidget(row);
+	QLineEdit* edit = new QLineEdit;
+	edit->setMinimumHeight(30);
+	edit->setPlaceholderText("اكتب الخطوة");
+	QPushButton* rm = new QPushButton("حذف");
+	connect(rm, &QPushButton::clicked, this, &MainWindow::remove_row);
+	if (step.isEmpty() == false)
+	{
+		edit->setText(step);
+	}
+
+	row_layout->addWidget(edit);
+	row_layout->addWidget(rm);
+	ui->steps_container->layout()->addWidget(row);
 }
 void MainWindow::remove_row()
 {
-    QPushButton* btn = qobject_cast<QPushButton*>(sender());
-    if (!btn) return;
-    QWidget* row = btn->parentWidget();
-    delete row;
-}
-
-void MainWindow::on_home_page_btn_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->home_page);
-    this->display_all_recipes();
-}
-
-void MainWindow::on_add_recipe_page_btn_clicked()
-{
-    ui->title_line->setEnabled(true);
-    ui->title_line->clear();
-
-    ui->delete_btn->setVisible(false);
-    ui->edit_btn->setVisible(false);
-
-    const QList<QPushButton*>& ing_btns = ui->ing_container->findChildren<QPushButton*>();
-    for (auto btn : ing_btns)
-    {
-        btn->click();
-    }
-    add_ingredient_row();
-
-    const QList<QPushButton*>& steps_btns = ui->steps_container->findChildren<QPushButton*>();
-    for (auto btn : steps_btns)
-    {
-       btn->click();
-    }
-    add_step_row();
-
-    ui->des_edit->setEnabled(true);
-    ui->des_edit->clear();
-
-    ui->category_combobox->setCurrentIndex(0);
-    ui->level_combobox->setCurrentIndex(0);
-    ui->cock_time_spinbox->setValue(0);
-
-    ui->img_widget->setVisible(true);
-    ui->save_recipe_btn->setVisible(true);
-
-    ui->stackedWidget->setCurrentWidget(ui->recipe_page);
+	QPushButton* btn = qobject_cast<QPushButton*>(sender());
+	if (!btn) return;
+	QWidget* row = btn->parentWidget();
+	delete row;
 }
 
 
-void MainWindow::on_log_out_btn_clicked()
+// Functions
+void MainWindow::fill_grid(QScrollArea* scroll_area, QSharedPointer<Recipe>* recipes_arr, int size)
 {
-    loged_in_user = nullptr;
-    emit switchToDialog();
-}
+	// Create a new empty widget and set it as the scroll_area widget
+	// that automatically removes the old one with all of its content
+	QWidget* new_widget = new QWidget(scroll_area);
+	QGridLayout* container_layout = new QGridLayout(new_widget);
+	scroll_area->setWidget(new_widget);
 
-void MainWindow::on_save_recipe_btn_clicked()
-{
-    
-    // Create object
-    QSharedPointer<Recipe> recipe_ptr(new Recipe());
-    recipe_ptr->generate_id();
-    recipes[num_of_recipes] = recipe_ptr;
-    recipes_id_to_index[recipe_ptr->id] = num_of_recipes;
-    num_of_recipes++;
+	// Check if user is allowed to edit
+	bool admin = user->isAdmin;
+	bool allowed_to_edit = (admin || (!admin && size && recipes_arr[0]->id == -1));
 
-    // add title
-    recipe_ptr->title = ui->title_line->text();
-    recipe_ptr->title = recipe_ptr->title.trimmed();
+	// Fill the widget
+	int max_in_row = 3;
+	int row = 0, column = 0;
+	for (int i = 0; i < size; i++)
+	{
+		QWidget* widget = new QWidget;
+		QVBoxLayout* layout = new QVBoxLayout(widget);
 
-    // add description
-    recipe_ptr->description = ui->des_edit->toPlainText();
-    recipe_ptr->description = recipe_ptr->description.trimmed();
-    
-    // add ingredients
-    const QList<QLineEdit*> &ingredients = ui->ing_container->findChildren<QLineEdit*>();
-    recipe_ptr->ing_num = ingredients.size();
-    for (int i = 0; i < recipe_ptr->ing_num; i++)
-    {
-        recipe_ptr->ingredients[i] = ingredients[i]->text().trimmed();
-    }
+		QLabel* title = new QLabel(recipes_arr[i]->title);
+		title->setAlignment(Qt::AlignCenter);
 
-    // add steps
-    const QList<QLineEdit*>& steps = ui->steps_container->findChildren<QLineEdit*>();
-    recipe_ptr->steps_num = steps.size();
-    for (int i = 0; i < recipe_ptr->steps_num; i++)
-    {
-         recipe_ptr->steps[i] = steps[i]->text().trimmed(); 
-    }
+		// QLabel *image = new QLabel;
+		// image->setPixmap(QPixmap(imagePath).scaled(150, 150, Qt::KeepAspectRatio));
+		// image->setAlignment(Qt::AlignCenter);
 
-    // add info
-    recipe_ptr->category = ui->category_combobox->currentIndex();
-    recipe_ptr->level = ui->level_combobox->currentIndex();
-    recipe_ptr->cock_time = ui->cock_time_spinbox->value();
+		QPushButton* display_btn = new QPushButton("عرض الوصفه");
+		connect(display_btn, &QPushButton::clicked, this, [=]() {
+			display_recipe(recipes_arr[i]);
+			});
 
-    qInfo() << "Recipe" << recipe_ptr->id << "added successfully!";
 
-    // return to home page
-    this->on_home_page_btn_clicked();
+		QWidget* btn_widget = new QWidget;
+		QHBoxLayout* btn_layout = new QHBoxLayout(btn_widget);
+		btn_layout->addWidget(display_btn);
+
+		if (allowed_to_edit)
+		{
+			QPushButton* delete_btn = new QPushButton("حذف");
+			connect(delete_btn, &QPushButton::clicked, this, [=]() 
+				{
+					delete_recipe(recipes_arr[i]);
+
+					if(user->isAdmin)
+						on_home_page_btn_clicked();
+					else
+						on_my_recipes_page_btn_clicked();
+				});
+
+			QPushButton* edit_btn = new QPushButton("تعديل");
+			connect(edit_btn, &QPushButton::clicked, this, [=]()
+				{
+					display_recipe(recipes_arr[i]);
+					ui->edit_btn->click();
+				});
+
+			btn_layout->addWidget(delete_btn);
+			btn_layout->addWidget(edit_btn);
+		}
+		// if a user opens his favorite recipes page
+		else if(scroll_area->objectName() == "favorite_scrollArea")
+		{
+			QPushButton* delete_fav = new QPushButton("حذف");
+			connect(delete_fav, &QPushButton::clicked, this, [=]()
+				{
+					display_recipe(recipes_arr[i]);
+					ui->favorite_btn->click();
+					on_my_favorites_page_btn_clicked();
+				});
+
+			btn_layout->addWidget(delete_fav);
+		}
+
+
+		layout->addWidget(title);
+		layout->addWidget(btn_widget);
+
+		// sets 3 widgets in a raw
+		column = i % max_in_row;
+		if (!column && i) row++;
+		container_layout->addWidget(widget, row, column);
+	}
 }
 
 void MainWindow::display_recipe(QSharedPointer<Recipe> r_ptr)
 {
-    ui->title_line->setEnabled(false);
-    ui->title_line->setText(r_ptr->title);
+	clear_recipe_page();
 
-    ui->delete_btn->setVisible(true);
-    ui->edit_btn->setVisible(true);
+	ui->buttons_menu->setVisible(true);
+	ui->delete_btn->setVisible(true);
+	ui->edit_btn->setVisible(true);
+	ui->submit_btn->setVisible(false);
+	ui->my_recipe_btn->setVisible(false);
+	ui->favorite_btn->setVisible(false);
 
-    // delete all
-    const QList<QWidget*>& ingredients = ui->ing_container->findChildren<QWidget*>();
-    for (int i = 0; i < ingredients.size(); i++)
-    {
-        ingredients[i]->deleteLater();
-    }
+	// allowed to edit
+	bool admin = user->isAdmin;
+	if (admin || (!admin && r_ptr->id == -1))
+	{
+		connect(ui->delete_btn, &QPushButton::clicked, this, [this, r_ptr]() 
+			{
+				delete_recipe(r_ptr);
 
-    // set ingredients
-    for (int i = 0; i < r_ptr->ing_num; i++)
-    {
-        add_ingredient_row(r_ptr->ingredients[i]);
-    }
+				if (user->isAdmin) on_home_page_btn_clicked();
+				else on_my_recipes_page_btn_clicked();
+			});
 
-    // delete all
-    const QList<QWidget*>& steps = ui->steps_container->findChildren<QWidget*>();
-    for (int i = 0; i < steps.size(); i++)
-    {
-        steps[i]->deleteLater();
-    }
+		connect(ui->edit_btn, &QPushButton::clicked, this, [this, r_ptr]()
+			{
+				ui->buttons_menu->setVisible(false);
+				ui->submit_btn->setVisible(true);
 
-    // set steps
-    for (int i = 0; i < r_ptr->steps_num; i++)
-    {
-        add_step_row(r_ptr->steps[i]);
-    }
+				connect(ui->submit_btn, &QPushButton::clicked, this, [this, r_ptr]() {
+					//QMessageBox::information(this, "Message", QString("تم تعديل " + r_ptr->title + " بنجاح"));
+					fill_recipe_from_page(r_ptr);
+					display_recipe(r_ptr);
+					});
+			});
+	}
+	else
+	{
+		ui->delete_btn->setVisible(false);
+		ui->edit_btn->setVisible(false);
 
-    ui->des_edit->setEnabled(false);
-    ui->des_edit->setText(r_ptr->description);
+		ui->my_recipe_btn->setVisible(true);
+		ui->favorite_btn->setVisible(true);
 
-    ui->category_combobox->setCurrentIndex(r_ptr->category);
-    ui->level_combobox->setCurrentIndex(r_ptr->level);
-    ui->cock_time_spinbox->setValue(r_ptr->cock_time);
+		connect_favorite_btn(r_ptr);
+		connect_my_recipe_btn(r_ptr);
+	}
 
-    ui->img_widget->setVisible(false);
-    ui->save_recipe_btn->setVisible(false);
-    ui->stackedWidget->setCurrentWidget(ui->recipe_page);
+	// fill recipe_page and open it
+	fill_page_from_recipe(r_ptr);
 }
 
-void MainWindow::display_all_recipes()
+void MainWindow::connect_favorite_btn(QSharedPointer<Recipe> r_ptr)
 {
-    QLayoutItem* item;
-    while ((item = recipes_grid->takeAt(0)) != nullptr)
+	disconnect(ui->favorite_btn, nullptr, nullptr, nullptr);
+
+	int idx_in_fav = -1;
+    for (int i = 0; i < user->favorites_count; i++)
     {
-        if (QWidget* w = item->widget()) w->deleteLater();
-        delete item;
+		if (user->favorites[i] == r_ptr)
+		{
+			idx_in_fav = i;
+			break;
+		}
     }
 
-    int r = 0, c = 0;
-    for (int i = 0; i < num_of_recipes; i++)
-    {
-        QWidget* widget = new QWidget;
+	// if not found in favorite, Add it.
+	if (idx_in_fav == -1)
+	{
+		ui->favorite_btn->setText("اضف للمفضلة");
+		connect(ui->favorite_btn, &QPushButton::clicked, this, [this, r_ptr]()
+			{
+				user->favorites[user->favorites_count] = r_ptr;
+				user->favorites_count += 1;
+				//QMessageBox::information(this, "Message", QString("تم اضافة " + r_ptr->title + " للوصفات المفضله بنجاح"));
+				display_recipe(r_ptr);
+			});
+	}
+	// if found in favorite, Delete it.
+	else
+	{
+		ui->favorite_btn->setText("احذف من المفضلة");
+		connect(ui->favorite_btn, &QPushButton::clicked, this, [this, r_ptr, idx_in_fav]()
+			{
+				// Swipe recipes so that all recipes be adjacent:
+				for (int i = idx_in_fav; i + 1 < user->favorites_count; i++)
+					user->favorites[i] = user->favorites[i + 1];
 
-        QVBoxLayout* layout = new QVBoxLayout(widget);
+				// delete last element and decrement count by 1
+				user->favorites[--user->favorites_count] = nullptr;
 
-        QLabel* title = new QLabel(recipes[i]->title);
-        title->setAlignment(Qt::AlignCenter);
+				//QMessageBox::information(this, "Message", QString("تم حذف " + r_ptr->title + " من الوصفات المفضله بنجاح"));
+				display_recipe(r_ptr);
+			});
+	}
+}
+void MainWindow::connect_my_recipe_btn(QSharedPointer<Recipe> r_ptr)
+{
+	disconnect(ui->my_recipe_btn, nullptr, nullptr, nullptr);
 
-        // QLabel *image = new QLabel;
-        // image->setPixmap(QPixmap(imagePath).scaled(150, 150, Qt::KeepAspectRatio));
-        // image->setAlignment(Qt::AlignCenter);
+	int idx = -1;
+	for (int i = 0; i < user->my_recipes_count; i++)
+	{
+		if (user->my_recipes[i]->title == r_ptr->title)
+		{
+			idx = i;
+			break;
+		}
+	}
 
-        QPushButton* display = new QPushButton("عرض الوصفه");
-        connect(display, &QPushButton::clicked, this, [=]() {
-            display_recipe(recipes[i]);
-            });
+	// if not found, Add it.
+	if (idx == -1)
+	{
+		ui->my_recipe_btn->setText("اضف لوصفاتي");
+		connect(ui->my_recipe_btn, &QPushButton::clicked, this, [this, r_ptr]()
+			{
+				add_recipe();
+				display_recipe(r_ptr);
+			});
+	}
+	// if found, Delete it.
+	else
+	{
+		ui->my_recipe_btn->setText("احذف من وصفاتي");
+		connect(ui->my_recipe_btn, &QPushButton::clicked, this, [this, r_ptr, idx]()
+			{
+				// Swipe recipes so that all recipes be adjacent:
+				for (int i = idx; i + 1 < user->my_recipes_count; i++)
+					user->my_recipes[i] = user->my_recipes[i + 1];
 
-        QPushButton* del = new QPushButton("حذف");
-        connect(del, &QPushButton::clicked, this, [=]() {
+				// delete last element and decrement count by 1
+				user->my_recipes[--user->my_recipes_count] = nullptr;
 
-            //recipes_grid->removeWidget(widget);
-            //widget->deleteLater();
-            delete_recipe(recipes[i]);
-           
-            });
-
-        QWidget* btn_widget = new QWidget;
-        QHBoxLayout* btn_layout = new QHBoxLayout(btn_widget);
-        btn_layout->addWidget(display);
-        btn_layout->addWidget(del);
-
-        layout->addWidget(title);
-        layout->addWidget(btn_widget);
-
-        c = i % 4;
-        if (!c && i) r++;
-        recipes_grid->addWidget(widget, r, c);
-    }
+				//QMessageBox::information(this, "Message", QString("تم حذف " + r_ptr->title + " من وصفاتي بنجاح"));
+				display_recipe(r_ptr);
+			});
+	}
 }
 
+void MainWindow::add_recipe()
+{
+	// Create new recipe
+	QSharedPointer<Recipe> r_ptr(new Recipe());
 
+	if (user->isAdmin)
+	{
+		recipes[recipes_count] = r_ptr;
+		r_ptr->generate_id();
+		recipes_id_to_index[r_ptr->id] = recipes_count;
+		recipes_count++;
+	}
+	else
+	{
+		r_ptr->id = -1;
+		user->my_recipes[user->my_recipes_count] = r_ptr;
+		user->my_recipes_count++;
+	}
+
+	// fill recipe
+	fill_recipe_from_page(r_ptr);
+
+	//QMessageBox::information(this, "Message", QString("الوصفه " + r_ptr->title + " اضيفت بنجاح"));
+	qInfo() << "Recipe" << r_ptr->id << ". " << r_ptr->title << "added successfully!";
+
+	clear_recipe_page();
+}
 void MainWindow::delete_recipe(QSharedPointer<Recipe> r_ptr)
 {
+	// get count of all recipes, recipes_arr, and index of recipe to be deleted
+	int* count = &recipes_count;
+	QSharedPointer<Recipe>* recipes_arr = recipes;
+	int idx = recipes_id_to_index[r_ptr->id];
 
-    // check if loged_in_user had the recipe in his favorite array   (won't need it since only admin can delete)
-    // other users gets checked at log in and and when save_users gets excuted
-    //int &fav_num = loged_in_user->favorite_recipes_num;
-    //for (int j = 0; j < fav_num; j++)
-    //{
-    //    // if the id refers to deleted recipe 
-    //    // switch it with the last one and decrease favorite_recipes_num
-    //    if (recipes_id_to_index[loged_in_user->favorite_recipes[j]] == -1)
-    //    {
-    //        int last_id = loged_in_user->favorite_recipes[fav_num - 1];
-    //        loged_in_user->favorite_recipes[fav_num - 1] = 0;
-    //        loged_in_user->favorite_recipes[j] = last_id;
+	bool admin = user->isAdmin;
+	if (not admin)
+	{
+		count = &user->my_recipes_count;
+		recipes_arr = user->my_recipes;
+		// find index
+		for (int i = 0; i < *count; i++)
+		{
+			if (recipes_arr[i] == r_ptr)
+			{
+				idx = i;
+				break;
+			}
+		}
+	}
 
-    //        fav_num--;
-    //    }
-    //}
+	// Swipe recipes so that all recipes be adjacent:
+	for (int i = idx; i + 1 < *count; i++)
+	{
+		recipes_arr[i] = recipes_arr[i + 1];
+		if (admin) recipes_id_to_index[recipes[i]->id] = i;
+	}
 
-    // now delete all pointers to current recipe and it will automatically delete the objet for us 
-    short idx = recipes_id_to_index[r_ptr->id];
+	recipes_arr[*count - 1].reset();					 // drop the QSharedPointer
+	if (admin) recipes_id_to_index[r_ptr->id] = -1;       // mark “gone”
+	*count -= 1;
 
-    // make all recipes adjacent:
-    for (int i = idx; i + 1 < num_of_recipes; ++i) {
-        recipes[i] = recipes[i + 1];
-        recipes_id_to_index[recipes[i]->id] = i;
-    }
+	//QMessageBox::information(this, "Message", QString("تم مسح " + r_ptr->title + " بنجاح"));
 
-    recipes[num_of_recipes - 1].clear();           // drop the QSharedPointer
-    recipes_id_to_index[r_ptr->id] = -1;           // mark “gone”
-    --num_of_recipes;
-
-    on_home_page_btn_clicked();
+	clear_recipe_page();
 }
+
