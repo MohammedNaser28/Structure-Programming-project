@@ -62,7 +62,7 @@ void Dialog::on_log_in_btn_clicked()
                 }
             }
             int deleted = 0;
-            for (int i = fav_count-1; i > 0; i--)
+            for (int i = fav_count-1; i >= 0; i--)
             {
                 if (recipes_id_to_index[user->favorites[i]->id] != -1) break;
                 else deleted++;
