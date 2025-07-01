@@ -25,7 +25,7 @@ void MainWindow::setup_mainwindow()
 
 	// Homepage
 	// Generate random recipes
-	if (user->isAdmin) ui->random_recipes_container->setVisible(false);
+	if (user->isAdmin || recipes_count <= 3) ui->random_recipes_container->setVisible(false);
 	else
 	{
 		ui->random_recipes_container->setVisible(true);
